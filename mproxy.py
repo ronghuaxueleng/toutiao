@@ -1,0 +1,89 @@
+import functools
+import json
+import logging
+import logging.handlers
+
+# 日志配置
+from toutiao.toutiao import save_task_data, save_request_data
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+file_handler = logging.handlers.RotatingFileHandler("mproxy.log", maxBytes=10485760, backupCount=5, encoding="utf-8")
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+'''
+    异常捕捉
+'''
+
+
+def log_exception(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            fn(*args, **kwargs)
+        except Exception as e:
+            logging.exception("[Error in {}] msg: {}".format(__name__, str(e)))
+            raise
+
+    return wrapper
+
+
+'''
+    抓包监听
+'''
+
+
+class mproxy:
+
+    @log_exception
+    def request(self, flow):
+        if '/luckycat/lite/v1/activity/done_whole_scene_task' in flow.request.path:
+            save_task_data(flow, 'done_whole_scene_task')
+
+        if '/score_task/v1/task/new_excitation_ad' in flow.request.path:
+            save_task_data(flow, 'new_excitation_ad')
+
+        if '/score_task/v1/task/open_treasure_box' in flow.request.path:
+            save_task_data(flow, 'open_treasure_box')
+
+        if '/luckycat/lite/v1/sleep/done_task' in flow.request.path:
+            save_task_data(flow, 'sleep_done_task')
+
+        if '/luckycat/lite/v1/eat/done_eat' in flow.request.path:
+            save_task_data(flow, 'eat_done_task')
+
+        host = flow.request.host
+        if "marathon.jd.com" in host \
+                and "captcha.html" not in flow.request.path \
+                and "getJBeanInfo.action" not in flow.request.path:
+            logger.warning("request=============================================")
+            logger.warning(json.dumps(dict(flow.request.headers.items())))
+            logger.warning(flow.request.url)
+            logger.warning(flow.request.host)
+            logger.warning(flow.request.method)
+            logger.warning(flow.request.get_text())
+
+    @log_exception
+    def response(self, flow):
+        host = flow.request.host
+        if "snssdk.com" in host:
+            if '/passport/account/info/v2/?' in flow.request.path:
+                save_request_data(flow)
+
+        if "marathon.jd.com" in host \
+                and "captcha.html" not in flow.request.path \
+                and "getJBeanInfo.action" not in flow.request.path:
+            logger.warning("response=============================================")
+            logger.warning(flow.response.status_code)
+            logger.warning(flow.response.text)
+            logger.warning(flow.response.get_text())
+
+
+addons = [
+    mproxy()
+]

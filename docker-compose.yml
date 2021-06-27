@@ -1,0 +1,11 @@
+version: "2.4"
+services:
+  app:
+    container_name: toutiao
+    build: "."
+    image: toutiao
+    ports:
+      - 8080:8080
+    environment:
+      - TZ=Asia/Shanghai
+    restart: always
