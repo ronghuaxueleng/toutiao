@@ -1,5 +1,5 @@
 name: 自动同步
-on: push
+on: [push, workflow_dispatch]
 jobs:
   repo-sync:
     name: 同步到gitee
