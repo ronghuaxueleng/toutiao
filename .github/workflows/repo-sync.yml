@@ -1,0 +1,15 @@
+name: 自动同步
+on: [push, workflow_dispatch]
+jobs:
+  repo-sync:
+    name: 同步到gitee
+    runs-on: ubuntu-latest
+    steps:
+      - name: 同步到gitee
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/ronghuaxueleng
+          dst: gitee/getready
+          static_list: "mitmproxy"
+          dst_key: ${{ secrets.GITEE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}

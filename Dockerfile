@@ -19,6 +19,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
 WORKDIR ${APP_DIR}
+COPY git_pull.sh ${APP_DIR}/
 COPY docker-entrypoint.sh ${APP_DIR}/
 COPY requirements.txt ${APP_DIR}/
 RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
