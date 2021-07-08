@@ -17,3 +17,5 @@
 0 7 * * * python3 /mitmproxy/run_task.py -t "newbie_consume" >> /mitmproxy/logs/newbie_consume.log 2>&1
 # 翻倍
 30 0 * * * python3 /mitmproxy/run_task.py -t "double_whole_scene_task" >> /mitmproxy/logs/double_whole_scene_task.log 2>&1
+# 走路
+0 */2 * * * python3 /mitmproxy/run_task.py -lt 0 -t "walk_count" >> /mitmproxy/logs/walk_count.log 2>&1
