@@ -12,7 +12,7 @@ DockerDir=${ScriptsDir}/docker
 [ ! -d "${DockerDir}" ] && mkdir -p "${DockerDir}"
 # shellcheck disable=SC2034
 ListCronSh=${DockerDir}/crontab_list.sh
-OwnActionsURL=https://gitee.com/getready/my_actions.git
+OwnActionsURL=https://gitee.com/getready/mitmproxy.git
 
 ## 更新Shell源码
 function Git_PullShell() {
@@ -22,28 +22,8 @@ function Git_PullShell() {
     git fetch --all
     # shellcheck disable=SC2034
     ExitStatusShell=$?
-    git reset --hard origin/source
-    git pull
-}
-
-## 克隆scripts
-function Git_CloneScripts() {
-    echo -e "克隆${OwnActionsURL} main分支脚本\n"
-    git clone -b main ${OwnActionsURL} "${ScriptsDir}"
-    ExitStatusScripts=$?
-    echo
-}
-
-## 更新scripts
-function Git_PullScripts() {
-    echo -e "更新${OwnActionsURL} main分支脚本\n"
-    # shellcheck disable=SC2164
-    cd "${ScriptsDir}"
-    git fetch --all
-    # shellcheck disable=SC2034
-    ExitStatusScripts=$?
     git reset --hard origin/main
-    echo
+    git pull
 }
 
 ## 在日志中记录时间与路径
@@ -58,7 +38,6 @@ echo -e "+-----------------------------------------------------------+"
 
 ## 更新Shell源码
 [ -d "${ShellDir}"/.git ] && Git_PullShell
-[ -d ${ScriptsDir}/.git ] && Git_PullScripts || Git_CloneScripts
 
 ## 赋权
 chmod 777 "${ShellDir}"/*
