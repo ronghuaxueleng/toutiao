@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
 
 from peewee import *
 
-db = SqliteDatabase('account.db')
+dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'account.db')
+db = SqliteDatabase(dbpath)
 
 
 # 账户信息
