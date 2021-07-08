@@ -7,11 +7,6 @@ ShellDir=${MITM_DIR:-$(
     cd $(dirname "$0")
     pwd
 )}
-ScriptsDir=${ShellDir}/jd_scripts
-DockerDir=${ScriptsDir}/docker
-[ ! -d "${DockerDir}" ] && mkdir -p "${DockerDir}"
-# shellcheck disable=SC2034
-ListCronSh=${DockerDir}/crontab_list.sh
 OwnActionsURL=https://gitee.com/getready/mitmproxy.git
 
 ## 更新Shell源码
@@ -30,14 +25,13 @@ function Git_PullShell() {
 echo -e ''
 echo -e "+----------------- 开 始 执 行 更 新 脚 本 -----------------+"
 echo -e ''
-echo -e "   活动脚本目录：${ScriptsDir}"
-echo -e ''
 echo -e "   当前系统时间：$(date "+%Y-%m-%d %H:%M")"
 echo -e ''
 echo -e "+-----------------------------------------------------------+"
 
 ## 更新Shell源码
 [ -d "${ShellDir}"/.git ] && Git_PullShell
+crontab -r && crontab "${ShellDir}"/crontab.list
 
 ## 赋权
 chmod 777 "${ShellDir}"/*

@@ -29,7 +29,5 @@ bash git_pull >/dev/null 2>&1
 echo
 
 UseNotes
-
-crontab -r && crontab crontab.list
 /usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5
 exec "$@"
