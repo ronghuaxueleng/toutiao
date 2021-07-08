@@ -1,0 +1,16 @@
+name: "构建Docker镜像"
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: 构建Github镜像
+    steps:
+      - name: docker build and push
+        run: |
+          git clone -b docker https://github.com/ronghuaxueleng/mitmproxy.git docker
+          cd docker
+          docker login docker.io -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+          docker build -t ronghuaxueleng/jrtt .
+          docker push ronghuaxueleng/jrtt
