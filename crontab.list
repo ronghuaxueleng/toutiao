@@ -1,9 +1,0 @@
-* * * * * (sleep 30 ; python3 /work/project/run_task.py -lt 1 -t "done_whole_scene_task" >> /work/project/logs/done_whole_scene_task.log 2>&1)
-*/8 * * * * python3 /work/project/run_task.py -lt 1 -t "new_excitation_ad" >> /work/project/logs/new_excitation_ad.log 2>&1
-*/10 * * * * python3 /work/project/run_task.py -lt 1 -t "open_treasure_box" >> /work/project/logs/open_treasure_box.log 2>&1
-0 2,4,6,8,14 * * * python3 /work/project/run_task.py -t "get_read" >> /work/project/logs/get_read.log 2>&1
-0 2,4,6,8,14 * * * python3 /work/project/run_task.py -t "get_push_read_bonus" >> /work/project/logs/get_push_read_bonus.log 2>&1
-0 3 * * * python3 /work/project/run_task.py -t "sign_in" >> /work/project/logs/sign_in.log 2>&1
-0 5 * * * python3 /work/project/run_task.py -t "open_notice" >> /work/project/logs/open_notice.log 2>&1
-0 7 * * * python3 /work/project/run_task.py -t "newbie_consume" >> /work/project/logs/newbie_consume.log 2>&1
-30 0 * * * python3 /work/project/run_task.py -t "double_whole_scene_task" >> /work/project/logs/double_whole_scene_task.log 2>&1

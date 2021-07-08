@@ -21,7 +21,6 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 WORKDIR ${APP_DIR}
 COPY docker-entrypoint.sh /usr/local/bin/
 COPY requirements.txt ${APP_DIR}/
-COPY crontab.list ${APP_DIR}/
 
 # 使用清华源安装依赖
 RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
