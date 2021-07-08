@@ -13,7 +13,7 @@ OwnActionsURL=https://gitee.com/getready/mitmproxy.git
 
 ## 更新Shell源码
 function Git_PullShell() {
-    echo -e "\n开始更新仓库 /jd\n"
+    echo -e "\n开始更新仓库\n"
     # shellcheck disable=SC2164
     cd ${ShellDir}
     git fetch --all
