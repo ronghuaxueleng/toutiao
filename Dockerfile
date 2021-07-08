@@ -19,11 +19,13 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
 WORKDIR ${APP_DIR}
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY docker-entrypoint.sh ${APP_DIR}/
 COPY requirements.txt ${APP_DIR}/
+RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
+    && cp -f ${APP_DIR}/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh \
+    && chmod 777 /usr/local/bin/docker-entrypoint.sh
 
 # 使用清华源安装依赖
 RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
-RUN chmod 777 /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT docker-entrypoint.sh

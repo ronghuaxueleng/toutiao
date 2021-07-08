@@ -24,8 +24,7 @@ function UseNotes() {
 
 echo -e "\n========================1. 更新源代码========================\n"
 crond
-bash git_pull
-bash git_pull >/dev/null 2>&1
+bash /mitmproxy/git_pull.sh
 echo
 
 UseNotes
