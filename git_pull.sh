@@ -7,6 +7,8 @@ ShellDir=${MITM_DIR:-$(
     cd $(dirname "$0")
     pwd
 )}
+LogDir=${ShellDir}/logs
+[ ! -d ${LogDir} ] && mkdir -p ${LogDir}
 OwnActionsURL=https://gitee.com/getready/mitmproxy.git
 
 ## 更新Shell源码
