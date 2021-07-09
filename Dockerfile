@@ -1,4 +1,4 @@
-FROM node:lts-alpine as base
+FROM ronghuaxueleng/jd:latest as base
 
 FROM mitmproxy/mitmproxy
 LABEL maintainer="jishuixiansheng"
