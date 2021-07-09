@@ -29,7 +29,7 @@ RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
 # 使用清华源安装依赖
 RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
-COPY --from=base /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/
+COPY --from=base /usr/share/zoneinfo /usr/share/
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
 
 ENTRYPOINT docker-entrypoint.sh
