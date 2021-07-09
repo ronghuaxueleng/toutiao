@@ -1,3 +1,5 @@
+FROM node:lts-alpine as base
+
 FROM mitmproxy/mitmproxy
 LABEL maintainer="jishuixiansheng"
 ARG APP_URL=https://gitee.com/getready/mitmproxy.git
@@ -14,8 +16,6 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && apk upgrade \
     && apk --no-cache ca-certificates add -f bash git \
     && rm -rf /var/cache/apk/* \
-    && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && echo "Asia/Shanghai" > /etc/timezone \
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
 WORKDIR ${APP_DIR}
@@ -28,5 +28,8 @@ RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
 
 # 使用清华源安装依赖
 RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+
+COPY --from=base /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
 
 ENTRYPOINT docker-entrypoint.sh
