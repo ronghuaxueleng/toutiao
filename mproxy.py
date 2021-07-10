@@ -57,16 +57,8 @@ class mproxy:
         if '/luckycat/lite/v1/eat/done_eat' in flow.request.path:
             save_task_data(flow, 'eat_done_task')
 
-        host = flow.request.host
-        if "marathon.jd.com" in host \
-                and "captcha.html" not in flow.request.path \
-                and "getJBeanInfo.action" not in flow.request.path:
-            logger.warning("request=============================================")
-            logger.warning(json.dumps(dict(flow.request.headers.items())))
-            logger.warning(flow.request.url)
-            logger.warning(flow.request.host)
-            logger.warning(flow.request.method)
-            logger.warning(flow.request.get_text())
+        if '/luckycat/lite/v1/article/done_score_task' in flow.request.path:
+            save_task_data(flow, 'done_score_task')
 
     @log_exception
     def response(self, flow):
@@ -74,14 +66,6 @@ class mproxy:
         if "snssdk.com" in host:
             if '/passport/account/info/v2/?' in flow.request.path:
                 save_request_data(flow)
-
-        if "marathon.jd.com" in host \
-                and "captcha.html" not in flow.request.path \
-                and "getJBeanInfo.action" not in flow.request.path:
-            logger.warning("response=============================================")
-            logger.warning(flow.response.status_code)
-            logger.warning(flow.response.text)
-            logger.warning(flow.response.get_text())
 
 
 addons = [

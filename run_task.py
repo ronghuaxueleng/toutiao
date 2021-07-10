@@ -45,13 +45,6 @@ def double_whole_scene_task(headers, query):
     print('double_whole_scene_task' + res)
 
 
-def done_score_task(headers, query):
-    host = 'api3-normal-lf.toutiaoapi.com'
-    path = '/luckycat/lite/v1/article/done_score_task?{}'.format(query)
-    res = post(host, path, headers, b'{"task_id":215,"rit":"coin","use_ecpm":0}')
-    print('double_whole_scene_task' + res)
-
-
 # 阅读推送文章
 def get_push_read_bonus(headers, query, account):
     get_read_bonus(headers, query, account)
@@ -123,8 +116,6 @@ def run_accout_task(type):
             newbie_consume(headers, query)
         elif type == 'double_whole_scene_task':
             double_whole_scene_task(headers, query)
-        elif type == 'done_score_task':
-            done_score_task(headers, query)
         elif type == 'get_push_read_bonus':
             get_push_read_bonus(headers, query, account)
         elif type == 'get_read':
