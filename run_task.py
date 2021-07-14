@@ -59,12 +59,26 @@ def get_read(headers, query, account):
 def walk_count(headers, query):
     host = 'i-hl.snssdk.com'
     path = '/luckycat/lite/v1/walk/count/?{}'.format(query)
-    data = {"count": 20000, "client_time": int(time.time())}
-    post(host, path, headers, json.dumps(data))
+    data = {"count": 500, "client_time": int(time.time())}
+    res = post(host, path, headers, json.dumps(data))
+    print('walk_count' + res)
+
+
+# 领取走路赚钱奖励
+def walk_bonus_136(headers, query):
+    host = 'i-hl.snssdk.com'
     bonus_path = '/luckycat/lite/v1/walk/bonus/?{}'.format(query)
     data = {"task_id": 136, "client_time": int(time.time()), "rit": "coin", "use_ecpm": 0}
     res = post(host, bonus_path, headers, json.dumps(data))
-    print('walk_count' + res)
+    print('walk_bonus_136' + res)
+
+# 领取走路赚钱满勤奖
+def walk_bonus_137(headers, query):
+    host = 'i-hl.snssdk.com'
+    bonus_path = '/luckycat/lite/v1/walk/bonus/?{}'.format(query)
+    data = {"task_id": 137, "client_time": int(time.time()), "rit": "coin", "use_ecpm": 0}
+    res = post(host, bonus_path, headers, json.dumps(data))
+    print('walk_bonus_137' + res)
 
 
 # 金币详情
@@ -124,6 +138,10 @@ def run_accout_task(type):
             walk_count(headers, query)
         elif type == 'profit_detail':
             profit_detail(headers, query, account)
+        elif type == 'walk_bonus_136':
+            walk_bonus_136(headers, query)
+        elif type == 'walk_bonus_137':
+            walk_bonus_137(headers, query)
 
 
 def run_task(task_type):

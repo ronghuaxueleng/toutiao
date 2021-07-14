@@ -18,6 +18,10 @@
 # 翻倍
 30 0 * * * python3 /mitmproxy/run_task.py -t "double_whole_scene_task" >> /mitmproxy/logs/double_whole_scene_task.log 2>&1
 # 走路
-10 */2 * * * python3 /mitmproxy/run_task.py -lt 0 -t "walk_count" >> /mitmproxy/logs/walk_count.log 2>&1
+10 */1 * * * python3 /mitmproxy/run_task.py -lt 0 -t "walk_count" >> /mitmproxy/logs/walk_count.log 2>&1
+# 领取走路赚钱奖励
+11 */1 * * * python3 /mitmproxy/run_task.py -lt 0 -t "walk_bonus_136" >> /mitmproxy/logs/walk_bonus_136.log 2>&1
+# 领取走路赚钱满勤奖
+12 */1 * * * python3 /mitmproxy/run_task.py -lt 0 -t "walk_bonus_137" >> /mitmproxy/logs/walk_bonus_137.log 2>&1
 # 阅读惊喜
 */5 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "done_score_task" >> /mitmproxy/logs/done_score_task.log 2>&1
