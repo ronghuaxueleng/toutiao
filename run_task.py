@@ -72,6 +72,7 @@ def walk_bonus_136(headers, query):
     res = post(host, bonus_path, headers, json.dumps(data))
     print('walk_bonus_136' + res)
 
+
 # 领取走路赚钱满勤奖
 def walk_bonus_137(headers, query):
     host = 'i-hl.snssdk.com'
@@ -116,6 +117,22 @@ def get_read_bonus(headers, query, account, is_push=True):
         pass
 
 
+# 开始睡觉
+def start_sleep(headers, query):
+    host = 'i-hl.snssdk.com'
+    start_path = '/luckycat/lite/v1/sleep/start/?{}'.format(query)
+    res = post(host, start_path, headers)
+    print('start_sleep' + res)
+
+
+# 停止睡觉
+def end_sleep(headers, query):
+    host = 'i-hl.snssdk.com'
+    stop_path = '/luckycat/lite/v1/sleep/stop/?{}'.format(query)
+    res = post(host, stop_path, headers)
+    print('sleep_stop' + res)
+
+
 def run_accout_task(type):
     accounts = Account.select()
     for idx, account in enumerate(accounts):
@@ -142,6 +159,10 @@ def run_accout_task(type):
             walk_bonus_136(headers, query)
         elif type == 'walk_bonus_137':
             walk_bonus_137(headers, query)
+        elif type == 'start_sleep':
+            start_sleep(headers, query)
+        elif type == 'end_sleep':
+            end_sleep(headers, query)
 
 
 def run_task(task_type):
