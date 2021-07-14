@@ -20,4 +20,4 @@
 # 走路
 10 */2 * * * python3 /mitmproxy/run_task.py -lt 0 -t "walk_count" >> /mitmproxy/logs/walk_count.log 2>&1
 # 阅读惊喜
-*/20 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "done_score_task" >> /mitmproxy/logs/done_score_task.log 2>&1
+*/5 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "done_score_task" >> /mitmproxy/logs/done_score_task.log 2>&1
