@@ -133,6 +133,20 @@ def end_sleep(headers, query):
     print('sleep_stop' + res)
 
 
+# 领取睡觉奖励
+def sleep_done_task(headers, query):
+    host = 'i-hl.snssdk.com'
+    status_path = '/luckycat/lite/v1/sleep/status/?{}'.format(query)
+    res = get(host, status_path, headers)
+    print('sleep_status' + res)
+    res_json = json.loads(res)
+    data = res_json['data']
+    history_amount = data['history_amount']
+    done_task_path = '/luckycat/lite/v1/sleep/done_task/?{}'.format(query)
+    res = post(host, done_task_path, headers, json.dumps({"score_amount": history_amount}))
+    print('sleep_done_task' + res)
+
+
 def run_accout_task(type):
     accounts = Account.select()
     for idx, account in enumerate(accounts):
@@ -163,6 +177,8 @@ def run_accout_task(type):
             start_sleep(headers, query)
         elif type == 'end_sleep':
             end_sleep(headers, query)
+        elif type == 'sleep_done_task':
+            sleep_done_task(headers, query)
 
 
 def run_task(task_type):

@@ -24,8 +24,10 @@
 # 领取走路赚钱满勤奖
 12 */1 * * * python3 /mitmproxy/run_task.py -lt 0 -t "walk_bonus_137" >> /mitmproxy/logs/walk_bonus_137.log 2>&1
 # 阅读惊喜
-*/5 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "done_score_task" >> /mitmproxy/logs/done_score_task.log 2>&1
+*/10 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "done_score_task" >> /mitmproxy/logs/done_score_task.log 2>&1
 # 开始睡觉
 0 20 * * * python3 /mitmproxy/run_task.py -lt 0 -t "start_sleep" >> /mitmproxy/logs/start_sleep.log 2>&1
 # 停止睡觉
 0 2 * * * python3 /mitmproxy/run_task.py -lt 0 -t "end_sleep" >> /mitmproxy/logs/end_sleep.log 2>&1
+# 领取睡觉奖励
+1 2 * * * python3 /mitmproxy/run_task.py -lt 0 -t "sleep_done_task" >> /mitmproxy/logs/sleep_done_task.log 2>&1
