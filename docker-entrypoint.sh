@@ -1,4 +1,4 @@
-#!/bin/bash
+````#!/bin/bash
 set -e
 set -o errexit
 set -o pipefail
@@ -29,4 +29,5 @@ echo
 
 UseNotes
 /usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5
+ss-server -c /etc/shadowsocks-libev/config.json
 exec "$@"
