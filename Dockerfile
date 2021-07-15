@@ -53,7 +53,6 @@ RUN apk add --no-cache rng-tools bash git \
 		| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
 		| xargs -r apk info --installed \
 		| sort -u) \
-	&& apk del .build-deps \
 	&& cd /tmp \
 	&& rm -rf /tmp/libev \
     && rm -rf /var/cache/apk/* \
