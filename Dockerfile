@@ -20,6 +20,7 @@ RUN apk update && \
   DOWNLOAD_LINK="https://ghproxy.com/https://github.com/v2fly/v2ray-core/releases/download/$VERSION_TAG/v2ray-linux-64.zip" && \
   wget -O v2ray.zip $DOWNLOAD_LINK && \
   unzip v2ray.zip && \
+  mv v2ray /usr/local/bin/v2ray && \
   rm v2ray.zip && \
   apk del wget unzip
 

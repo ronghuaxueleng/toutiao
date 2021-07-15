@@ -28,6 +28,6 @@ bash git_pull
 echo
 
 UseNotes
-/app/v2ray -config /app/config.json &
+/usr/local/bin/v2ray -config /etc/v2ray/config.json &
 /usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5
 exec "$@"
