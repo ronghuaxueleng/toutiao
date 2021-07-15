@@ -1,4 +1,4 @@
-FROM ronghuaxueleng/jd:latest as base
+#FROM ronghuaxueleng/jd:latest as base
 
 FROM mitmproxy/mitmproxy
 LABEL maintainer="jishuixiansheng"
@@ -11,19 +11,31 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     PS1="\u@\h:\w \$ " \
     APP_DIR=/mitmproxy
 
+#下载v2ray
+RUN apk update && \
+  apk add --no-cache wget unzip && \
+  wget -O version.json --header="Accept: application/vnd.github.v3+json" "https://api.github.com/repos/v2fly/v2ray-core/releases/latest" && \
+  VERSION_TAG=$(sed 'y/,/\n/' "version.json" | grep 'tag_name' | awk -F '"' '{print $4}') && \
+  rm version.json && \
+  DOWNLOAD_LINK="https://ghproxy.com/https://github.com/v2fly/v2ray-core/releases/download/$VERSION_TAG/v2ray-linux-64.zip" && \
+  wget -O v2ray.zip $DOWNLOAD_LINK && \
+  unzip v2ray.zip && \
+  rm v2ray.zip && \
+  apk del wget unzip
+
+RUN apk update && \
+  #设置时区
+  apk add --no-cache tzdata && \
+  cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+  echo "Asia/Shanghai" > /etc/timezone && \
+  apk del tzdata
+
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk update -f \
     && apk upgrade \
     && apk --no-cache ca-certificates add -f bash git \
     && rm -rf /var/cache/apk/* \
-    && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR} \
-    && wget -O /tmp/shadowsocksr-3.2.2.tar.gz https://ghproxy.com/https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz \
-	&& tar zxf /tmp/shadowsocksr-3.2.2.tar.gz -C /tmp \
-	&& mv /tmp/shadowsocksr-3.2.2/shadowsocks /usr/local/ \
-	&& rm -fr /tmp/shadowsocksr-3.2.2 \
-	&& rm -f /tmp/shadowsocksr-3.2.2.tar.gz
-
-COPY ./config_sample.json /etc/shadowsocks-r/config.json
+    && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
 WORKDIR ${APP_DIR}
 COPY git_pull.sh ${APP_DIR}/
@@ -36,16 +48,8 @@ RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
 # 使用清华源安装依赖
 RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
-COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo/
-RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
+#COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo/
+#RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
 RUN ln -sf /usr/bin/python3 /usr/bin/python
-
-ENV MY_PROXY_URL="http://127.0.0.1:8080"
-ENV HTTP_PROXY=$MY_PROXY_URL \
-    HTTPS_PROXY=$MY_PROXY_URL \
-    FTP_PROXY=$MY_PROXY_URL \
-    http_proxy=$MY_PROXY_URL \
-    https_proxy=$MY_PROXY_URL \
-    ftp_proxy=$MY_PROXY_URL
 
 ENTRYPOINT docker-entrypoint.sh
