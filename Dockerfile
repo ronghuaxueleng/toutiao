@@ -14,7 +14,7 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk update -f \
     && apk upgrade \
-    && apk --no-cache ca-certificates add -f bash git \
+    && apk --no-cache ca-certificates add -f bash git nginx \
     && rm -rf /var/cache/apk/* \
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR} \
     && wget -O /tmp/shadowsocksr-3.2.2.tar.gz https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz \
