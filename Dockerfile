@@ -15,6 +15,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && apk update -f \
     && apk upgrade \
     && apk --no-cache ca-certificates add -f bash git nginx \
+    && mkdir /run/nginx/ \
     && rm -rf /var/cache/apk/* \
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR} \
     && wget -O /tmp/shadowsocksr-3.2.2.tar.gz https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz \
@@ -24,6 +25,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 	&& rm -f /tmp/shadowsocksr-3.2.2.tar.gz
 
 COPY ./config_sample.json /etc/shadowsocks-r/config.json
+COPY ./nginx.conf /usr/local/nginx/conf/nginx.conf
 
 WORKDIR ${APP_DIR}
 COPY git_pull.sh ${APP_DIR}/
