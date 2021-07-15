@@ -23,11 +23,11 @@ function UseNotes() {
 }
 
 echo -e "\n========================1. 更新源代码========================\n"
-crond
+crond >/dev/null 2>&1
 bash git_pull
 echo
 
 UseNotes
-/usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5
+nohup /usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5 &
 ss-server -c /etc/shadowsocks-libev/config.json
 exec "$@"
