@@ -17,6 +17,13 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && apk --no-cache ca-certificates add -f bash git \
     && rm -rf /var/cache/apk/* \
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
+    && wget -O /tmp/shadowsocksr-3.2.2.tar.gz https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz \
+	&& tar zxf /tmp/shadowsocksr-3.2.2.tar.gz -C /tmp \
+	&& mv /tmp/shadowsocksr-3.2.2/shadowsocks /usr/local/ \
+	&& rm -fr /tmp/shadowsocksr-3.2.2 \
+	&& rm -f /tmp/shadowsocksr-3.2.2.tar.gz
+
+COPY ./config_sample.json /etc/shadowsocks-r/config.json
 
 WORKDIR ${APP_DIR}
 COPY git_pull.sh ${APP_DIR}/
@@ -31,5 +38,6 @@ RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r re
 
 COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo/
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 ENTRYPOINT docker-entrypoint.sh
