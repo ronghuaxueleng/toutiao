@@ -40,7 +40,12 @@ COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo/
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
-ENV http_proxy "http://127.0.0.1:8080"
-ENV https_proxy  "http://127.0.0.1:8080"
+ENV MY_PROXY_URL="http://127.0.0.1:8080"
+ENV HTTP_PROXY=$MY_PROXY_URL \
+    HTTPS_PROXY=$MY_PROXY_URL \
+    FTP_PROXY=$MY_PROXY_URL \
+    http_proxy=$MY_PROXY_URL \
+    https_proxy=$MY_PROXY_URL \
+    ftp_proxy=$MY_PROXY_URL
 
 ENTRYPOINT docker-entrypoint.sh
