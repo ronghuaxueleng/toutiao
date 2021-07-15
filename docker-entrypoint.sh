@@ -28,6 +28,6 @@ bash git_pull
 echo
 
 UseNotes
-/usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5
+/usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5 &
 /usr/local/shadowsocks/server.py -c /etc/shadowsocks-r/config.json
 exec "$@"
