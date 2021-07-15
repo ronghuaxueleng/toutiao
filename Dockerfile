@@ -19,17 +19,14 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 COPY ./config_sample.json /etc/shadowsocks-r/config.json
 
-RUN set -ex \
-	&& apk add --no-cache tar libsodium-dev openssl \
-	&& wget -O /tmp/shadowsocksr-3.2.2.tar.gz https://ghproxy.com/https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz \
+RUN apk --no-cache ca-certificates add -f bash git \
+    && rm -rf /var/cache/apk/* \
+    && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR} \
+    && wget -O /tmp/shadowsocksr-3.2.2.tar.gz https://ghproxy.com/https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz \
 	&& tar zxf /tmp/shadowsocksr-3.2.2.tar.gz -C /tmp \
 	&& mv /tmp/shadowsocksr-3.2.2/shadowsocks /usr/local/ \
 	&& rm -fr /tmp/shadowsocksr-3.2.2 \
 	&& rm -f /tmp/shadowsocksr-3.2.2.tar.gz
-
-RUN apk --no-cache ca-certificates add -f bash git \
-    && rm -rf /var/cache/apk/* \
-    && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
 COPY git_pull.sh ${APP_DIR}/
 COPY docker-entrypoint.sh ${APP_DIR}/
