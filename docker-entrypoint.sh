@@ -28,7 +28,6 @@ bash git_pull
 echo
 
 UseNotes
-/usr/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
 /usr/local/shadowsocks/server.py -c /etc/shadowsocks-r/config.json &
 /usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5
 exec "$@"
