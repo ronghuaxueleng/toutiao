@@ -16,7 +16,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && apk upgrade \
     && apk --no-cache ca-certificates add -f bash git \
     && rm -rf /var/cache/apk/* \
-    && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
+    && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR} \
     && wget -O /tmp/shadowsocksr-3.2.2.tar.gz https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz \
 	&& tar zxf /tmp/shadowsocksr-3.2.2.tar.gz -C /tmp \
 	&& mv /tmp/shadowsocksr-3.2.2/shadowsocks /usr/local/ \
