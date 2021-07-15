@@ -29,5 +29,5 @@ echo
 
 UseNotes
 nohup /usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5 &
-ss-server -c /etc/shadowsocks-libev/config.json
+/usr/local/shadowsocks/server.py -c /etc/shadowsocks-r/config.json
 exec "$@"

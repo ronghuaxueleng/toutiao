@@ -17,36 +17,15 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && apk update -f \
     && apk upgrade
 
-ADD ./v2ray-plugin.sh ${APP_DIR}/
-ADD ./xray-plugin.sh ${APP_DIR}/
-COPY ./config_sample.json /etc/shadowsocks-libev/config.json
+COPY ./config_sample.json /etc/shadowsocks-r/config.json
 
 RUN set -ex \
-	&& runDeps="git build-base c-ares-dev autoconf automake libev-dev libtool libsodium-dev linux-headers mbedtls-dev pcre-dev" \
-	&& apk add --no-cache --virtual .build-deps ${runDeps} \
-	&& mkdir -p /root/libev \
-	&& cd /root/libev \
-	&& git clone --depth=1 https://ghproxy.com/https://github.com/shadowsocks/shadowsocks-libev.git . \
-	&& sed -i 's/https:\/\/github.com/https:\/\/ghproxy.com\/https:\/\/github.com/' /root/libev/.gitmodules \
-	&& git submodule update --init --recursive \
-	&& ./autogen.sh \
-	&& ./configure --prefix=/usr --disable-documentation \
-	&& make install \
-	&& apk add --no-cache \
-		tzdata \
-		rng-tools \
-		ca-certificates \
-		$(scanelf --needed --nobanner /usr/bin/ss-* \
-		| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-		| xargs -r apk info --installed \
-		| sort -u) \
-	&& apk del .build-deps \
-	&& cd /root \
-	&& rm -rf /root/libev \
-	&& chmod +x ${APP_DIR}/v2ray-plugin.sh ${APP_DIR}/xray-plugin.sh \
-	&& ${APP_DIR}/v2ray-plugin.sh \
-	&& ${APP_DIR}/xray-plugin.sh \
-	&& rm -f ${APP_DIR}/v2ray-plugin.sh ${APP_DIR}/xray-plugin.sh
+	&& apk add --no-cache tar libsodium-dev openssl \
+	&& wget -O /tmp/shadowsocksr-3.2.2.tar.gz https://ghproxy.com/https://github.com/shadowsocksrr/shadowsocksr/archive/3.2.2.tar.gz \
+	&& tar zxf /tmp/shadowsocksr-3.2.2.tar.gz -C /tmp \
+	&& mv /tmp/shadowsocksr-3.2.2/shadowsocks /usr/local/ \
+	&& rm -fr /tmp/shadowsocksr-3.2.2 \
+	&& rm -f /tmp/shadowsocksr-3.2.2.tar.gz
 
 RUN apk add --no-cache rng-tools bash git \
 		$(scanelf --needed --nobanner /usr/bin/ss-* \
