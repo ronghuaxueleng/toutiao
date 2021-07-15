@@ -27,13 +27,7 @@ RUN set -ex \
 	&& rm -fr /tmp/shadowsocksr-3.2.2 \
 	&& rm -f /tmp/shadowsocksr-3.2.2.tar.gz
 
-RUN apk add --no-cache rng-tools bash git \
-		$(scanelf --needed --nobanner /usr/bin/ss-* \
-		| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-		| xargs -r apk info --installed \
-		| sort -u) \
-	&& cd /tmp \
-	&& rm -rf /tmp/libev \
+RUN apk --no-cache ca-certificates add -f bash git \
     && rm -rf /var/cache/apk/* \
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
