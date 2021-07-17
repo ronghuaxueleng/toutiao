@@ -181,6 +181,9 @@ def run_accout_task(type):
             sleep_done_task(headers, query)
 
 
+new_excitation_ad_task_ids = ["188", "308"]
+
+
 def run_task(task_type):
     query = (DbTask.select(DbTask, Account).join(Account, JOIN.LEFT_OUTER,
                                                  on=(DbTask.session_key == Account.session_key))
@@ -193,12 +196,20 @@ def run_task(task_type):
         method = task['method']
         headers = task['header']
         body = task['body']
-
-        try:
-            res = request(host, method, path, json.loads(headers), body)
-            print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
-        except Exception as e:
-            print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
+        if task_type == 'new_excitation_ad':
+            for taskId in new_excitation_ad_task_ids:
+                b = body.replace("188", taskId)
+                try:
+                    res = request(host, method, path, json.loads(headers), b)
+                    print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
+                except Exception as e:
+                    print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
+        else:
+            try:
+                res = request(host, method, path, json.loads(headers), body)
+                print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
+            except Exception as e:
+                print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
 
 
 parser = argparse.ArgumentParser(description='')
