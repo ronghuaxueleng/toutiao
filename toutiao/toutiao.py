@@ -73,5 +73,6 @@ def save_task_data(flow, type):
         queryTask = Task.select(Task, Account).join(Account, JOIN.LEFT_OUTER,
                                                     on=(Task.session_key == Account.session_key)) \
             .where(Task.session_key == session_key, Task.type == type)
-        userTasks.addJob(queryTask.dicts().get())
-        send_message("用户【{}】添加任务【】成功".format(queryTask.name, type))
+        result = queryTask.dicts().get()
+        userTasks.addJob(result)
+        send_message("用户【{}】添加任务【】成功".format(result.get('name'), type))
