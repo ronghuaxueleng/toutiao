@@ -59,6 +59,8 @@ def save_task_data(flow, type):
             body=body,
             type=type,
         ).where(Task.session_key == session_key, Task.type == type).execute()
+        result = queryTask.dicts().get()
+        send_message("用户【{}】更新任务【】成功".format(result.get('name'), type))
     else:
         Task.create(
             session_key=session_key,
