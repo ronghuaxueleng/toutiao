@@ -37,7 +37,7 @@ def convert_cookies_to_dict(cookies, delimiter="; |;|, |,"):
 
 
 def send_message(content):
-    token = '653a27049c144b80936a55a7600541cf'
+    token = '258f84f44f0246c38bffb7d03733a825'
     title = '今日头条极速版'
     url = 'http://pushplus.hxtrip.com/send?token=' + token + '&title=' + title + '&content=' + content
     requests.get(url)
