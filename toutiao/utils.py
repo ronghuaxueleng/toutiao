@@ -39,10 +39,9 @@ def convert_cookies_to_dict(cookies, delimiter="; |;|, |,"):
 def send_message(content):
     token = '258f84f44f0246c38bffb7d03733a825'
     title = '今日头条极速版'
-    url = 'http://pushplus.hxtrip.com/send?token=' + token + '&title=' + title + '&content=' + content
+    url = 'http://www.pushplus.plus/send?token=' + token + '&title=' + title + '&content=' + content
     requests.get(url)
 
 
 if __name__ == '__main__':
-    print(convert_cookies_to_dict(
-        "gd=20210113, PIXIEL_RATIO=3, FRM=new, n_mh=5Ho88Y9x8PnG2gZlMXiZs6cPCspJVlnR4t2RoO1GPxQ, uid_tt=dc70dcaf296cf0ef2ffefe5b413789be, uid_tt_ss=dc70dcaf296cf0ef2ffefe5b413789be, sid_tt=74faabce5e1d6eccde51388fe56ffdb7, sessionid=74faabce5e1d6eccde51388fe56ffdb7, sessionid_ss=74faabce5e1d6eccde51388fe56ffdb7, WIN_WH=360_522, ssr_tz=Asia/Shanghai, ssr_sbh__=24, sid_guard=74faabce5e1d6eccde51388fe56ffdb7%7C1609552413%7C5180666%7CWed%2C+03-Mar-2021+00%3A57%3A59+GMT, UM_distinctid=176cd227956fc-0bbab6e9aec9b-450c3405-1fa400-176cd22795b93, d_ticket=89dcff96241fec82ddaee374379f3d6599c69, odin_tt=b07475c40ea1373a3b2c3c64b4393f130e1024b3e5e99112b91d879fd9a2f5938053a3bc981269599c588d33f3031895, passport_csrf_token=34067122c05173a7dcffa8977511846a, passport_csrf_token_default=34067122c05173a7dcffa8977511846a, install_id=2023515197541988, ttreq=1$8583db968663d6bcd44256b418b7a0e99a426578"))
+    send_message("测试")
