@@ -198,9 +198,8 @@ def run_task(task_type):
         body = task['body']
         if task_type == 'new_excitation_ad':
             for taskId in new_excitation_ad_task_ids:
-                b = body.replace("188", taskId)
                 try:
-                    res = request(host, method, path, json.loads(headers), b)
+                    res = request(host, method, path, json.loads(headers), '{"task_id":"' + taskId + '"}')
                     print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
                 except Exception as e:
                     print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
