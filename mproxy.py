@@ -63,6 +63,9 @@ class mproxy:
         if '/luckycat/lite/v1/task/done_universal_task' in flow.request.path:
             save_task_data(flow, 'done_universal_task')
 
+        if '/luckycat/lite/v1/task/done/excitation_ad' in flow.request.path:
+            save_task_data(flow, 'excitation_ad')
+
     @log_exception
     def response(self, flow):
         host = flow.request.host
