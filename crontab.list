@@ -3,6 +3,7 @@
 * * * * * python3 /mitmproxy/run_task.py -lt 1 -t "done_whole_scene_task" >> /mitmproxy/logs/done_whole_scene_task.log 2>&1
 # 看视频广告
 */10 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "new_excitation_ad" >> /mitmproxy/logs/new_excitation_ad.log 2>&1
+*/10 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "excitation_ad" >> /mitmproxy/logs/excitation_ad.log 2>&1
 # 开宝箱
 */20 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "open_treasure_box" >> /mitmproxy/logs/open_treasure_box.log 2>&1
 # 阅读

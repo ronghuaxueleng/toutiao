@@ -182,7 +182,7 @@ def run_accout_task(type):
             sleep_done_task(headers, query)
 
 
-new_excitation_ad_task_ids = ["188", "308"]
+new_excitation_ad_task_ids = ["188", "308" , "216"]
 
 
 def run_task(task_type):
