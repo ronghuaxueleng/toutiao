@@ -3,3 +3,4 @@
 __pycache__
 *.log
 /Kitsunebi-1.8.0-Android.apk
+/config/account.db
