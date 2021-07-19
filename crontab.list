@@ -34,3 +34,5 @@
 0 2 * * * python3 /mitmproxy/run_task.py -lt 0 -t "end_sleep" >> /mitmproxy/logs/end_sleep.log 2>&1
 # 领取睡觉奖励
 1 2 * * * python3 /mitmproxy/run_task.py -lt 0 -t "sleep_done_task" >> /mitmproxy/logs/sleep_done_task.log 2>&1
+# 查询账户详情
+0 12 * * * python3 /mitmproxy/run_task.py -lt 0 -t "profit_detail" >> /mitmproxy/logs/profit_detail.log 2>&1

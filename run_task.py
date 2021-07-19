@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from peewee import JOIN
 
 from toutiao.db import Task as DbTask, Account, CommonParams
-from toutiao.utils import get, post, request
+from toutiao.utils import get, post, request, send_message
 
 
 # 签到
@@ -90,8 +90,8 @@ def profit_detail(headers, query, account):
         query)
     res = get(host, path, headers)
     res_json = json.loads(res)
-    print('{}：现有金币{}, ：现金收益{}'.format(account.name, res_json['data']['score_balance'],
-                                      res_json['data']['cash_balance'] / 100))
+    return '{}：现有金币{}, ：现金收益{}'.format(account.name, res_json['data']['score_balance'],
+                                      res_json['data']['cash_balance'] / 100)
 
 
 # 阅读
@@ -149,6 +149,7 @@ def sleep_done_task(headers, query):
 
 
 def run_accout_task(type):
+    results = []
     accounts = Account.select()
     for idx, account in enumerate(accounts):
         headers = json.loads(account.headers)
@@ -169,7 +170,8 @@ def run_accout_task(type):
         elif type == 'walk_count':
             walk_count(headers, query)
         elif type == 'profit_detail':
-            profit_detail(headers, query, account)
+            result = profit_detail(headers, query, account)
+            results.append(result)
         elif type == 'walk_bonus_136':
             walk_bonus_136(headers, query)
         elif type == 'walk_bonus_137':
@@ -180,6 +182,8 @@ def run_accout_task(type):
             end_sleep(headers, query)
         elif type == 'sleep_done_task':
             sleep_done_task(headers, query)
+    if len(results) > 0:
+        send_message("\n".join(results))
 
 
 new_excitation_ad_task_ids = ["188", "308" , "216"]
