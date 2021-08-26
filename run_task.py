@@ -90,8 +90,14 @@ def profit_detail(headers, query, account):
         query)
     res = get(host, path, headers)
     res_json = json.loads(res)
-    return '{}：现有金币{}, ：现金收益{}'.format(account.name, res_json['data']['score_balance'],
-                                      res_json['data']['cash_balance'] / 100)
+    err_no = res_json['err_no']
+    if err_no == 0:
+        data = res_json['data']
+        score_balance = data['score_balance'] if data is not None else '-'
+        cash_balance = data['cash_balance'] if data is not None else 0
+        return '{}：现有金币{}, ：现金收益{}'.format(account.name, score_balance, cash_balance / 100)
+    elif err_no == 10001:
+        return '{} 请重新登录'.format(account.name)
 
 
 # 阅读
