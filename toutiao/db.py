@@ -2,9 +2,8 @@
 import os
 
 from peewee import *
-from pathlib import Path
 
-dbpath = os.path.join(Path(), '..', 'config', 'account.db')
+dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'account.db')
 db = SqliteDatabase(dbpath)
 
 
