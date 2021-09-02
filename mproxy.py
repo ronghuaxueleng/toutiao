@@ -68,7 +68,7 @@ class mproxy:
         if '/luckycat/lite/v1/task/done/excitation_ad' in flow.request.path:
             save_task_data(flow, 'excitation_ad')
 
-        if 'api.m.jd.com' in flow.request.host and '/client.action?functionId=genToken' in flow.request.path:
+        if 'api.m.jd.com' in flow.request.host:
             save_jd_pin(flow)
 
     @log_exception

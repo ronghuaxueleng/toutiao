@@ -87,18 +87,19 @@ def save_jd_pin(flow):
     cookies = regMatch.groupdict()
     pin = cookies.get("pin")
     wskey = cookies.get("wskey")
-    query = Jd.select().where(Jd.pin == pin)
-    if query.exists():
-        Jd.update(
-            pin=pin,
-            wskey=wskey,
-        ).where(Jd.pin == pin).execute()
-        logger.info("更新京东用户【{}】信息".format(pin))
-        send_message("更新京东用户【{}】信息".format(pin))
-    else:
-        Jd.insert(
-            pin=pin,
-            wskey=wskey,
-        ).execute()
-        logger.info("添加京东用户【{}】信息".format(pin))
-        send_message("添加京东用户【{}】信息".format(pin))
+    if pin is not None and wskey is not None:
+        query = Jd.select().where(Jd.pin == pin)
+        if query.exists():
+            Jd.update(
+                pin=pin,
+                wskey=wskey,
+            ).where(Jd.pin == pin).execute()
+            logger.info("更新京东用户【{}】信息".format(pin))
+            send_message("更新京东用户【{}】信息".format(pin))
+        else:
+            Jd.insert(
+                pin=pin,
+                wskey=wskey,
+            ).execute()
+            logger.info("添加京东用户【{}】信息".format(pin))
+            send_message("添加京东用户【{}】信息".format(pin))
