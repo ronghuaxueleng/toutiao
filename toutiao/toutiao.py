@@ -5,7 +5,6 @@ from furl import furl
 
 from toutiao.db import Task, Account, JOIN
 from toutiao.userInfo import UserInfo
-from toutiao.tasks import userTasks
 from toutiao.utils import convert_cookies_to_dict, send_message
 
 is_legal_header_name = re.compile(rb'[^:\s][^:\r\n]*').fullmatch
@@ -76,5 +75,4 @@ def save_task_data(flow, type):
                                                     on=(Task.session_key == Account.session_key)) \
             .where(Task.session_key == session_key, Task.type == type)
         result = queryTask.dicts().get()
-        userTasks.addJob(result)
         send_message("用户【{}】添加任务【{}】成功".format(result.get('name'), type))
