@@ -29,5 +29,4 @@ echo
 
 UseNotes
 /usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5
-/usr/bin/mitmdump -p 1203 -s mproxy.py --set block_global=false
 exec "$@"
