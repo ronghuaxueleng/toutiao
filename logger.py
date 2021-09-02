@@ -14,7 +14,7 @@ class NoRunningFilter(logging.Filter):
 
 
 my_filter = NoRunningFilter()
-logger = logging.getLogger("apscheduler.scheduler")
+logger = logging.getLogger("toutiao")
 
 
 def set_logger():

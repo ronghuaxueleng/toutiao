@@ -3,7 +3,8 @@ import re
 
 from furl import furl
 
-from toutiao.db import Task, Account, JOIN
+from logger import logger
+from toutiao.db import Task, Account, JOIN, Jd
 from toutiao.userInfo import UserInfo
 from toutiao.utils import convert_cookies_to_dict, send_message
 
@@ -14,6 +15,7 @@ is_legal_header_name = re.compile(rb'[^:\s][^:\r\n]*').fullmatch
 '''
 
 users = {}
+cookieReg = re.compile('pin=(?P<pin>\S+?);.*?wskey=(?P<wskey>\S+?);')
 
 
 def save_request_data(flow):
@@ -45,7 +47,7 @@ def save_task_data(flow, type):
     # 请求中body的内容，有一些http会把请求参数放在body里面，可通过此方法获取，返回字典类型
     body = flow.request.get_text()
     queryTask = Task.select(Task, Account).join(Account, JOIN.LEFT_OUTER,
-                                               on=(Task.session_key == Account.session_key)) \
+                                                on=(Task.session_key == Account.session_key)) \
         .where(Task.session_key == session_key, Task.type == type)
     if queryTask.exists():
         Task.update(
@@ -76,3 +78,27 @@ def save_task_data(flow, type):
             .where(Task.session_key == session_key, Task.type == type)
         result = queryTask.dicts().get()
         send_message("用户【{}】添加任务【{}】成功".format(result.get('name'), type))
+
+
+def save_jd_pin(flow):
+    headers_json = dict(flow.request.headers.items())
+    cookie = headers_json.get("cookie")
+    regMatch = cookieReg.match(cookie)
+    cookies = regMatch.groupdict()
+    pin = cookies.get("pin")
+    wskey = cookies.get("wskey")
+    query = Jd.select().where(Jd.pin == pin)
+    if query.exists():
+        Jd.update(
+            pin=pin,
+            wskey=wskey,
+        ).where(Jd.pin == pin).execute()
+        logger.info("更新京东用户【{}】信息".format(pin))
+        send_message("更新京东用户【{}】信息".format(pin))
+    else:
+        Jd.insert(
+            pin=pin,
+            wskey=wskey,
+        ).execute()
+        logger.info("添加京东用户【{}】信息".format(pin))
+        send_message("添加京东用户【{}】信息".format(pin))

@@ -2,8 +2,9 @@
 import os
 
 from peewee import *
+from pathlib import Path
 
-dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'account.db')
+dbpath = os.path.join(Path(), '..', 'config', 'account.db')
 db = SqliteDatabase(dbpath)
 
 
@@ -79,6 +80,14 @@ class Article(Model):
         database = db
 
 
+class Jd(Model):
+    pin = CharField(null=False)
+    wskey = CharField(null=False)
+
+    class Meta:
+        database = db
+
+
 if __name__ == '__main__':
     db.connect()
-    db.create_tables([Article])
+    db.create_tables([Jd])

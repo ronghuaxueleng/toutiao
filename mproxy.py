@@ -6,7 +6,7 @@ import logging.handlers
 # 日志配置
 import re
 
-from toutiao.toutiao import save_task_data, save_request_data
+from toutiao.toutiao import save_task_data, save_request_data, save_jd_pin
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -39,8 +39,6 @@ def log_exception(fn):
     抓包监听
 '''
 
-cookieReg = re.compile('pin=(?P<pin>\S+?);.*?wskey=(?P<wskey>\S+?);')
-
 
 class mproxy:
 
@@ -71,11 +69,7 @@ class mproxy:
             save_task_data(flow, 'excitation_ad')
 
         if 'api.m.jd.com' in flow.request.host and '/client.action?functionId=genToken' in flow.request.path:
-            headers_json = dict(flow.request.headers.items())
-            cookie = headers_json.get("cookie")
-            regMatch = cookieReg.match(cookie)
-            cookies = regMatch.groupdict()
-            logging.info(json.dumps(cookies))
+            save_jd_pin(flow)
 
     @log_exception
     def response(self, flow):
