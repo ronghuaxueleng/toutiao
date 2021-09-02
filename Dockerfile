@@ -1,6 +1,6 @@
 FROM ronghuaxueleng/jd:latest as base
 
-FROM mitmproxy/mitmproxy
+FROM mitmproxy/mitmproxy:6.0.2
 LABEL maintainer="jishuixiansheng"
 ARG APP_URL=https://gitee.com/getready/mitmproxy.git
 ARG APP_BRANCH=main
