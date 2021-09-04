@@ -28,5 +28,5 @@ bash git_pull
 echo
 
 UseNotes
-/usr/bin/mitmdump -s mproxy.py --set block_global=false --mode socks5
+/usr/bin/mitmdump -s mproxy.py --set block_global=false
 exec "$@"
