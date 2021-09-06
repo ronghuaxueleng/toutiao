@@ -59,7 +59,7 @@ def get_read(headers, query, account):
 def walk_count(headers, query):
     host = 'i-hl.snssdk.com'
     path = '/luckycat/lite/v1/walk/count/?{}'.format(query)
-    data = {"count": 5000, "client_time": int(time.time())}
+    data = {"count": 20000, "client_time": int(time.time())}
     res = post(host, path, headers, json.dumps(data))
     print('walk_count' + res)
     walk_bonus_136(headers, query)
