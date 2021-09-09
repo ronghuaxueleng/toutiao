@@ -149,7 +149,7 @@ def sleep_done_task(headers, query):
     res_json = json.loads(res)
     data = res_json['data']
     history_amount = data['history_amount']
-    done_task_path = '/luckycat/lite/v1/sleep/done_task/?{}'.format(query)
+    done_task_path = '/luckycat/lite/v1/sleep/done_task/?_request_from=web&device_platform=undefined&{}'.format(query)
     res = post(host, done_task_path, headers, json.dumps({"score_amount": history_amount}))
     print('sleep_done_task' + res)
 
