@@ -127,7 +127,7 @@ def get_read_bonus(headers, query, account, is_push=True):
 # 开始睡觉
 def start_sleep(headers, query):
     host = 'i-hl.snssdk.com'
-    start_path = '/luckycat/lite/v1/sleep/start/?{}'.format(query)
+    start_path = '/luckycat/lite/v1/sleep/start/?_request_from=web&{}'.format(query)
     res = post(host, start_path, headers)
     print('start_sleep' + res)
 
@@ -135,7 +135,7 @@ def start_sleep(headers, query):
 # 停止睡觉
 def end_sleep(headers, query):
     host = 'i-hl.snssdk.com'
-    stop_path = '/luckycat/lite/v1/sleep/stop/?{}'.format(query)
+    stop_path = '/luckycat/lite/v1/sleep/stop/?_request_from=web&{}'.format(query)
     res = post(host, stop_path, headers)
     print('sleep_stop' + res)
 
@@ -143,7 +143,7 @@ def end_sleep(headers, query):
 # 领取睡觉奖励
 def sleep_done_task(headers, query):
     host = 'i-hl.snssdk.com'
-    status_path = '/luckycat/lite/v1/sleep/status/?{}'.format(query)
+    status_path = '/luckycat/lite/v1/sleep/status/?_request_from=web&{}'.format(query)
     res = get(host, status_path, headers)
     print('sleep_status' + res)
     res_json = json.loads(res)
