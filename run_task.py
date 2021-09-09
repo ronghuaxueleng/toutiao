@@ -224,13 +224,18 @@ def run_task(task_type):
         elif task_type == 'open_treasure_box':
             res = request(host, method, path, json.loads(headers), body)
             print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
+            res_json = json.loads(res)
+            if res_json.get("err_no") == 0:
+                for taskId in new_excitation_ad_task_ids:
+                    new_excitation_ad(host, method, path, headers, taskId, task, 'new_excitation_ad', session_key)
         else:
             try:
                 res = request(host, method, path, json.loads(headers), body)
                 print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
                 res_json = json.loads(res)
                 if res_json.get("err_no") == 0:
-                    new_excitation_ad(host, method, path, headers, taskId, task, task_type, session_key)
+                    for taskId in new_excitation_ad_task_ids:
+                        new_excitation_ad(host, method, path, headers, taskId, task, 'new_excitation_ad', session_key)
             except Exception as e:
                 print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
 
