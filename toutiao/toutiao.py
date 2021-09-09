@@ -3,10 +3,10 @@ import re
 
 from furl import furl
 
-from logger import logger
+from utils.logger import logger
 from toutiao.db import Task, Account, JOIN, Jd
 from toutiao.userInfo import UserInfo
-from toutiao.utils import convert_cookies_to_dict, send_message
+from utils.utils import convert_cookies_to_dict, send_message
 
 is_legal_header_name = re.compile(rb'[^:\s][^:\r\n]*').fullmatch
 

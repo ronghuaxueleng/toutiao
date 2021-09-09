@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from peewee import JOIN
 
 from toutiao.db import Task as DbTask, Account, CommonParams
-from toutiao.utils import get, post, request, send_message
+from utils.utils import get, post, request, send_message
 
 
 # 签到
@@ -192,7 +192,18 @@ def run_accout_task(type):
         send_message("\n".join(results))
 
 
-new_excitation_ad_task_ids = ["188", "308" , "216"]
+new_excitation_ad_task_ids = ["188", "308", "216", "255"]
+
+
+def new_excitation_ad(host, method, path, headers, taskId, task, task_type, session_key):
+    try:
+        res = request(host, method, path, json.loads(headers), '{"task_id":"' + taskId + '"}')
+        print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
+        res_json = json.loads(res)
+        if res_json.get("err_no") == 0:
+            new_excitation_ad(host, method, path, headers, taskId, task, task_type, session_key)
+    except Exception as e:
+        print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
 
 
 def run_task(task_type):
@@ -209,15 +220,17 @@ def run_task(task_type):
         body = task['body']
         if task_type == 'new_excitation_ad':
             for taskId in new_excitation_ad_task_ids:
-                try:
-                    res = request(host, method, path, json.loads(headers), '{"task_id":"' + taskId + '"}')
-                    print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
-                except Exception as e:
-                    print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
+                new_excitation_ad(host, method, path, headers, taskId, task, task_type, session_key)
+        elif task_type == 'open_treasure_box':
+            res = request(host, method, path, json.loads(headers), body)
+            print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
         else:
             try:
                 res = request(host, method, path, json.loads(headers), body)
                 print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
+                res_json = json.loads(res)
+                if res_json.get("err_no") == 0:
+                    new_excitation_ad(host, method, path, headers, taskId, task, task_type, session_key)
             except Exception as e:
                 print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
 
