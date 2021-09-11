@@ -28,5 +28,5 @@ bash git_pull
 echo
 
 UseNotes
-/usr/bin/mitmdump -s mproxy.py --set block_global=false
+/usr/local/bin/mitmdump -s mproxy.py --set block_global=false
 exec "$@"
