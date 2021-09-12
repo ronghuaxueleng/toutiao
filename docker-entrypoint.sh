@@ -23,10 +23,12 @@ function UseNotes() {
 }
 
 echo -e "\n========================1. 更新源代码========================\n"
-crond >/dev/null 2>&1
 bash git_pull
-echo
-
-UseNotes
+echo -e "\n========================2. 启动定时任务========================\n"
+crond >/dev/null 2>&1
+echo -e "\n========================3. 启动中间人任务========================\n"
 /usr/local/bin/mitmdump -s mproxy.py --set block_global=false
+
+echo
+UseNotes
 exec "$@"
