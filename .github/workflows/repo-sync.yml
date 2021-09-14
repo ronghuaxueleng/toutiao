@@ -13,3 +13,9 @@ jobs:
           static_list: "mitmproxy"
           dst_key: ${{ secrets.GITEE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
+      - name: 删除过多的workflows
+          uses: Mattraks/delete-workflow-runs@main
+          with:
+            token: ${{ github.token }}
+            repository: ${{ github.repository }}
+            retain_days: 3
