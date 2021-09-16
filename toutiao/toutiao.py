@@ -4,7 +4,7 @@ import re
 from furl import furl
 
 from utils.logger import logger
-from toutiao.db import Task, Account, JOIN, Jd
+from toutiao.db import Task, Account, JOIN, Jd, Iad
 from toutiao.userInfo import UserInfo
 from utils.utils import convert_cookies_to_dict, send_message
 
@@ -103,3 +103,21 @@ def save_jd_pin(flow):
             ).execute()
             logger.info("添加京东用户【{}】信息".format(pin))
             send_message("添加京东用户【{}】信息".format(pin))
+
+
+def save_ad(source, web_url):
+    query = Iad.select().where(Iad.source == source)
+    if query.exists():
+        Iad.update(
+            source=source,
+            web_url=web_url,
+        ).where(Iad.source == source).execute()
+        logger.info("更新广告【{}】信息".format(source))
+        send_message("更新广告【{}】信息".format(source))
+    else:
+        Iad.insert(
+            source=source,
+            web_url=web_url,
+        ).execute()
+        logger.info("添加广告【{}】信息".format(source))
+        send_message("添加广告【{}】信息".format(source))

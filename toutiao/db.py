@@ -87,6 +87,14 @@ class Jd(Model):
         database = db
 
 
+class Iad(Model):
+    source = CharField(null=False)
+    web_url = CharField(null=False)
+
+    class Meta:
+        database = db
+
+
 if __name__ == '__main__':
     db.connect()
-    db.create_tables([Jd])
+    db.create_tables([Iad])
