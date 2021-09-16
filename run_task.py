@@ -164,18 +164,19 @@ def get_ad(headers, query):
     status_path = '/api/ad/v1/inspire/?van_package=1&ad_count=20&creator_id=2000&client_extra_params=%7B%22ad_download%22%3A%7B%7D%7D&ad_from=coin&enable_one_more=true&{}'.format(
         query)
     res = get(host, status_path, headers)
-    try:
-        if res is not None:
-            res_json = json.loads(res)
-            ad_item = res_json.get('ad_item')
+    if res is not None:
+        res_json = json.loads(res)
+        ad_item = res_json.get('ad_item')
+        if ad_item is not None:
             for item in ad_item:
-                data = item.get('dynamic_ad').get('data')
-                source = data.get('source')
-                if source in iads:
-                    web_url = data.get('web_url')
-                    save_ad(source, web_url)
-    except Exception as e:
-        pass
+                try:
+                    data = item.get('dynamic_ad').get('data')
+                    source = data.get('source')
+                    if source in iads:
+                        web_url = data.get('web_url')
+                        save_ad(source, web_url)
+                except Exception as e:
+                    pass
 
 
 def run_accout_task(type):
