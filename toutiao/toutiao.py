@@ -106,18 +106,12 @@ def save_jd_pin(flow):
 
 
 def save_ad(source, web_url):
-    query = Iad.select().where(Iad.source == source)
-    if query.exists():
-        Iad.update(
-            source=source,
-            web_url=web_url,
-        ).where(Iad.source == source).execute()
-        logger.info("更新广告【{}】信息".format(source))
-        send_message("更新广告【{}】信息\n下载地址：{}".format(source, web_url))
-    else:
+    query = Iad.select().where(Iad.source == source and Iad.web_url == web_url)
+    if not query.exists():
         Iad.insert(
             source=source,
             web_url=web_url,
         ).execute()
         logger.info("添加广告【{}】信息".format(source))
         send_message("添加广告【{}】信息\n下载地址：{}".format(source, web_url))
+
