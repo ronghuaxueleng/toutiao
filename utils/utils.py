@@ -44,4 +44,4 @@ def send_message(content):
 
 
 if __name__ == '__main__':
-    send_message("测试")
+    send_message("测试\n测试")
