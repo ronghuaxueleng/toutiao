@@ -1,6 +1,6 @@
-FROM ronghuaxueleng/mitmproxy
+FROM mitmproxy/mitmproxy:6.0.2
 LABEL maintainer="jishuixiansheng"
-ARG APP_URL=https://gitee.com/getready/mitmproxy.git
+ARG APP_URL=https://gitee.com/getready/toutiao.git
 ARG APP_BRANCH=main
 
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
