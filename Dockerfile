@@ -19,7 +19,7 @@ RUN apk update && \
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk update -f \
     && apk upgrade \
-    && apk --no-cache ca-certificates add -f bash git g++ gcc libxslt-dev \
+    && apk --no-cache ca-certificates add -f bash git g++ gcc libxslt-dev libxml2-dev python3-dev \
     && rm -rf /var/cache/apk/* \
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
