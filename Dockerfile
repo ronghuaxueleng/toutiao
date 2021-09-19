@@ -19,7 +19,7 @@ RUN apk update && \
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk update -f \
     && apk upgrade \
-    && apk --no-cache ca-certificates add -f bash git \
+    && apk --no-cache ca-certificates add -f bash git libxslt-dev \
     && rm -rf /var/cache/apk/* \
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
@@ -32,7 +32,7 @@ RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
     && chmod 777 /usr/local/bin/docker-entrypoint.sh
 
 # 使用清华源安装依赖
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
