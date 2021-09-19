@@ -1,3 +1,4 @@
+import json
 import re
 
 import requests
@@ -39,8 +40,8 @@ def convert_cookies_to_dict(cookies, delimiter="; |;|, |,"):
 def send_message(content):
     token = '258f84f44f0246c38bffb7d03733a825'
     title = '今日头条极速版'
-    url = 'http://www.pushplus.plus/send?token=' + token + '&title=' + title + '&content=' + content
-    requests.get(url)
+    url = 'http://www.pushplus.plus/send'
+    requests.post(url, data={"token": token, "title": title, "content": content, "channel": "cp", "webhook": "3819"})
 
 
 if __name__ == '__main__':

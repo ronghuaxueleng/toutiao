@@ -4,7 +4,7 @@ import re
 from furl import furl
 
 from utils.logger import logger
-from toutiao.db import Task, Account, JOIN, Jd, Iad
+from toutiao.db import Task, Account, JOIN, Jd, Iad, Abb
 from toutiao.userInfo import UserInfo
 from utils.utils import convert_cookies_to_dict, send_message
 
@@ -16,6 +16,7 @@ is_legal_header_name = re.compile(rb'[^:\s][^:\r\n]*').fullmatch
 
 users = {}
 cookieReg = re.compile('pin=(?P<pin>\S+?);.*?wskey=(?P<wskey>\S+?);')
+abbUserReg = re.compile('trueName:"(?P<username>.*?)"')
 
 
 def save_request_data(flow):
@@ -122,3 +123,24 @@ def save_ad(source, web_url):
         logger.info("更新广告【{}】信息".format(source))
         send_message("更新广告【{}】信息\n下载地址：{}".format(source, web_url))
 
+
+def save_abb_header(flow):
+    body = flow.response.text
+    regMatch = abbUserReg.search(body, re.M)
+    if regMatch is not None:
+        usernames = regMatch.groupdict()
+        username = usernames.get("username")
+        headers_json = json.dumps(dict(flow.request.headers.items()))
+        query = Abb.select().where(Abb.nick == username)
+        if not query.exists():
+            Abb.insert(
+                nick=username,
+                header=headers_json,
+            ).execute()
+            logger.info("添加用户【{}】信息".format(username))
+        else:
+            Abb.update(
+                nick=username,
+                header=headers_json,
+            ).where(Abb.nick == username).execute()
+            logger.info("更新用户【{}】信息".format(username))

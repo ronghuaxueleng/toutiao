@@ -6,7 +6,7 @@ import logging.handlers
 # 日志配置
 import re
 
-from toutiao.toutiao import save_task_data, save_request_data, save_jd_pin
+from toutiao.toutiao import save_task_data, save_request_data, save_jd_pin, save_abb_header
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -73,10 +73,12 @@ class mproxy:
 
     @log_exception
     def response(self, flow):
-        host = flow.request.host
-        if "snssdk.com" in host:
+        if "snssdk.com" in flow.request.host:
             if '/passport/account/info/v2/?' in flow.request.path:
                 save_request_data(flow)
+
+        if 'front15.ncziliyun.com' in flow.request.host and '/user/person.html' in flow.request.path:
+            save_abb_header(flow)
 
 
 addons = [

@@ -79,6 +79,7 @@ class Article(Model):
         database = db
 
 
+# 京东
 class Jd(Model):
     pin = CharField(null=False)
     wskey = CharField(null=False)
@@ -87,6 +88,7 @@ class Jd(Model):
         database = db
 
 
+# 广告
 class Iad(Model):
     source = CharField(null=False)
     web_url = CharField(null=False)
@@ -95,6 +97,15 @@ class Iad(Model):
         database = db
 
 
+# 爱步宝
+class Abb(Model):
+    nick = CharField(null=False)
+    header = CharField(null=False)
+
+    class Meta:
+        database = db
+
+
 if __name__ == '__main__':
     db.connect()
-    db.create_tables([Iad])
+    db.create_tables([Abb])

@@ -38,3 +38,11 @@
 0 12,18,21 * * * python3 /mitmproxy/run_task.py -lt 0 -t "profit_detail" >> /mitmproxy/logs/profit_detail.log 2>&1
 # 获得喜爱的广告
 */10 * * * * python3 /mitmproxy/run_task.py -lt 0 -t "get_ad" >> /mitmproxy/logs/get_ad.log 2>&1
+# 爱步宝提交步数
+0 2 * * * python3 /mitmproxy/other/abb.py -t "convert_step" >> /mitmproxy/logs/convert_step.log 2>&1
+# 爱步宝签到
+0 3 * * * python3 /mitmproxy/other/abb.py -t "signin" >> /mitmproxy/logs/signin.log 2>&1
+# 爱步宝提现
+0 4 * * * python3 /mitmproxy/other/abb.py -t "fuli" >> /mitmproxy/logs/fuli.log 2>&1
+# 爱步宝提现记录
+0 5 * * * python3 /mitmproxy/other/abb.py -t "record" >> /mitmproxy/logs/record.log 2>&1
