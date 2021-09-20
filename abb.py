@@ -53,7 +53,7 @@ def record(headers, nick):
     if len(processing) > 0:
         return "{}\n共提现金额:{}元，还有{}笔提现正在处理，如下：\n{}".format(nick, succ_total, len(processing), "\n".join(processing))
     else:
-        return "{}\n共提现金额:{}元，没有提现正在处理的提现款项".format(nick, succ_total)
+        return "{}\n共提现金额:{}元，没有正在处理的提现款项".format(nick, succ_total)
 
 
 def run_accout_task(type):
