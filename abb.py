@@ -6,7 +6,6 @@ from toutiao.db import Abb
 
 from bs4 import BeautifulSoup
 
-
 # 签到
 from utils.utils import send_message
 
@@ -30,6 +29,17 @@ def convert_step(headers):
 def fuli(headers):
     url = "http://front15.ncziliyun.com/user/fuli.html"
     response = requests.request("POST", url, headers=headers)
+
+
+# 早起挑战赛报名
+def getup(headers):
+    url = "http://front15.ncziliyun.com/mobile/getup/apply.html"
+    payload = 'cost=money'
+    requests.request("POST", url, headers=headers, data=payload)
+    url = "http://front15.ncziliyun.com/handle/apply.html"
+    payload = "phone=1"
+    response = requests.request("POST", url, headers=headers, data=payload)
+    print(response.text)
 
 
 # 提现记录
@@ -71,6 +81,8 @@ def run_accout_task(type):
             fuli(header_json)
         elif type == 'record':
             results.append(record(header_json, nick))
+        elif type == 'getup':
+            getup(header_json)
 
     if len(results) > 0:
         send_message("\n".join(results), '爱步宝')
