@@ -138,11 +138,11 @@ def save_abb_header(flow):
                 header=headers_json,
             ).execute()
             logger.info("添加用户【{}】信息".format(username))
-            send_message("添加用户【{}】信息".format(username))
+            send_message("添加用户【{}】信息".format(username), "爱步宝")
         else:
             Abb.update(
                 nick=username,
                 header=headers_json,
             ).where(Abb.nick == username).execute()
             logger.info("更新用户【{}】信息".format(username))
-            send_message("更新用户【{}】信息".format(username))
+            send_message("更新用户【{}】信息".format(username), "爱步宝")
