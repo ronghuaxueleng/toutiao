@@ -73,7 +73,7 @@ def run_accout_task(type):
             results.append(record(header_json, nick))
 
     if len(results) > 0:
-        send_message("\n".join(results))
+        send_message("\n".join(results), '爱步宝')
 
 
 parser = argparse.ArgumentParser(description='')
