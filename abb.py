@@ -1,6 +1,9 @@
 # 爱步宝
 import argparse
 import json
+import random
+import time
+
 import requests
 from toutiao.db import Abb
 
@@ -28,7 +31,7 @@ def convert_step(headers):
 # 提现
 def fuli(headers):
     url = "http://front15.ncziliyun.com/user/fuli.html"
-    response = requests.request("POST", url, headers=headers)
+    requests.request("POST", url, headers=headers)
 
 
 # 早起挑战赛报名
@@ -40,6 +43,12 @@ def getup(headers):
     payload = "phone=1"
     response = requests.request("POST", url, headers=headers, data=payload)
     print(response.text)
+
+
+# 早起打卡
+def getup_clock(headers):
+    url = "http://front15.ncziliyun.com/mobile/getup/clock.html"
+    requests.request("GET", url, headers=headers)
 
 
 # 提现记录
@@ -65,11 +74,15 @@ def record(headers, nick):
     else:
         return "{}\n共提现金额:{}元，没有正在处理的提现款项".format(nick, succ_total)
 
-
 def run_accout_task(type):
     items = Abb.select().dicts()
     results = []
     for item in items:
+        if type != 'record':
+            # 休眠1-100秒之间一个数执行
+            sec = random.randint(1, 100)
+            print("休眠{}秒后继续执行".format(sec))
+            time.sleep(sec)
         nick = item.get('nick')
         header = item.get('header')
         header_json = json.loads(header)
@@ -83,6 +96,8 @@ def run_accout_task(type):
             results.append(record(header_json, nick))
         elif type == 'getup':
             getup(header_json)
+        elif type == 'getup_clock':
+            getup_clock(header_json)
 
     if len(results) > 0:
         send_message("\n".join(results), '爱步宝')
