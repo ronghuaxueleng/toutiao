@@ -161,7 +161,7 @@ iads = ['爱步宝']
 # 获得喜爱的广告
 def get_ad(headers, query):
     host = 'api3-normal-lf.toutiaoapi.com'
-    status_path = '/api/ad/v1/inspire/?van_package=1&ad_count=20&creator_id=2000&client_extra_params=%7B%22ad_download%22%3A%7B%7D%7D&ad_from=coin&enable_one_more=true&{}'.format(
+    status_path = '/api/ad/v1/inspire/?van_package=1&ad_count=1&creator_id=2000&client_extra_params=%7B%22ad_download%22%3A%7B%7D%7D&ad_from=coin&enable_one_more=true&{}'.format(
         query)
     res = get(host, status_path, headers)
     if res is not None:
