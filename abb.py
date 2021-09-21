@@ -23,7 +23,7 @@ def signin(headers):
 # 提交步数
 def convert_step(headers):
     url = "http://front15.ncziliyun.com/mobile/convert_step.html"
-    payload = "todayStep=20000"
+    payload = "todayStep={}".format(20000 + random.randint(100, 1000))
     response = requests.request("POST", url, headers=headers, data=payload)
     print(response.text)
 
