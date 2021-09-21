@@ -39,7 +39,7 @@
 # 获得喜爱的广告
 */2 * * * * python3 /mitmproxy/run_task.py -lt 0 -t "get_ad" >> /mitmproxy/logs/get_ad.log 2>&1
 # 爱步宝提交步数
-0 6 * * * python3 /mitmproxy/abb.py -t "convert_step" >> /mitmproxy/logs/convert_step.log 2>&1
+0 6,20 * * * python3 /mitmproxy/abb.py -t "convert_step" >> /mitmproxy/logs/convert_step.log 2>&1
 # 爱步宝签到
 0 5 * * * python3 /mitmproxy/abb.py -t "signin" >> /mitmproxy/logs/signin.log 2>&1
 # 爱步宝提现
