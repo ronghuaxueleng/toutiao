@@ -84,6 +84,7 @@ def run_accout_task(type):
             print("休眠{}秒后继续执行".format(sec))
             time.sleep(sec)
         nick = item.get('nick')
+        print("\n" + nick + "\n")
         header = item.get('header')
         header_json = json.loads(header)
         if type == 'convert_step':
