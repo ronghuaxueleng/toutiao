@@ -37,7 +37,7 @@
 # 查询账户详情
 0 12,18,21 * * * python3 /mitmproxy/run_task.py -lt 0 -t "profit_detail" >> /mitmproxy/logs/profit_detail.log 2>&1
 # 获得喜爱的广告
-*/10 * * * * python3 /mitmproxy/run_task.py -lt 0 -t "get_ad" >> /mitmproxy/logs/get_ad.log 2>&1
+*/2 * * * * python3 /mitmproxy/run_task.py -lt 0 -t "get_ad" >> /mitmproxy/logs/get_ad.log 2>&1
 # 爱步宝提交步数
 0 6 * * * python3 /mitmproxy/abb.py -t "convert_step" >> /mitmproxy/logs/convert_step.log 2>&1
 # 爱步宝签到
