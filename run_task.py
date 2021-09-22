@@ -274,8 +274,8 @@ def run_task(task_type):
 
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--ltype', '-lt', help='主任务类型，必要参数', required=True)
-parser.add_argument('--type', '-t', help='任务类型，必要参数', required=False)
+parser.add_argument('--ltype', '-lt', help='主任务类型，必要参数', default=0)
+parser.add_argument('--type', '-t', help='任务类型，必要参数', required=True)
 args = parser.parse_args()
 
 if __name__ == '__main__':
@@ -283,7 +283,5 @@ if __name__ == '__main__':
     type = args.type
     if ltype == '1':
         run_task(type)
-    elif ltype == '0':
-        run_accout_task(type)
     else:
-        delete_shixiao_task()
+        run_accout_task(type)
