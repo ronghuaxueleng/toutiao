@@ -49,4 +49,4 @@
 # 每日打开挑战赛报名
 0 11 * * * python3 /mitmproxy/abb.py -t "getup" >> /mitmproxy/logs/getup.log 2>&1
 # 打卡早起
-0 11 * * * python3 /mitmproxy/abb.py -t "getup_clock" >> /mitmproxy/logs/getup_clock.log 2>&1
+0 7 * * * python3 /mitmproxy/abb.py -t "getup_clock" >> /mitmproxy/logs/getup_clock.log 2>&1
