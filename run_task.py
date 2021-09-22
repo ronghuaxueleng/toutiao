@@ -155,6 +155,12 @@ def sleep_done_task(headers, query):
     print('sleep_done_task' + res)
 
 
+# 删除失效任务
+def delete_shixiao_task():
+    session_keys = [session_key.get('session_key') for session_key in Account.select(Account.session_key).dicts()]
+    DbTask.delete().where(DbTask.session_key.not_in(session_keys)).execute()
+
+
 iads = ['爱步宝']
 
 
@@ -268,8 +274,8 @@ def run_task(task_type):
 
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--ltype', '-lt', help='主任务类型，必要参数', default=0)
-parser.add_argument('--type', '-t', help='任务类型，必要参数', required=True)
+parser.add_argument('--ltype', '-lt', help='主任务类型，必要参数', required=True)
+parser.add_argument('--type', '-t', help='任务类型，必要参数', required=False)
 args = parser.parse_args()
 
 if __name__ == '__main__':
@@ -277,5 +283,7 @@ if __name__ == '__main__':
     type = args.type
     if ltype == '1':
         run_task(type)
-    else:
+    elif ltype == '0':
         run_accout_task(type)
+    else:
+        delete_shixiao_task()
