@@ -74,6 +74,7 @@ def record(headers, nick):
     else:
         return "{}\n共提现金额:{}元，没有正在处理的提现款项".format(nick, succ_total)
 
+
 def run_accout_task(type):
     items = Abb.select().dicts()
     results = []
