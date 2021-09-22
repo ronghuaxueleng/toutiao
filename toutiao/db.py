@@ -99,6 +99,8 @@ class Iad(Model):
 
 # 爱步宝
 class Abb(Model):
+    uid = CharField(null=False)
+    real_name = CharField(null=True)
     nick = CharField(null=False)
     header = CharField(null=False)
 

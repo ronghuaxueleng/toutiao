@@ -17,6 +17,7 @@ is_legal_header_name = re.compile(rb'[^:\s][^:\r\n]*').fullmatch
 users = {}
 cookieReg = re.compile('pin=(?P<pin>\S+?);.*?wskey=(?P<wskey>\S+?);')
 abbUserReg = re.compile('trueName:"(?P<username>.*?)"')
+abbUserIdReg = re.compile('uid=(?P<uid>\d+)')
 
 
 def save_request_data(flow):
@@ -126,14 +127,18 @@ def save_ad(source, web_url):
 
 def save_abb_header(flow):
     body = flow.response.text
-    regMatch = abbUserReg.search(body, re.M)
-    if regMatch is not None:
-        usernames = regMatch.groupdict()
+    userMatch = abbUserReg.search(body)
+    userIdMatch = abbUserIdReg.search(body)
+    if userMatch is not None and userIdMatch is not None:
+        usernames = userMatch.groupdict()
         username = usernames.get("username")
+        userIds = userIdMatch.groupdict()
+        userId = userIds.get("uid")
         headers_json = json.dumps(dict(flow.request.headers.items()))
-        query = Abb.select().where(Abb.nick == username)
+        query = Abb.select().where(Abb.uid == userId)
         if not query.exists():
             Abb.insert(
+                uid=userId,
                 nick=username,
                 header=headers_json,
             ).execute()
@@ -141,8 +146,7 @@ def save_abb_header(flow):
             send_message("添加用户【{}】信息".format(username), "爱步宝")
         else:
             Abb.update(
-                nick=username,
                 header=headers_json,
-            ).where(Abb.nick == username).execute()
+            ).where(Abb.uid == userId).execute()
             logger.info("更新用户【{}】信息".format(username))
             send_message("更新用户【{}】信息".format(username), "爱步宝")
