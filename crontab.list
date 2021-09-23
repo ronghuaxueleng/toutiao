@@ -50,3 +50,5 @@
 0 11 * * * python3 /mitmproxy/abb.py -t "getup" >> /mitmproxy/logs/getup.log 2>&1
 # 打卡早起
 0 7 * * * python3 /mitmproxy/abb.py -t "getup_clock" >> /mitmproxy/logs/getup_clock.log 2>&1
+# 更新账号信息
+15 12 * * * python3 /mitmproxy/abb.py -t "getperson" >> /mitmproxy/logs/getperson.log 2>&1

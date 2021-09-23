@@ -102,7 +102,10 @@ class Abb(Model):
     uid = CharField(null=False)
     real_name = CharField(null=True)
     nick = CharField(null=False)
-    header = CharField(null=False)
+    header = TextField(null=False)
+    phone = CharField(null=True)
+    alipay = CharField(null=True)
+    money = CharField(null=True)
 
     class Meta:
         database = db

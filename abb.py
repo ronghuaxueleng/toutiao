@@ -2,6 +2,7 @@
 import argparse
 import json
 import random
+import re
 import time
 
 import requests
@@ -10,6 +11,7 @@ from toutiao.db import Abb
 from bs4 import BeautifulSoup
 
 # 签到
+from toutiao.toutiao import abbPhoneReg, abbMoneyReg, abbAliNameReg, abbAlipayReg
 from utils.utils import send_message
 
 
@@ -82,15 +84,54 @@ def record(headers, nick, fromApi=False):
         }
 
 
+# 获得支付宝信息
+def getalipay(headers, uid):
+    url = "http://front15.ncziliyun.com/user/alipay.html"
+    response = requests.request("GET", url, headers=headers)
+    body = response.text
+    aliNameMatch = abbAliNameReg.search(body)
+    aliPayMatch = abbAlipayReg.search(body)
+    if aliNameMatch is not None and aliPayMatch is not None:
+        aliNames = aliNameMatch.groupdict()
+        aliName = aliNames.get("aliname")
+        aliPays = aliPayMatch.groupdict()
+        aliPay = aliPays.get("alipay")
+        Abb.update(
+            alipay='{}:{}'.format(aliName, aliPay)
+        ).where(Abb.uid == uid).execute()
+
+
+# 获得账号信息
+def getperson(headers, uid):
+    url = "http://front15.ncziliyun.com/user/person.html"
+    response = requests.request("GET", url, headers=headers)
+    body = response.text
+    phoneMatch = abbPhoneReg.search(body)
+    moneyMatch = abbMoneyReg.search(body)
+    if phoneMatch is not None and moneyMatch is not None:
+        phones = phoneMatch.groupdict()
+        phone = phones.get("phone")
+        moneys = moneyMatch.groupdict()
+        money = moneys.get("money")
+        Abb.update(
+            phone=phone,
+            money=money
+        ).where(Abb.uid == uid).execute()
+
+
+extype = ['record', 'getalipay', 'getperson']
+
+
 def run_accout_task(type):
     items = Abb.select().dicts()
     results = []
     for item in items:
-        if type != 'record':
+        if type not in extype:
             # 休眠1-100秒之间一个数执行
             sec = random.randint(1, 100)
             print("休眠{}秒后继续执行".format(sec))
             time.sleep(sec)
+        uid = item.get('uid')
         nick = item.get('nick')
         print("\n" + nick + "\n")
         header = item.get('header')
@@ -107,6 +148,10 @@ def run_accout_task(type):
             getup(header_json)
         elif type == 'getup_clock':
             getup_clock(header_json)
+        elif type == 'getalipay':
+            getalipay(header_json, uid)
+        elif type == 'getperson':
+            getperson(header_json, uid)
 
     if len(results) > 0:
         send_message("\n".join(results), '爱步宝')

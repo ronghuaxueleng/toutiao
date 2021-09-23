@@ -18,6 +18,10 @@ users = {}
 cookieReg = re.compile('pin=(?P<pin>\S+?);.*?wskey=(?P<wskey>\S+?);')
 abbUserReg = re.compile('trueName:"(?P<username>.*?)"')
 abbUserIdReg = re.compile('uid=(?P<uid>\d+)')
+abbPhoneReg = re.compile('phone:"(?P<phone>.*?)"')
+abbMoneyReg = re.compile('<div\s+class="money">(?P<money>.*?)</div>')
+abbAliNameReg = re.compile('<input(?:\s+\S+)+\s+placeholder="输入姓名"\s+value="(?P<aliname>.*?)">')
+abbAlipayReg = re.compile('<input(?:\s+\S+)+\s+placeholder="输入支付宝账号"\s+value="(?P<alipay>.*?)">')
 
 
 def save_request_data(flow):
@@ -128,12 +132,15 @@ def save_ad(source, web_url):
 def save_abb_header(flow):
     body = flow.response.text
     userMatch = abbUserReg.search(body)
+    phoneMatch = abbPhoneReg.search(body)
     userIdMatch = abbUserIdReg.search(body)
-    if userMatch is not None and userIdMatch is not None:
+    if userMatch is not None and userIdMatch is not None and phoneMatch is not None:
         usernames = userMatch.groupdict()
         username = usernames.get("username")
         userIds = userIdMatch.groupdict()
         userId = userIds.get("uid")
+        phones = phoneMatch.groupdict()
+        phone = phones.get("phone")
         headers_json = json.dumps(dict(flow.request.headers.items()))
         query = Abb.select().where(Abb.uid == userId)
         if not query.exists():
@@ -141,11 +148,13 @@ def save_abb_header(flow):
                 uid=userId,
                 nick=username,
                 header=headers_json,
+                phone=phone
             ).execute()
             logger.info("添加用户【{}】信息".format(username))
             send_message("添加用户【{}】信息".format(username), "爱步宝")
         else:
             Abb.update(
+                phone=phone,
                 header=headers_json,
             ).where(Abb.uid == userId).execute()
             logger.info("更新用户【{}】信息".format(username))
