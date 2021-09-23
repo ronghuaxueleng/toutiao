@@ -1,3 +1,20 @@
-docker run -dit -v $PWD/config:/mitmproxy/config -v $PWD/logs:/mitmproxy/logs -p 8080:8080 --name toutiao --network bridge --hostname toutiao --restart always ronghuaxueleng/jrtt
+docker run -dit \
+-v $PWD/config:/mitmproxy/config \
+-v $PWD/logs:/mitmproxy/logs \
+-p 8080:8080 \
+-p 5000:5000 \
+--name toutiao \
+--network bridge \
+--hostname toutiao \
+--restart always ronghuaxueleng/jrtt
 
-docker run -dit -v /root/mitmproxy/config:/mitmproxy/config -v /root/mitmproxy/logs:/mitmproxy/logs -p 8080:8080 --name toutiao --network bridge --hostname toutiao --restart always ronghuaxueleng/jrtt
+docker run -dit \
+-v /root/mitmproxy/config:/mitmproxy/config \
+-v /root/mitmproxy/logs:/mitmproxy/logs \
+-p 5000:5000 \
+-p 8080:8080 \
+--name toutiao \
+--network bridge \
+--hostname toutiao \
+--restart always \
+ronghuaxueleng/jrtt
