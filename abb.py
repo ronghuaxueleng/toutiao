@@ -78,7 +78,7 @@ def record(headers, nick, fromApi=False):
         return {
             'nick': nick,
             'succ_total': succ_total,
-            'processing': processing
+            'processing': "\n".join(processing)
         }
 
 
