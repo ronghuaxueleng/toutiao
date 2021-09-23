@@ -5,6 +5,8 @@ from urllib.parse import urlencode
 from flask import Flask, jsonify
 from flask import render_template
 
+import abb
+import run_task
 from abb import record
 from run_task import profit_detail
 from toutiao.db import Account, CommonParams, Abb
@@ -38,6 +40,19 @@ def getAbb():
     for item in items:
         nick = item.get('nick')
         header = item.get('header')
+        money = item.get('money')
         header_json = json.loads(header)
-        results.append(record(header_json, nick, True))
+        results.append(record(header_json, nick, money, True))
     return jsonify(results)
+
+
+@app.route('/pushabb')
+def pushabb():
+    abb.run_accout_task('record')
+    return 'ok'
+
+
+@app.route('/pushtoutiao')
+def pushtoutiao():
+    run_task.run_accout_task('profit_detail')
+    return 'ok'

@@ -17,6 +17,9 @@
             <el-row :span="24" class="content-row">
                 <el-tabs v-model="activeName" @tab-click="handleClick">
                     <el-tab-pane label="今日头条" name="toutiao">
+                        <el-button size="small" plain @click="pushtoutiao()">
+                            推送消息
+                        </el-button>
                         <el-table v-loading="loading" :data="toutiao" stripe style="margin-top: 10px">
                             <el-table-column prop="name" label="账号" align="center"></el-table-column>
                             <el-table-column prop="score_balance" label="现有金币" align="center"></el-table-column>
@@ -25,8 +28,12 @@
                         </el-table>
                     </el-tab-pane>
                     <el-tab-pane label="爱步宝" name="abb">
+                        <el-button size="small" plain @click="pushabb()">
+                            推送消息
+                        </el-button>
                         <el-table v-loading="loading" :data="abb" stripe style="margin-top: 10px">
                             <el-table-column prop="nick" label="账号" align="center"></el-table-column>
+                            <el-table-column prop="money" label="余额（元）" align="center"></el-table-column>
                             <el-table-column prop="succ_total" label="提现金额（元）" align="center"></el-table-column>
                             <el-table-column prop="processing" label="正在处理（笔）" align="center">
                                 <template slot-scope="scope">
@@ -79,6 +86,12 @@
                 $.get('/getAbb?t=' + new Date().getTime()).then(res => {
                     that.abb = res
                 })
+            },
+            pushtoutiao() {
+                $.get('/pushtoutiao?t=' + new Date().getTime())
+            },
+            pushabb() {
+                $.get('/pushabb?t=' + new Date().getTime())
             }
         }
     })

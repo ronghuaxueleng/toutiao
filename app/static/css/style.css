@@ -4,12 +4,12 @@ html, body {
 
 #app {
     height: 100%;
-    padding: 30px
+    padding: 10px
 }
 
 .content-contanier {
     height: 100%;
-    padding: 30px;
+    padding: 10px;
 }
 
 .content-row {
