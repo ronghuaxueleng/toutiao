@@ -85,7 +85,7 @@ def walk_bonus_137(headers, query):
 
 
 # 金币详情
-def profit_detail(headers, query, account):
+def profit_detail(headers, query, account, fromAPI = False):
     host = 'i-hl.snssdk.com'
     path = '/luckycat/lite/v1/user/profit_detail/?offset=6922228539857356812&num=300&income_type=1&{}'.format(
         query)
@@ -96,9 +96,23 @@ def profit_detail(headers, query, account):
         data = res_json['data']
         score_balance = data['score_balance'] if data is not None else '-'
         cash_balance = data['cash_balance'] if data is not None else 0
-        return '{}：现有金币{}, ：现金收益{}'.format(account.name, score_balance, cash_balance / 100)
+        if fromAPI is False:
+            return '{}：现有金币{}, ：现金收益{}'.format(account.name, score_balance, cash_balance / 100)
+        else:
+            return {
+                'name': account.name,
+                'score_balance': score_balance,
+                'cash_balance': cash_balance / 100,
+            }
     elif err_no == 10001:
-        return '{} 请重新登录'.format(account.name)
+        if fromAPI is False:
+            return '{} 请重新登录'.format(account.name)
+        else:
+            return {
+                'name': account.name,
+                'score_balance': 0,
+                'cash_balance': 0,
+            }
 
 
 # 阅读
@@ -273,12 +287,11 @@ def run_task(task_type):
                 print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
 
 
-parser = argparse.ArgumentParser(description='')
-parser.add_argument('--ltype', '-lt', help='主任务类型，必要参数', default=0)
-parser.add_argument('--type', '-t', help='任务类型，必要参数', required=True)
-args = parser.parse_args()
-
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='今日头条运行')
+    parser.add_argument('--ltype', '-lt', help='主任务类型，必要参数', default=0)
+    parser.add_argument('--type', '-t', help='任务类型，必要参数', required=True)
+    args = parser.parse_args()
     ltype = args.ltype
     type = args.type
     if ltype == '1':

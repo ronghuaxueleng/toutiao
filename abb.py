@@ -52,7 +52,7 @@ def getup_clock(headers):
 
 
 # 提现记录
-def record(headers, nick):
+def record(headers, nick, fromApi=False):
     url = "http://front15.ncziliyun.com/user/cash/record.html"
     response = requests.request("GET", url, headers=headers)
     html = response.text
@@ -69,10 +69,17 @@ def record(headers, nick):
                 succ_total += float(cols[0])
             if cols[2] == '处理中':
                 processing.append("时间【{}】，金额: {}元".format(cols[1], cols[0]))
-    if len(processing) > 0:
-        return "{}\n共提现金额:{}元，还有{}笔提现正在处理，如下：\n{}".format(nick, succ_total, len(processing), "\n".join(processing))
+    if fromApi is False:
+        if len(processing) > 0:
+            return "{}\n共提现金额:{}元，还有{}笔提现正在处理，如下：\n{}".format(nick, succ_total, len(processing), "\n".join(processing))
+        else:
+            return "{}\n共提现金额:{}元，没有正在处理的提现款项".format(nick, succ_total)
     else:
-        return "{}\n共提现金额:{}元，没有正在处理的提现款项".format(nick, succ_total)
+        return {
+            'nick': nick,
+            'succ_total': succ_total,
+            'processing': processing
+        }
 
 
 def run_accout_task(type):
@@ -105,9 +112,8 @@ def run_accout_task(type):
         send_message("\n".join(results), '爱步宝')
 
 
-parser = argparse.ArgumentParser(description='')
-parser.add_argument('--type', '-t', help='任务类型，必要参数', required=True)
-args = parser.parse_args()
-
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--type', '-t', help='任务类型，必要参数', required=True)
+    args = parser.parse_args()
     run_accout_task(args.type)
