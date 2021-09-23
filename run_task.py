@@ -96,13 +96,15 @@ def profit_detail(headers, query, account, fromAPI = False):
         data = res_json['data']
         score_balance = data['score_balance'] if data is not None else '-'
         cash_balance = data['cash_balance'] if data is not None else 0
+        cash_amount = data['cash_amount'] if data is not None else 0
         if fromAPI is False:
-            return '{}：现有金币{}, ：现金收益{}'.format(account.name, score_balance, cash_balance / 100)
+            return '{}：现有金币{}，现金收益{}，总收益{}'.format(account.name, score_balance, cash_balance / 100, cash_amount / 100)
         else:
             return {
                 'name': account.name,
                 'score_balance': score_balance,
                 'cash_balance': cash_balance / 100,
+                'cash_amount': cash_amount / 100
             }
     elif err_no == 10001:
         if fromAPI is False:
@@ -110,8 +112,9 @@ def profit_detail(headers, query, account, fromAPI = False):
         else:
             return {
                 'name': account.name,
-                'score_balance': 0,
-                'cash_balance': 0,
+                'score_balance': '请重新登录',
+                'cash_balance': '请重新登录',
+                'cash_amount': '请重新登录'
             }
 
 
