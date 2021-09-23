@@ -16,10 +16,10 @@ RUN apk update && \
   echo "Asia/Shanghai" > /etc/timezone && \
   apk del tzdata
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
     && apk update -f \
     && apk upgrade \
-    && apk --no-cache ca-certificates add -f bash git g++ gcc libxslt-dev libxml2-dev python3-dev \
+    && apk --no-cache ca-certificates add -f bash git g++ gcc libxslt-dev libxml2-dev python3-dev supervisor \
     && rm -rf /var/cache/apk/* \
     && git clone -b ${APP_BRANCH} ${APP_URL} ${APP_DIR}
 
@@ -27,6 +27,7 @@ WORKDIR ${APP_DIR}
 COPY git_pull.sh ${APP_DIR}/
 COPY docker-entrypoint.sh ${APP_DIR}/
 COPY requirements.txt ${APP_DIR}/
+COPY supervisord.conf /etc/
 RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
     && cp -f ${APP_DIR}/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh \
     && chmod 777 /usr/local/bin/docker-entrypoint.sh
@@ -36,4 +37,4 @@ RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r re
 
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
-ENTRYPOINT docker-entrypoint.sh
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
