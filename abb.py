@@ -57,26 +57,34 @@ def getup_clock(headers):
 def record(headers, nick, money, fromApi=False):
     url = "http://front15.ncziliyun.com/user/cash/record.html"
     response = requests.request("GET", url, headers=headers)
-    html = response.text
-    soup = BeautifulSoup(html, 'lxml')
-    finder = soup.find('table')
-    rows = finder.find_all('tr')
     succ_total = 0
     processing = []
-    for row in rows:
-        cols = row.find_all('td')
-        cols = [ele.text.strip() for ele in cols]
-        if len(cols) > 0:
-            if cols[2] == '提现成功':
-                succ_total += float(cols[0])
-            if cols[2] == '处理中':
-                processing.append("时间【{}】，金额: {}元".format(cols[1], cols[0]))
-    if fromApi is False:
-        if len(processing) > 0:
-            return "{}\n共提现金额:{}元，还有{}笔提现正在处理，如下：\n{}".format(nick, succ_total, len(processing), "\n".join(processing))
+    try:
+        html = response.text
+        soup = BeautifulSoup(html, 'lxml')
+        finder = soup.find('table')
+        rows = finder.find_all('tr')
+        for row in rows:
+            cols = row.find_all('td')
+            cols = [ele.text.strip() for ele in cols]
+            if len(cols) > 0:
+                if cols[2] == '提现成功':
+                    succ_total += float(cols[0])
+                if cols[2] == '处理中':
+                    processing.append("时间【{}】，金额: {}元".format(cols[1], cols[0]))
+        if fromApi is False:
+            if len(processing) > 0:
+                return "{}\n共提现金额:{}元，还有{}笔提现正在处理，如下：\n{}".format(nick, succ_total, len(processing), "\n".join(processing))
+            else:
+                return "{}\n共提现金额:{}元，没有正在处理的提现款项".format(nick, succ_total)
         else:
-            return "{}\n共提现金额:{}元，没有正在处理的提现款项".format(nick, succ_total)
-    else:
+            return {
+                'nick': nick,
+                'money': money,
+                'succ_total': succ_total,
+                'processing': 0 if len(processing) == 0 else "\n".join(processing)
+            }
+    except Exception as e:
         return {
             'nick': nick,
             'money': money,
