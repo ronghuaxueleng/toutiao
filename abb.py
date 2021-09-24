@@ -101,10 +101,10 @@ def record(headers, nick, money, phone, fromApi=False):
     except Exception as e:
         return {
             'nick': nick,
-            'money': '账户异常',
+            'money': '-',
             'phone': phone,
-            'succ_total': '账户异常',
-            'processing': '账户异常'
+            'succ_total': '-',
+            'processing': '-'
         }
 
 
