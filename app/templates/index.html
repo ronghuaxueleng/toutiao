@@ -17,7 +17,7 @@
             <el-row :span="24" class="content-row">
                 <el-tabs v-model="activeName" @tab-click="handleClick">
                     <el-tab-pane label="今日头条" name="toutiao">
-                        <el-button size="small" plain @click="pushtoutiao()">
+                        <el-button size="small" plain @click="pushtoutiao">
                             推送消息
                         </el-button>
                         <el-table v-loading="loading" :data="toutiao" stripe style="margin-top: 10px">
@@ -28,8 +28,11 @@
                         </el-table>
                     </el-tab-pane>
                     <el-tab-pane label="爱步宝" name="abb">
-                        <el-button size="small" plain @click="pushabb()">
+                        <el-button size="small" plain @click="pushabb">
                             推送消息
+                        </el-button>
+                        <el-button size="small" plain @click="updateabb">
+                            更新账户信息
                         </el-button>
                         <el-table v-loading="loading" :data="abb" stripe style="margin-top: 10px">
                             <el-table-column prop="nick" label="账号" align="center"></el-table-column>
@@ -92,6 +95,12 @@
             },
             pushabb() {
                 $.get('/pushabb?t=' + new Date().getTime())
+            },
+            updateabb() {
+                let that = this
+                $.get('/updateabb?t=' + new Date().getTime()).then(function() {
+                    that.getAbb()
+                })
             }
         }
     })

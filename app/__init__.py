@@ -56,3 +56,9 @@ def pushabb():
 def pushtoutiao():
     run_task.run_accout_task('profit_detail')
     return 'ok'
+
+
+@app.route('/updateabb')
+def updateabb():
+    abb.run_accout_task('getperson')
+    return 'ok'
