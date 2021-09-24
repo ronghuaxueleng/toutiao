@@ -40,9 +40,10 @@ def getAbb():
     for item in items:
         nick = item.get('nick')
         header = item.get('header')
+        phone = item.get('phone')
         money = item.get('money')
         header_json = json.loads(header)
-        results.append(record(header_json, nick, money, True))
+        results.append(record(header_json, nick, money, phone, True))
     return jsonify(results)
 
 

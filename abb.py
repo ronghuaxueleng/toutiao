@@ -67,7 +67,7 @@ def getup_clock(headers):
 
 
 # 提现记录
-def record(headers, nick, money, fromApi=False):
+def record(headers, nick, money, phone, fromApi=False):
     url = "http://front15.ncziliyun.com/user/cash/record.html"
     response = requests.request("GET", url, headers=headers)
     succ_total = 0
@@ -94,15 +94,17 @@ def record(headers, nick, money, fromApi=False):
             return {
                 'nick': nick,
                 'money': money,
+                'phone': phone,
                 'succ_total': succ_total,
                 'processing': 0 if len(processing) == 0 else "\n".join(processing)
             }
     except Exception as e:
         return {
             'nick': nick,
-            'money': money,
-            'succ_total': succ_total,
-            'processing': 0 if len(processing) == 0 else "\n".join(processing)
+            'money': '账户异常',
+            'phone': phone,
+            'succ_total': '账户异常',
+            'processing': '账户异常'
         }
 
 
@@ -161,8 +163,9 @@ def run_accout_task(type):
             time.sleep(sec)
         uid = item.get('uid')
         nick = item.get('nick')
+        phone = item.get('phone')
         money = item.get('money')
-        print("\n" + nick + "\n")
+        print(nick + "\n")
         header = item.get('header')
         header_json = json.loads(header)
         if type == 'convert_step':
@@ -172,7 +175,7 @@ def run_accout_task(type):
         elif type == 'fuli':
             fuli(header_json)
         elif type == 'record':
-            results.append(record(header_json, nick, money))
+            results.append(record(header_json, nick, money, phone))
         elif type == 'getup':
             getup(header_json)
         elif type == 'getup_clock':
