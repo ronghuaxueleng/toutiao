@@ -2,55 +2,68 @@
 import argparse
 import json
 import random
-import re
 import time
 
 import requests
-from toutiao.db import Abb
-
 from bs4 import BeautifulSoup
 
+from toutiao.db import Abb
 # 签到
 from toutiao.toutiao import abbPhoneReg, abbMoneyReg, abbAliNameReg, abbAlipayReg
 from utils.utils import send_message
 
 
 def signin(headers):
-    url = "http://front15.ncziliyun.com/handle/signin.html"
-    payload = "phone=1"
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    try:
+        url = "http://front15.ncziliyun.com/handle/signin.html"
+        payload = "phone=1"
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print(response.text)
+    except Exception as e:
+        pass
 
 
 # 提交步数
 def convert_step(headers):
-    url = "http://front15.ncziliyun.com/mobile/convert_step.html"
-    payload = "todayStep={}".format(20000 + random.randint(100, 1000))
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    try:
+        url = "http://front15.ncziliyun.com/mobile/convert_step.html"
+        payload = "todayStep={}".format(20000 + random.randint(100, 1000))
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print(response.text)
+    except Exception as e:
+        pass
 
 
 # 提现
 def fuli(headers):
-    url = "http://front15.ncziliyun.com/user/fuli.html"
-    requests.request("POST", url, headers=headers)
+    try:
+        url = "http://front15.ncziliyun.com/user/fuli.html"
+        requests.request("POST", url, headers=headers)
+    except Exception:
+        pass
 
 
 # 早起挑战赛报名
 def getup(headers):
-    url = "http://front15.ncziliyun.com/mobile/getup/apply.html"
-    payload = 'cost=money'
-    requests.request("POST", url, headers=headers, data=payload)
-    url = "http://front15.ncziliyun.com/handle/apply.html"
-    payload = "phone=1"
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    try:
+        url = "http://front15.ncziliyun.com/mobile/getup/apply.html"
+        payload = 'cost=money'
+        requests.request("POST", url, headers=headers, data=payload)
+        url = "http://front15.ncziliyun.com/handle/apply.html"
+        payload = "phone=1"
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print(response.text)
+    except Exception as e:
+        pass
 
 
 # 早起打卡
 def getup_clock(headers):
-    url = "http://front15.ncziliyun.com/mobile/getup/clock.html"
-    requests.request("GET", url, headers=headers)
+    try:
+        url = "http://front15.ncziliyun.com/mobile/getup/clock.html"
+        requests.request("GET", url, headers=headers)
+    except Exception as e:
+        pass
 
 
 # 提现记录
@@ -95,37 +108,43 @@ def record(headers, nick, money, fromApi=False):
 
 # 获得支付宝信息
 def getalipay(headers, uid):
-    url = "http://front15.ncziliyun.com/user/alipay.html"
-    response = requests.request("GET", url, headers=headers)
-    body = response.text
-    aliNameMatch = abbAliNameReg.search(body)
-    aliPayMatch = abbAlipayReg.search(body)
-    if aliNameMatch is not None and aliPayMatch is not None:
-        aliNames = aliNameMatch.groupdict()
-        aliName = aliNames.get("aliname")
-        aliPays = aliPayMatch.groupdict()
-        aliPay = aliPays.get("alipay")
-        Abb.update(
-            alipay='{}:{}'.format(aliName, aliPay)
-        ).where(Abb.uid == uid).execute()
+    try:
+        url = "http://front15.ncziliyun.com/user/alipay.html"
+        response = requests.request("GET", url, headers=headers)
+        body = response.text
+        aliNameMatch = abbAliNameReg.search(body)
+        aliPayMatch = abbAlipayReg.search(body)
+        if aliNameMatch is not None and aliPayMatch is not None:
+            aliNames = aliNameMatch.groupdict()
+            aliName = aliNames.get("aliname")
+            aliPays = aliPayMatch.groupdict()
+            aliPay = aliPays.get("alipay")
+            Abb.update(
+                alipay='{}:{}'.format(aliName, aliPay)
+            ).where(Abb.uid == uid).execute()
+    except Exception as e:
+        pass
 
 
 # 获得账号信息
 def getperson(headers, uid):
-    url = "http://front15.ncziliyun.com/user/person.html"
-    response = requests.request("GET", url, headers=headers)
-    body = response.text
-    phoneMatch = abbPhoneReg.search(body)
-    moneyMatch = abbMoneyReg.search(body)
-    if phoneMatch is not None and moneyMatch is not None:
-        phones = phoneMatch.groupdict()
-        phone = phones.get("phone")
-        moneys = moneyMatch.groupdict()
-        money = moneys.get("money")
-        Abb.update(
-            phone=phone,
-            money=money
-        ).where(Abb.uid == uid).execute()
+    try:
+        url = "http://front15.ncziliyun.com/user/person.html"
+        response = requests.request("GET", url, headers=headers)
+        body = response.text
+        phoneMatch = abbPhoneReg.search(body)
+        moneyMatch = abbMoneyReg.search(body)
+        if phoneMatch is not None and moneyMatch is not None:
+            phones = phoneMatch.groupdict()
+            phone = phones.get("phone")
+            moneys = moneyMatch.groupdict()
+            money = moneys.get("money")
+            Abb.update(
+                phone=phone,
+                money=money
+            ).where(Abb.uid == uid).execute()
+    except Exception as e:
+        pass
 
 
 extype = ['record', 'getalipay', 'getperson']
