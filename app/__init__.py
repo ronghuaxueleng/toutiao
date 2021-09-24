@@ -63,3 +63,9 @@ def pushtoutiao():
 def updateabb():
     abb.run_accout_task('getperson')
     return 'ok'
+
+
+@app.route('/updateabbstep')
+def updateabbstep():
+    abb.run_accout_task('updateabbstep')
+    return 'ok'

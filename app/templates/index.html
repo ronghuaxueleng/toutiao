@@ -34,6 +34,9 @@
                         <el-button size="small" plain @click="updateabb">
                             更新账户信息
                         </el-button>
+                        <el-button size="small" plain @click="updateabbstep">
+                            更新步数信息
+                        </el-button>
                         <el-table v-loading="loading" :data="abb" stripe style="margin-top: 10px">
                             <el-table-column prop="nick" label="账号" align="center"></el-table-column>
                             <el-table-column prop="phone" label="手机号" align="center"></el-table-column>
@@ -100,6 +103,12 @@
             updateabb() {
                 let that = this
                 $.get('/updateabb?t=' + new Date().getTime()).then(function() {
+                    that.getAbb()
+                })
+            },
+            updateabbstep() {
+                let that = this
+                $.get('/updateabbstep?t=' + new Date().getTime()).then(function() {
                     that.getAbb()
                 })
             }

@@ -149,7 +149,7 @@ def getperson(headers, uid):
         pass
 
 
-extype = ['record', 'getalipay', 'getperson']
+extype = ['record', 'getalipay', 'getperson', 'updateabbstep']
 
 
 def run_accout_task(type):
@@ -168,7 +168,7 @@ def run_accout_task(type):
         print(nick + "\n")
         header = item.get('header')
         header_json = json.loads(header)
-        if type == 'convert_step':
+        if type == 'convert_step' or type == 'updateabbstep':
             convert_step(header_json)
         elif type == 'signin':
             signin(header_json)
