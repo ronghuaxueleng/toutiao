@@ -38,7 +38,10 @@ def convert_step(headers):
 def fuli(headers):
     try:
         url = "http://front15.ncziliyun.com/user/fuli.html"
-        requests.request("POST", url, headers=headers)
+        verify_url = "http://front15.ncziliyun.com/handle/handle_bind_verify.html"
+        response = requests.request("POST", verify_url, headers=headers)
+        payload = 'code={}'.format(response.text)
+        requests.request("POST", url, headers=headers, data=payload)
     except Exception:
         pass
 
