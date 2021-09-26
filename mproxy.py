@@ -77,7 +77,7 @@ class mproxy:
             if '/passport/account/info/v2/?' in flow.request.path:
                 save_request_data(flow)
 
-        if 'front15.ncziliyun.com' in flow.request.host and '/user/person.html' in flow.request.path:
+        if 'ncziliyun.com' in flow.request.host and '/user/person.html' in flow.request.path:
             save_abb_header(flow)
 
 
