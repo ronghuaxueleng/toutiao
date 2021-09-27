@@ -16,9 +16,10 @@ is_legal_header_name = re.compile(rb'[^:\s][^:\r\n]*').fullmatch
 
 users = {}
 cookieReg = re.compile('pin=(?P<pin>\S+?);.*?wskey=(?P<wskey>\S+?);')
-abbUserReg = re.compile('trueName:"(?P<username>.*?)"')
+abbUserReg = re.compile('lu_name\s=\s"(?P<username>.*?)"')
 abbUserIdReg = re.compile('uid=(?P<uid>\d+)')
-abbPhoneReg = re.compile('phone:"(?P<phone>.*?)"')
+abbPhoneReg = re.compile('<div\s+class="phone">(?P<phone>.*?)</div>')
+
 abbMoneyReg = re.compile('<div\s+class="money">(?P<money>.*?)</div>')
 abbAliNameReg = re.compile('<input(?:\s+\S+)+\s+placeholder="输入姓名"\s+value="(?P<aliname>.*?)">')
 abbAlipayReg = re.compile('<input(?:\s+\S+)+\s+placeholder="输入支付宝账号"\s+value="(?P<alipay>.*?)">')
