@@ -1,9 +1,9 @@
 docker run -dit \
 -v $PWD/config:/mitmproxy/config \
 -v $PWD/logs:/mitmproxy/logs \
--p 8080:8080 \
 -p 5000:5000 \
--p 8888:8888 \
+-p 8999:8999 \
+-p 9999:9999 \
 --name toutiao \
 --network bridge \
 --hostname toutiao \
@@ -15,8 +15,8 @@ docker run -dit \
 -v /root/mitmproxy/logs:/var/run \
 -v /root/mitmproxy/logs:/var/log \
 -p 5000:5000 \
--p 8080:8080 \
--p 8888:8888 \
+-p 8999:8999 \
+-p 9999:9999 \
 --name toutiao \
 --network bridge \
 --hostname toutiao \
