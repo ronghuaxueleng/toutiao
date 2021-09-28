@@ -1,4 +1,4 @@
-FROM mitmproxy/mitmproxy:6.0.2
+FROM ronghuaxueleng/mitmproxy:7.0.3
 LABEL maintainer="jishuixiansheng"
 ARG APP_URL=https://gitee.com/getready/toutiao.git
 ARG APP_BRANCH=main
@@ -35,7 +35,6 @@ RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
 # 使用清华源安装依赖
 RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 RUN pip install git+https://gitee.com/getready/supervisor-stdout.git
+RUN pip install --force-reinstall h2==3.2.0
 
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisord.conf"]
