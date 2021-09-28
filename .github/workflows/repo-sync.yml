@@ -10,7 +10,7 @@ jobs:
         with:
           src: github/ronghuaxueleng
           dst: gitee/getready
-          static_list: "mitmproxy"
+          static_list: "toutiao"
           dst_key: ${{ secrets.GITEE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
 
