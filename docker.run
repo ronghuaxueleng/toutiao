@@ -12,8 +12,8 @@ docker run -dit \
 docker run -dit \
 -v /root/mitmproxy/config:/mitmproxy/config \
 -v /root/mitmproxy/logs:/mitmproxy/logs \
--v /root/mitmproxy/logs:/var/run/supervisord.pid \
--v /root/mitmproxy/logs:/var/log/supervisord.log \
+-v /root/mitmproxy/logs:/var/run \
+-v /root/mitmproxy/logs:/var/log \
 -p 5000:5000 \
 -p 8080:8080 \
 -p 8888:8888 \
