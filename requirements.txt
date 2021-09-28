@@ -4,5 +4,6 @@ peewee==3.14.0
 hyper==0.7.0
 lxml==4.6.3
 beautifulsoup4==4.7.1
+supervisor==4.2.2
 passlib==1.7.1; sys_platform != 'win32' and python_version < '3.8'
 passlib==1.7.2; sys_platform == 'win32' or python_version >= '3.8'
