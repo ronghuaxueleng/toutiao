@@ -23,7 +23,7 @@ function UseNotes() {
 }
 
 echo -e "\n========================1. 更新源代码========================\n"
-bash git_pull
+bash /usr/local/bin/git_pull
 echo -e "\n========================2. 启动定时任务========================\n"
 crond >/dev/null 2>&1
 
