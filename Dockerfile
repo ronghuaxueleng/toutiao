@@ -35,6 +35,6 @@ RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
 # 使用清华源安装依赖
 RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 RUN pip install git+https://gitee.com/getready/supervisor-stdout.git
-RUN pip install --force-reinstall h2==3.2.0
+COPY _http2.py /usr/local/lib/python3.9/site-packages/mitmproxy/proxy/layers/http/
 
 CMD ["/usr/local/bin/supervisord", "-c", "/etc/supervisord.conf"]
