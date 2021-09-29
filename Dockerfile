@@ -28,9 +28,8 @@ COPY git_pull.sh ${APP_DIR}/
 COPY docker-entrypoint.sh ${APP_DIR}/
 COPY requirements.txt ${APP_DIR}/
 COPY supervisord.conf /etc/
-RUN ln -sf ${APP_DIR}/git_pull.sh /usr/local/bin/git_pull \
-    && cp -f ${APP_DIR}/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh \
-    && chmod 777 /usr/local/bin/docker-entrypoint.sh
+RUN chmod 777 ${APP_DIR}/git_pull.sh \
+    && chmod 777 ${APP_DIR}/docker-entrypoint.sh
 
 # 使用清华源安装依赖
 RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
