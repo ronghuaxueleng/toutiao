@@ -4,6 +4,7 @@ docker run -dit \
 -p 5000:5000 \
 -p 8999:8999 \
 -p 9999:9999 \
+-p 8080:8080 \
 --name toutiao \
 --network bridge \
 --hostname toutiao \
@@ -17,6 +18,7 @@ docker run -dit \
 -p 5000:5000 \
 -p 8999:8999 \
 -p 9999:9999 \
+-p 8080:8080 \
 --name toutiao \
 --network bridge \
 --hostname toutiao \
