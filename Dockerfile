@@ -1,4 +1,4 @@
-FROM ronghuaxueleng/mitmproxy:7.0.3
+FROM ronghuaxueleng/mitmproxy:7.0.4
 LABEL maintainer="jishuixiansheng"
 ARG APP_URL=https://gitee.com/getready/toutiao.git
 ARG APP_BRANCH=main
