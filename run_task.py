@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from peewee import JOIN
 
 from toutiao.db import Task as DbTask, Account, CommonParams
-from toutiao.toutiao import save_ad
+from toutiao.jisu.toutiao import save_ad
 from utils.utils import get, post, request, send_message
 
 

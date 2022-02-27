@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 from toutiao.db import Abb
 # 签到
-from toutiao.toutiao import abbPhoneReg, abbMoneyReg, abbAliNameReg, abbAlipayReg
+from toutiao.jisu.toutiao import abbPhoneReg, abbMoneyReg, abbAliNameReg, abbAlipayReg
 from utils.utils import send_message
 
 

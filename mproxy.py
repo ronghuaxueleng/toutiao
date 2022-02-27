@@ -1,12 +1,10 @@
 import functools
-import json
 import logging
 import logging.handlers
 
 # 日志配置
-import re
 
-from toutiao.toutiao import save_task_data, save_request_data, save_jd_pin, save_abb_header
+from toutiao.jisu.toutiao import save_task_data, save_request_data, save_jd_pin, save_abb_header
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

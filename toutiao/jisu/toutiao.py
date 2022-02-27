@@ -5,7 +5,7 @@ from furl import furl
 
 from utils.logger import logger
 from toutiao.db import Task, Account, JOIN, Jd, Iad, Abb
-from toutiao.userInfo import UserInfo
+from toutiao.jisu.userInfo import UserInfo
 from utils.utils import convert_cookies_to_dict, send_message
 
 is_legal_header_name = re.compile(rb'[^:\s][^:\r\n]*').fullmatch

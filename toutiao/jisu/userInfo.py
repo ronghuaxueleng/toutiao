@@ -3,8 +3,9 @@
 '''
 import json
 
+from toutiao.db import CommonParams
 from utils.logger import logger
-from toutiao.db import Account, CommonParams
+from toutiao.jisu.toutiao import Account
 from utils.utils import send_message
 
 
