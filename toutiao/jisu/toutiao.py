@@ -4,7 +4,7 @@ import re
 from furl import furl
 
 from utils.logger import logger
-from toutiao.db import Task, Account, JOIN, Jd, Iad, Abb
+from db.toutiao_jisu import Task, Account, JOIN, Jd, Iad, Abb
 from toutiao.jisu.userInfo import UserInfo
 from utils.utils import convert_cookies_to_dict, send_message
 

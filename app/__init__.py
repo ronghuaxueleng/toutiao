@@ -9,7 +9,7 @@ import abb
 import run_task
 from abb import record
 from run_task import profit_detail
-from toutiao.db import Account, CommonParams, Abb
+from db.toutiao_jisu import Account, CommonParams, Abb
 
 app = Flask(__name__)
 

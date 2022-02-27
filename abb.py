@@ -7,7 +7,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from toutiao.db import Abb
+from db.toutiao_jisu import Abb
 # 签到
 from toutiao.jisu.toutiao import abbPhoneReg, abbMoneyReg, abbAliNameReg, abbAlipayReg
 from utils.utils import send_message
