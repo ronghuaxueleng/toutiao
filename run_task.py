@@ -19,6 +19,15 @@ def sign_in(headers, query):
     print('sign_in ' + res)
 
 
+# 首页惊喜红包
+def done_universal_task(headers, query):
+    sign_in_host = 'i-hl.snssdk.com'
+    sign_in_path = '/luckycat/lite/v1/task/done_universal_task?{}'
+    path = sign_in_path.format(query)
+    res = post(sign_in_host, path, headers, b'{"task_id":307}')
+    print('done_universal_task ' + res)
+
+
 # 打开通知
 def open_notice(headers, query):
     host = 'api3-normal-c-hl.snssdk.com'
@@ -85,7 +94,7 @@ def walk_bonus_137(headers, query):
 
 
 # 金币详情
-def profit_detail(headers, query, account, fromAPI = False):
+def profit_detail(headers, query, account, fromAPI=False):
     host = 'i-hl.snssdk.com'
     path = '/luckycat/lite/v1/user/profit_detail/?offset=6922228539857356812&num=300&income_type=1&{}'.format(
         query)
@@ -211,6 +220,12 @@ def run_accout_task(type):
         query = urlencode(params)
         if type == 'sign_in':
             sign_in(headers, query)
+        elif type == 'done_universal_task':
+            done_universal_task(headers, query)
+        elif type == 'challenge_task':
+            challenge_task(headers, query, account)
+        elif type == 'challenge_info_task':
+            challenge_info_task(headers, query, account)
         elif type == 'get_ad':
             get_ad(headers, query)
         elif type == 'open_notice':
@@ -254,6 +269,32 @@ def new_excitation_ad(host, method, path, headers, taskId, task, task_type, sess
             new_excitation_ad(host, method, path, headers, taskId, task, task_type, session_key)
     except Exception as e:
         print('{} - {} - {}执行失败'.format(task['name'], task_type, session_key))
+
+
+# 看资讯内容5分钟, 看资讯内容10分钟, 看资讯内容15分钟, 领取激励广告奖励, 开宝箱, 领取走路奖励, 看精彩小视频1分钟, 寻找首页阅读惊喜红包, 寻找阅读惊喜红包挑战奖励, 点赞喜欢的文章, 提现金币收益, 领取吃饭补贴, 领取睡觉奖励, 完成每日签到, 看资讯内容1分钟
+challenge_task_list = ["1007", "1008", "1009", "1014", "1001", "1002", "1010", "1013", "1015", "1017", "1003", "1004",
+                       "1020", "1006"]
+
+
+def challenge_task(headers, query, account):
+    sign_in_host = 'i-hl.snssdk.com'
+    sign_in_path = '/luckycat/lite/v1/daily_challenge/challenge_done/?{}'
+    path = sign_in_path.format(query)
+    for taskId in challenge_task_list:
+        res = request(sign_in_host, 'POST', path, headers, '{"task_id":' + taskId + '}')
+        print('challenge_task[' + account.name + ']' + res)
+
+
+challenge_info_list = ['1101', '1102', '1003']
+
+
+def challenge_info_task(headers, query, account):
+    sign_in_host = 'i-hl.snssdk.com'
+    sign_in_path = '/luckycat/lite/v1/daily_challenge/bonus_done?{}'
+    path = sign_in_path.format(query)
+    for taskId in challenge_info_list:
+        res = request(sign_in_host, 'POST', path, headers, '{"task_id":' + taskId + '}')
+        print('challenge_info_task[' + account.name + ']' + res)
 
 
 def run_task(task_type):
