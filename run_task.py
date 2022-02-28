@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 
 from peewee import JOIN
 
+from db.toutiao import Task as ToutiaoTask, Account as ToutiaoAccount
 from db.toutiao_jisu import Task as DbTask, Account, CommonParams
 from toutiao.jisu.toutiao import save_ad
 from utils.utils import get, post, request, send_message
@@ -17,6 +18,15 @@ def sign_in(headers, query):
     path = sign_in_path.format(query)
     res = post(sign_in_host, path, headers, b'{"rit": "coin", "use_ecpm": "0"}')
     print('sign_in ' + res)
+
+
+# 签到
+def toutiao_sign_in(headers, query):
+    sign_in_host = 'api3-normal-lf.toutiaoapi.com'
+    sign_in_path = '/luckycat/news/v1/sign_in/done_task?{}'
+    path = sign_in_path.format(query)
+    res = post(sign_in_host, path, headers, b'{}')
+    print('toutiao_sign_in ' + res)
 
 
 # 首页惊喜红包
@@ -53,6 +63,14 @@ def double_whole_scene_task(headers, query):
     path = '/luckycat/lite/v1/activity/double_whole_scene_task/?{}'.format(query)
     res = post(host, path, headers)
     print('double_whole_scene_task' + res)
+
+
+# 头条点击翻倍
+def toutiao_double_whole_scene_task(headers, query):
+    host = 'api3-normal-lf.toutiaoapi.com'
+    path = '/luckycat/news/v1/activity/double_whole_scene_task?{}'.format(query)
+    res = post(host, path, headers)
+    print('toutiao_double_whole_scene_task' + res)
 
 
 # 阅读推送文章
@@ -257,6 +275,20 @@ def run_accout_task(type):
         send_message("\n".join(results))
 
 
+def run_toutiao_accout_task(type):
+    results = []
+    accounts = ToutiaoAccount.select()
+    for idx, account in enumerate(accounts):
+        headers = json.loads(account.headers)
+        query = urlencode(json.loads(account.commonParams))
+        if type == 'toutiao_sign_in':
+            toutiao_sign_in(headers, query)
+        elif type == 'toutiao_double_whole_scene_task':
+            toutiao_double_whole_scene_task(headers, query)
+    if len(results) > 0:
+        send_message("\n".join(results))
+
+
 new_excitation_ad_task_ids = ["188", "308", "216", "255"]
 
 
@@ -297,10 +329,32 @@ def challenge_info_task(headers, query, account):
         print('challenge_info_task[' + account.name + ']' + res)
 
 
+def run_toutiao_task(task_type):
+    query = (ToutiaoTask.select(ToutiaoTask, ToutiaoAccount).join(ToutiaoAccount, JOIN.LEFT_OUTER,
+                                                             on=(ToutiaoTask.session_key == ToutiaoAccount.session_key))
+             .where(ToutiaoTask.type == task_type).dicts())
+    for idx, task in enumerate(query):
+        session_key = task['session_key']
+        host = task['host']
+        path = task['path']
+        method = task['method']
+        headers = task['header']
+        body = task['body']
+        if task_type == 'open_treasure_box':
+            res = request(host, method, path, json.loads(headers), body)
+            print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
+            res_json = json.loads(res)
+            print('open_treasure_box' + res)
+        elif task_type == 'excitation_ad':
+            res = request(host, method, path, json.loads(headers), body)
+            print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
+            res_json = json.loads(res)
+            print('excitation_ad' + res)
+
+
 def run_task(task_type):
     query = (DbTask.select(DbTask, Account).join(Account, JOIN.LEFT_OUTER,
                                                  on=(DbTask.session_key == Account.session_key))
-             # .where(DbTask.type == task_type, DbTask.session_key == '3b5be15157963546ef0c58a394d40119').dicts())
              .where(DbTask.type == task_type).dicts())
     for idx, task in enumerate(query):
         session_key = task['session_key']
@@ -340,5 +394,9 @@ if __name__ == '__main__':
     type = args.type
     if ltype == '1':
         run_task(type)
+    elif ltype == '2':
+        run_toutiao_accout_task(type)
+    elif ltype == '3':
+        run_toutiao_task(type)
     else:
         run_accout_task(type)
