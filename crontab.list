@@ -6,18 +6,24 @@
 */30 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "excitation_ad" >> /mitmproxy/logs/excitation_ad.log 2>&1
 # 开宝箱
 */22 * * * * python3 /mitmproxy/run_task.py -lt 1 -t "open_treasure_box" >> /mitmproxy/logs/open_treasure_box.log 2>&1
+# 头条开宝箱
+*/12 * * * * python3 /mitmproxy/run_task.py -lt 3 -t "open_treasure_box" >> /mitmproxy/logs/toutiao_open_treasure_box.log 2>&1
 # 阅读
 50 2,4,6,8,14 * * * python3 /mitmproxy/run_task.py -t "get_read" >> /mitmproxy/logs/get_read.log 2>&1
 # 阅读
 30 2,4,6,8,14 * * * python3 /mitmproxy/run_task.py -t "get_push_read_bonus" >> /mitmproxy/logs/get_push_read_bonus.log 2>&1
 # 签到
 15 3,12,16 * * * python3 /mitmproxy/run_task.py -t "sign_in" >> /mitmproxy/logs/sign_in.log 2>&1
+# 头条签到
+15 3,12,16 * * * python3 /mitmproxy/run_task.py -lt 2 -t "toutiao_sign_in" >> /mitmproxy/logs/toutiao_sign_in.log 2>&1
 # 打开提醒
 0 5,12,16 * * * python3 /mitmproxy/run_task.py -t "open_notice" >> /mitmproxy/logs/open_notice.log 2>&1
 # 新阅读
 0 7 * * * python3 /mitmproxy/run_task.py -t "newbie_consume" >> /mitmproxy/logs/newbie_consume.log 2>&1
 # 翻倍
 30 0 * * * python3 /mitmproxy/run_task.py -t "double_whole_scene_task" >> /mitmproxy/logs/double_whole_scene_task.log 2>&1
+# 头条翻倍
+30 0 * * * python3 /mitmproxy/run_task.py -lt 2 -t "toutiao_double_whole_scene_task" >> /mitmproxy/logs/toutiao_double_whole_scene_task.log 2>&1
 # 走路
 10 */1 * * * python3 /mitmproxy/run_task.py -lt 0 -t "walk_count" >> /mitmproxy/logs/walk_count.log 2>&1
 # 领取走路赚钱奖励
