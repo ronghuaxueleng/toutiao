@@ -343,12 +343,14 @@ def run_toutiao_task(task_type):
         if task_type == 'open_treasure_box':
             res = request(host, method, path, json.loads(headers), body)
             print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
-            res_json = json.loads(res)
             print('open_treasure_box' + res)
+        elif task_type == 'done_whole_scene_task':
+            res = request(host, method, path, json.loads(headers), body)
+            print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
+            print('done_whole_scene_task' + res)
         elif task_type == 'excitation_ad':
             res = request(host, method, path, json.loads(headers), body)
             print('{} - {} - {} {}'.format(task['name'], task_type, session_key, res))
-            res_json = json.loads(res)
             print('excitation_ad' + res)
 
 

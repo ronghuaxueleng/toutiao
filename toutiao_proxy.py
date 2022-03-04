@@ -42,6 +42,9 @@ class mproxy:
 
     @log_exception
     def request(self, flow):
+        if '/luckycat/news/v1/activity/done_whole_scene_task' in flow.request.path:
+            save_toutiao_task_data(flow, 'done_whole_scene_task')
+
         if '/luckycat/news/v1/treasure/open_treasure_box' in flow.request.path:
             save_toutiao_task_data(flow, 'open_treasure_box')
 
