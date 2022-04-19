@@ -40,27 +40,5 @@
 0 18 * * * python3 /mitmproxy/run_task.py -t "challenge_task" >> /mitmproxy/logs/challenge_task.log 2>&1
 # 每日挑战
 30 18 * * * python3 /mitmproxy/run_task.py -t "challenge_info_task" >> /mitmproxy/logs/challenge_info_task.log 2>&1
-# 开始睡觉
-#0 20 * * * python3 /mitmproxy/run_task.py -lt 0 -t "start_sleep" >> /mitmproxy/logs/start_sleep.log 2>&1
-# 停止睡觉
-#30 2 * * * python3 /mitmproxy/run_task.py -lt 0 -t "end_sleep" >> /mitmproxy/logs/end_sleep.log 2>&1
-# 领取睡觉奖励
-#1 3 * * * python3 /mitmproxy/run_task.py -lt 0 -t "sleep_done_task" >> /mitmproxy/logs/sleep_done_task.log 2>&1
-# 查询账户详情
-#0 12,18,21 * * * python3 /mitmproxy/run_task.py -lt 0 -t "profit_detail" >> /mitmproxy/logs/profit_detail.log 2>&1
-# 获得喜爱的广告
-# */2 * * * * python3 /mitmproxy/run_task.py -lt 0 -t "get_ad" >> /mitmproxy/logs/get_ad.log 2>&1
-# 爱步宝提交步数
-#0 6,20 * * * python3 /mitmproxy/abb.py -t "convert_step" >> /mitmproxy/logs/convert_step.log 2>&1
-# 爱步宝签到
-#0 5,14 * * * python3 /mitmproxy/abb.py -t "signin" >> /mitmproxy/logs/signin.log 2>&1
-# 爱步宝提现
-#0 7,12 * * * python3 /mitmproxy/abb.py -t "fuli" >> /mitmproxy/logs/fuli.log 2>&1
-# 爱步宝提现记录
-#0 9 * * * python3 /mitmproxy/abb.py -t "record" >> /mitmproxy/logs/record.log 2>&1
-# 每日打开挑战赛报名
-#0 11 * * * python3 /mitmproxy/abb.py -t "getup" >> /mitmproxy/logs/getup.log 2>&1
-# 打卡早起
-#0 7 * * * python3 /mitmproxy/abb.py -t "getup_clock" >> /mitmproxy/logs/getup_clock.log 2>&1
-# 更新账号信息
-#0 */1 * * * python3 /mitmproxy/abb.py -t "getperson" >> /mitmproxy/logs/getperson.log 2>&1
+# 我要上岸签到
+0 9 * * * python3 /mitmproxy/others/51twx.py
