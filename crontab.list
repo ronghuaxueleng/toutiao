@@ -42,3 +42,5 @@
 30 18 * * * python3 /mitmproxy/run_task.py -t "challenge_info_task" >> /mitmproxy/logs/challenge_info_task.log 2>&1
 # 我要上岸签到
 0 9 * * * python3 /mitmproxy/others/51twx.py
+# 小米步数提交
+0 9 * * * python3 /mitmproxy/others/xiaomistep.py
