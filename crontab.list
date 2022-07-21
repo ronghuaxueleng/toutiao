@@ -45,6 +45,6 @@
 # 小米步数提交
 0 7 * * * python3 /mitmproxy/others/xiaomistep.py
 # 签到
-50 8 * * * python3 /mitmproxy/others/daka/work.py
+50 8 * * * python3 /mitmproxy/others/daka/work.py -t signin
 # 签退
-0 18 * * * python3 /mitmproxy/others/daka/work.py
+0 18 * * * python3 /mitmproxy/others/daka/work.py -t signout

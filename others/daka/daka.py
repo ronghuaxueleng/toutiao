@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from utils.utils import todat_is_workday
+from utils.utils import todat_is_workday, send_message
 
 
 class Daka:
@@ -104,9 +104,13 @@ class Daka:
             'Host': 'app.dakabg.com'
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
-
-        print(response.text)
+        try:
+            response = requests.request("POST", url, headers=headers, data=payload.encode('utf-8'))
+            print(response.text)
+            send_message('签到成功：{}'.format(response.text), '打卡签到')
+        except Exception as e:
+            print(e)
+            send_message('签到失败：{}'.format(e), '打卡签到')
 
     def signout(self, id, projectid):
         """
@@ -123,9 +127,13 @@ class Daka:
             'Host': 'app.dakabg.com'
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
-
-        print(response.text)
+        try:
+            response = requests.request("POST", url, headers=headers, data=payload.encode('utf-8'))
+            print(response.text)
+            send_message('签退成功：{}'.format(response.text), '打卡签退')
+        except Exception as e:
+            print(e)
+            send_message('签退失败：{}'.format(e), '打卡签退')
 
     def leavelist(self):
         """
