@@ -1,7 +1,10 @@
-import json
+import datetime
+import random
 import re
+import time
 
 import requests
+from chinese_calendar import is_workday
 from hyper import HTTP20Connection
 
 
@@ -33,15 +36,76 @@ def request(host, method, path, headers=None, body=None):
 
 
 def convert_cookies_to_dict(cookies, delimiter="; |;|, |,"):
+    """
+    cookie 转换成 字典
+    :param cookies:
+    :param delimiter:
+    :return:
+    """
     cookies = dict([l.split("=", 1) for l in re.split(delimiter, cookies)])
     return cookies
 
 
-def send_message(content, title = '今日头条极速版'):
+def send_message(content, title='今日头条极速版'):
     token = '258f84f44f0246c38bffb7d03733a825'
     url = 'http://www.pushplus.plus/send'
     requests.post(url, data={"token": token, "title": title, "content": content, "channel": "cp", "webhook": "4680"})
 
 
+def todat_is_workday():
+    """
+    今天是否是工作日
+    """
+    da = datetime.date.today()
+    return is_workday(da)
+
+
+def randomtimes(start, end, n, frmt="%Y-%m-%d %H:%M:%S", istimestamp=False):
+    """
+    随机获得一段时间内的一组时间
+    """
+    return [randomtime(start, end, frmt, istimestamp) for _ in range(n)]
+
+
+def randomtime(start, end, frmt="%Y-%m-%d %H:%M:%S", istimestamp=True):
+    """
+    随机获得一段时间内的某一个时间
+    """
+    stime = datetime.datetime.strptime(start, frmt)
+    etime = datetime.datetime.strptime(end, frmt)
+    res = random.random() * (etime - stime) + stime
+    return res if istimestamp is not True else int(datetime.datetime.timestamp(res) * 1000)
+
+
+def get_today_ymd():
+    """
+    获得今天的时间，格式如2022-07-20
+    """
+    today = datetime.date.today()
+    year = today.year
+    month = today.month
+    day = today.day
+    return '{}-{:0>2d}-{:0>2d}'.format(year, month, day)
+
+
+def get_today_hm(hm):
+    """
+    获得今天某一时分的时间
+    """
+    today = get_today_ymd()
+    return '{} {}'.format(today, hm)
+
+
+def get_today_hm_timestamp(hm):
+    """
+    获得今天某一时分的时间戳
+    """
+    hmstr = get_today_hm(hm)
+    # 先转换为时间数组
+    timeArray = time.strptime(hmstr, "%Y-%m-%d %H:%M:%S")
+    # 转换为时间戳
+    return int(time.mktime(timeArray) * 1000)
+
+
 if __name__ == '__main__':
-    send_message("测试\n测试")
+    print(int(time.time() * 1000))
