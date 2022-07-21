@@ -107,5 +107,14 @@ def get_today_hm_timestamp(hm):
     return int(time.mktime(timeArray) * 1000)
 
 
+def timestamp_format(timestamp):
+    """
+    时间戳格式化
+    """
+    # 转换为其他日期格式,如:"%Y-%m-%d %H:%M:%S"
+    timeArray = time.localtime(timestamp)
+    return time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+
+
 if __name__ == '__main__':
     print(int(time.time() * 1000))
