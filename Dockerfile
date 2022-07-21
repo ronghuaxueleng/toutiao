@@ -4,6 +4,7 @@ ARG APP_URL=https://gitee.com/getready/toutiao.git
 ARG APP_BRANCH=main
 
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    PYTHONPATH="${PYTONPATH}:/mitmproxy:/mitmproxy/toutiao" \
     LANG=zh_CN.UTF-8 \
     SHELL=/bin/bash \
     PS1="\u@\h:\w \$ " \
