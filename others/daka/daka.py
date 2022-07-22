@@ -27,6 +27,24 @@ class Daka:
         res_json = json.loads(response.text)
         return res_json.get('list')
 
+    def verify_sign_type(self):
+        url = "https://app.dakabg.com/mobile/getchecktimes?verifytype=0&verifycontent={}&tenantid={}&timestamp={}".format(
+            self.phoneno,
+            self.tenantid,
+            int(time.time() * 1000))
+
+        payload = "{\"querycount \":true,\"staffid\":\"613E771AE00000016956919D61C25D9B\"}"
+        headers = {
+            'Cookie': 'inst=inst2',
+            'Cam-Charset': 'utf-8',
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Host': 'app.dakabg.com'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        res_json = json.loads(response.text)
+        return res_json.get('checktimes')
+
     def get_worklist(self):
         """
         获得工作列表
@@ -168,19 +186,20 @@ class Daka:
         now = time.time()
         return starttime_timestamp < now <= finishtime_timestamp
 
-    def can_sign(self):
-        return todat_is_workday() and self.check_is_leave() is False
+    def can_sign(self, type):
+        check = self.verify_sign_type()
+        return todat_is_workday() and self.check_is_leave() is False and (check.get('needcheckin') if type == 'in' else check.get('needcheckout'))
 
     def do_signin(self):
         """
         执行签到
         """
-        if self.can_sign():
+        if self.can_sign('in'):
             self.signin()
 
     def do_signout(self, id, projectid):
         """
         执行签退
         """
-        if self.can_sign():
+        if self.can_sign('out'):
             self.signout(id, projectid)
