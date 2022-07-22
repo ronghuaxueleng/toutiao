@@ -51,14 +51,11 @@ def signout():
 
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser(description='签卡运行')
-    # parser.add_argument('--type', '-t', help='signin：签到，signout：签退', required=True)
-    # args = parser.parse_args()
-    # type = args.type
-    # if type == 'signin':
-    #     signin()
-    # elif type == 'signout':
-    #     signout()
-    run = Daka()
-    res = run.do_signin()
-    print(res)
+    parser = argparse.ArgumentParser(description='签卡运行')
+    parser.add_argument('--type', '-t', help='signin：签到，signout：签退', required=True)
+    args = parser.parse_args()
+    type = args.type
+    if type == 'signin':
+        signin()
+    elif type == 'signout':
+        signout()
