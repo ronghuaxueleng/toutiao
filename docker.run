@@ -8,7 +8,7 @@ docker run -dit \
 --name toutiao \
 --network bridge \
 --hostname toutiao \
---restart always
+--restart always \
 ronghuaxueleng/jrtt
 
 docker run -dit \
