@@ -34,7 +34,6 @@ echo -e "+-----------------------------------------------------------+"
 ## 更新Shell源码
 [ -d "${ShellDir}"/.git ] && Git_PullShell
 crontab -r && crontab "${ShellDir}"/crontab.list
-/usr/sbin/crond restart
 
 ## 赋权
 chmod 777 "${ShellDir}"/*
