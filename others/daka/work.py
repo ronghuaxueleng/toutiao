@@ -5,7 +5,7 @@ from others.daka.daka import Daka
 from utils.utils import randomtime, get_today_hm, get_today_hm_timestamp, timestamp_format, send_message
 
 signintime = randomtime(get_today_hm('08:50:00'), get_today_hm('08:59:00'))
-signouttime = randomtime(get_today_hm('18:01:00'), get_today_hm('18:10:00'))
+signouttime = randomtime(get_today_hm('18:00:00'), get_today_hm('18:10:00'))
 workfrom = get_today_hm_timestamp('09:00:00')
 workto = get_today_hm_timestamp('18:00:00')
 
