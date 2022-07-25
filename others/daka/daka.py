@@ -196,6 +196,8 @@ class Daka:
         """
         if self.can_sign('in'):
             self.signin()
+        else:
+            send_message('不符合签到条件', '打卡签到')
 
     def do_signout(self, id, projectid):
         """
@@ -203,3 +205,5 @@ class Daka:
         """
         if self.can_sign('out'):
             self.signout(id, projectid)
+        else:
+            send_message('不符合签退条件', '打卡签退')

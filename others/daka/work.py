@@ -2,7 +2,7 @@ import argparse
 import time
 
 from others.daka.daka import Daka
-from utils.utils import randomtime, get_today_hm, get_today_hm_timestamp, timestamp_format
+from utils.utils import randomtime, get_today_hm, get_today_hm_timestamp, timestamp_format, send_message
 
 signintime = randomtime(get_today_hm('08:50:00'), get_today_hm('08:59:00'))
 signouttime = randomtime(get_today_hm('18:01:00'), get_today_hm('18:10:00'))
@@ -13,7 +13,9 @@ workto = get_today_hm_timestamp('18:00:00')
 def signin():
     count = 0
     run = Daka()
-    print("等待签到，签到时间是：{}".format(timestamp_format(signintime / 1000)))
+    signin_time = timestamp_format(signintime / 1000)
+    send_message('等待签到，签到时间是：{}'.format(signin_time), '打卡签到')
+    print("等待签到，签到时间是：{}".format(signin_time))
     while True:
         now = int(time.time() * 1000)
         print(timestamp_format(now / 1000))
@@ -33,7 +35,9 @@ def signout():
     if now > signouttime:
         print("签退时间已过")
     else:
-        print("等待签退，签退时间是：{}".format(timestamp_format(signouttime / 1000)))
+        signout_time = timestamp_format(signouttime / 1000)
+        send_message('等待签到，签到时间是：{}'.format(signout_time), '打卡签退')
+        print("等待签退，签退时间是：{}".format(signout_time))
         while True:
             now = int(time.time() * 1000)
             print(timestamp_format(now / 1000))
