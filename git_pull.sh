@@ -33,7 +33,8 @@ echo -e "+-----------------------------------------------------------+"
 
 ## 更新Shell源码
 [ -d "${ShellDir}"/.git ] && Git_PullShell
-crontab -r && crontab "${ShellDir}"/crontab.list
+# crontab -r && crontab "${ShellDir}"/crontab.list
+crontab "${ShellDir}"/crontab.list
 
 ## 赋权
 chmod 777 "${ShellDir}"/*
