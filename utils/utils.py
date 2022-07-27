@@ -6,7 +6,7 @@ import httpx
 
 import requests
 from chinese_calendar import is_workday
-from hyper import HTTP20Connection
+# from hyper import HTTP20Connection
 
 
 def get_sample(url, headers):
@@ -33,15 +33,15 @@ def post(url, headers, data=None):
 #     return request(host, 'POST', path, headers, data)
 
 
-def request(host, method, path, headers=None, body=None):
-    if headers is None:
-        headers = {}
-    headers['Accept'] = '*/*'
-    headers['Connection'] = 'keep-alive'
-    c = HTTP20Connection(host)
-    response = c.request(method, path, headers=headers, body=body)
-    resp = c.get_response(response)
-    return resp.read().decode('utf-8')
+# def request(host, method, path, headers=None, body=None):
+#     if headers is None:
+#         headers = {}
+#     headers['Accept'] = '*/*'
+#     headers['Connection'] = 'keep-alive'
+#     c = HTTP20Connection(host)
+#     response = c.request(method, path, headers=headers, body=body)
+#     resp = c.get_response(response)
+#     return resp.read().decode('utf-8')
 
 
 def convert_cookies_to_dict(cookies, delimiter="; |;|, |,"):
