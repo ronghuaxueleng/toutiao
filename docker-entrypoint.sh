@@ -25,7 +25,6 @@ function UseNotes() {
 echo -e "\n========================1. 更新源代码========================\n"
 /bin/bash /mitmproxy/git_pull.sh
 echo -e "\n========================2. 启动定时任务========================\n"
-ping www.baidu.com
 #crond >/dev/null 2>&1
 
 echo
