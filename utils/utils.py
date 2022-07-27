@@ -2,7 +2,6 @@ import datetime
 import random
 import re
 import time
-import httpx
 
 import requests
 from chinese_calendar import is_workday
@@ -10,11 +9,11 @@ from hyper import HTTP20Connection
 
 
 def get_sample(url, headers):
-    return httpx.get(url, headers=headers)
+    return requests.get(url, headers=headers)
 
 
 def post_sample(url, headers, data=None):
-    return httpx.post(url, headers=headers, data=data)
+    return requests.post(url, headers=headers, data=data)
 
 
 def get(host, path, headers):
