@@ -34,15 +34,5 @@ echo -e "+-----------------------------------------------------------+"
 ## 更新Shell源码
 [ -d "${ShellDir}"/.git ] && Git_PullShell
 crontab -r && crontab "${ShellDir}"/crontab.list
-ids=$(ps -ef | grep crond | grep -v grep | cut -c 0-5)
-i=0
-for pid in $ids;
-do
-  if [ $i -ne 0 ]; then
-    echo $pid | xargs kill -9;
-  fi
-  i=$(($i+1));
-done
-
 ## 赋权
 chmod 777 "${ShellDir}"/*
