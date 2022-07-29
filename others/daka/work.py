@@ -8,6 +8,7 @@ signintime = randomtime(get_today_hm('08:50:00'), get_today_hm('08:59:00'))
 signouttime = randomtime(get_today_hm('18:00:00'), get_today_hm('18:10:00'))
 workfrom = get_today_hm_timestamp('09:00:00')
 workto = get_today_hm_timestamp('18:00:00')
+finished = get_today_hm_timestamp('18:10:00')
 
 
 def signin():
@@ -32,7 +33,7 @@ def signout():
     count = 0
     run = Daka()
     now = int(time.time() * 1000)
-    if now > signouttime:
+    if now > finished:
         print("签退时间已过")
     else:
         signout_time = timestamp_format(signouttime / 1000)
