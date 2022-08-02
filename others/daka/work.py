@@ -37,12 +37,12 @@ def signout():
         print("签退时间已过")
     else:
         signout_time = timestamp_format(signouttime / 1000)
-        send_message('等待签到，签到时间是：{}'.format(signout_time), '打卡签退')
+        send_message('等待签退，签退时间是：{}'.format(signout_time), '打卡签退')
         print("等待签退，签退时间是：{}".format(signout_time))
         while True:
             now = int(time.time() * 1000)
             print(timestamp_format(now / 1000))
-            if workto < now < signouttime:
+            if signouttime < now:
                 worklist = run.get_worklist()
                 for work in worklist:
                     id = work.get('id')
