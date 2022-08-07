@@ -1,45 +1,39 @@
 import json
 import time
+from copy import deepcopy
 
 import requests
 
+from others.daka.urls import get_url, myphone, location, ssid
 from utils.utils import todat_is_workday, send_message
 
 
 class Daka:
-    def __init__(self, phoneno='15901254680'):
+    def __init__(self, phoneno=myphone):
         self.phoneno = phoneno
+        self.headers = {
+            'Cam-Charset': 'utf-8',
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Host': get_url("host")
+        }
         self.tenantid = self.get_tenantid(int(time.time() * 1000))
 
     def get_dingwei(self):
         """
         获得定位软件信息列表
         """
-        url = "https://app.dakabg.com/servlets/security/verify"
+        url = get_url("dingwei")
 
         payload = "{\"model\":\"BMH-AN20\"}"
-        headers = {
-            'Cam-Charset': 'utf-8',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Host': 'app.dakabg.com'
-        }
-        response = requests.request("POST", url, headers=headers, data=payload)
+        response = requests.request("POST", url, headers=self.headers, data=payload)
         res_json = json.loads(response.text)
         return res_json.get('list')
 
     def verify_sign_type(self):
-        url = "https://app.dakabg.com/mobile/getchecktimes?verifytype=0&verifycontent={}&tenantid={}&timestamp={}".format(
-            self.phoneno,
-            self.tenantid,
-            int(time.time() * 1000))
-
+        url = get_url("verifySignType").format(self.phoneno, self.tenantid, int(time.time() * 1000))
         payload = "{\"querycount \":true,\"staffid\":\"613E771AE00000016956919D61C25D9B\"}"
-        headers = {
-            'Cookie': 'inst=inst2',
-            'Cam-Charset': 'utf-8',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Host': 'app.dakabg.com'
-        }
+        headers = deepcopy(self.headers)
+        headers['Cookie'] = 'inst=inst2'
 
         response = requests.request("POST", url, headers=headers, data=payload)
         res_json = json.loads(response.text)
@@ -49,18 +43,10 @@ class Daka:
         """
         获得工作列表
         """
-        url = "https://app.dakabg.com/mobile/project/worklist?verifytype=0&verifycontent={}&tenantid={}&timestamp={}".format(
-            self.phoneno,
-            self.tenantid,
-            int(time.time() * 1000))
-
+        url = get_url("worklist").format(self.phoneno, self.tenantid, int(time.time() * 1000))
         payload = "{\"limit\":1,\"offset\":0,\"filter\":0}"
-        headers = {
-            'Cookie': 'inst=inst2',
-            'Cam-Charset': 'utf-8',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Host': 'app.dakabg.com'
-        }
+        headers = deepcopy(self.headers)
+        headers['Cookie'] = 'inst=inst2'
 
         response = requests.request("POST", url, headers=headers, data=payload)
         res_json = json.loads(response.text)
@@ -70,17 +56,10 @@ class Daka:
         """
         获得打卡时间
         """
-        url = "https://app.dakabg.com/mobile/checklist?verifytype=0&verifycontent={}&tenantid={}&timestamp={}".format(
-            self.phoneno,
-            self.tenantid,
-            int(time.time() * 1000))
+        url = get_url("dakatimes").format(self.phoneno, self.tenantid, int(time.time() * 1000))
         payload = "{\"offset\":0,\"limit\":-1}"
-        headers = {
-            'Cookie': 'inst=inst2',
-            'Cam-Charset': 'utf-8',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Host': 'app.dakabg.com'
-        }
+        headers = deepcopy(self.headers)
+        headers['Cookie'] = 'inst=inst2'
         response = requests.request("POST", url, headers=headers, data=payload)
         res_json = json.loads(response.text)
         return res_json.get('checklist')
@@ -89,13 +68,10 @@ class Daka:
         """
         获得租户ID
         """
-        url = "https://app.dakabg.com/mobilefwd?verifytype=0&verifycontent={}&mobileos=0&version=176&timestamp={}".format(
-            self.phoneno,
-            curr_timestamp)
-        headers = {
-            'Cam-Charset': 'utf-8',
-            'Host': 'app.dakabg.com'
-        }
+        url = get_url("getTenantId").format(self.phoneno, curr_timestamp)
+
+        headers = deepcopy(self.headers)
+        del headers['Content-Type']
 
         response = requests.request("GET", url, headers=headers)
         res_json = json.loads(response.text)
@@ -111,16 +87,10 @@ class Daka:
         """
         签到
         """
-        url = "https://app.dakabg.com/mobile/check?verifytype=0&verifycontent={}&tenantid={}&timestamp={}".format(
-            self.phoneno, self.tenantid, int(time.time() * 1000))
-
-        payload = "{\"checktype\":0,\"lng\":116.3730870922896,\"lat\":39.957986127185045,\"location\":\"北京市海淀区志强南园久其软件(文慧园办公区)\",\"projectid\":\"7826182FC00000211F2EC76EB5CDF805\",\"turnname\":\"\",\"method\":7,\"accuracy\":21.64131736755371,\"memo\":\"\",\"picnum\":0,\"ssid\":\"JiuQi-Office\",\"mac\":\"84:d9:31:06:5b:40\",\"version\":120}"
-        headers = {
-            'Cookie': 'inst=inst2',
-            'Cam-Charset': 'utf-8',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Host': 'app.dakabg.com'
-        }
+        url = get_url("signin").format(self.phoneno, self.tenantid, int(time.time() * 1000))
+        payload = '{"checktype":0,"lng":116.3730870922896,"lat":39.957986127185045,"location":"' + location + '","projectid":"7826182FC00000211F2EC76EB5CDF805","turnname":"","method":7,"accuracy":21.64131736755371,"memo":"","picnum":0,"ssid":"' + ssid + '","mac":"84:d9:31:06:5b:40","version":120}'
+        headers = deepcopy(self.headers)
+        headers['Cookie'] = 'inst=inst2'
 
         try:
             response = requests.request("POST", url, headers=headers, data=payload.encode('utf-8'))
@@ -134,16 +104,11 @@ class Daka:
         """
         签退
         """
-        url = "https://app.dakabg.com/mobile/check?verifytype=0&verifycontent={}&tenantid={}&timestamp={}".format(
-            self.phoneno, self.tenantid, int(time.time() * 1000))
+        url = get_url("signout").format(self.phoneno, self.tenantid, int(time.time() * 1000))
 
-        payload = '{"checktype":1,"lng":116.37288190005114,"lat":39.9579479565396,"location":"北京市海淀区志强南园久其软件(文慧园办公区)","works":[{"id":"' + id + '","hours":"8","remark":"","projectid":"' + projectid + '"}],"turnname":"","method":7,"accuracy":29,"memo":"","picnum":0,"ssid":"JiuQi-Office","mac":"84:d9:31:06:98:c0","version":120}'
-        headers = {
-            'Cookie': 'inst=inst2',
-            'Cam-Charset': 'utf-8',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Host': 'app.dakabg.com'
-        }
+        payload = '{"checktype":1,"lng":116.37288190005114,"lat":39.9579479565396,"location":"' + location + '","works":[{"id":"' + id + '","hours":"8","remark":"","projectid":"' + projectid + '"}],"turnname":"","method":7,"accuracy":29,"memo":"","picnum":0,"ssid":"' + ssid + '","mac":"84:d9:31:06:98:c0","version":120}'
+        headers = deepcopy(self.headers)
+        headers['Cookie'] = 'inst=inst2'
 
         try:
             response = requests.request("POST", url, headers=headers, data=payload.encode('utf-8'))
@@ -157,16 +122,10 @@ class Daka:
         """
         请假列表
         """
-        url = "https://app.dakabg.com/mobile/leavelist?verifytype=0&verifycontent={}&tenantid={}&timestamp={}".format(
-            self.phoneno, self.tenantid, int(time.time() * 1000))
-
+        url = get_url("leavelist").format(self.phoneno, self.tenantid, int(time.time() * 1000))
         payload = "{\"limit\":21,\"offset\":0,\"filter\":2}"
-        headers = {
-            'Cookie': 'inst=inst2',
-            'Cam-Charset': 'utf-8',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Host': 'app.dakabg.com'
-        }
+        headers = deepcopy(self.headers)
+        headers['Cookie'] = 'inst=inst2'
 
         response = requests.request("POST", url, headers=headers, data=payload)
         res_json = json.loads(response.text)
@@ -188,7 +147,8 @@ class Daka:
 
     def can_sign(self, type):
         check = self.verify_sign_type()
-        return todat_is_workday() and self.check_is_leave() is False and (check.get('needcheckin') if type == 'in' else check.get('needcheckout'))
+        return todat_is_workday() and self.check_is_leave() is False and (
+            check.get('needcheckin') if type == 'in' else check.get('needcheckout'))
 
     def do_signin(self):
         """
@@ -207,3 +167,8 @@ class Daka:
             self.signout(id, projectid)
         else:
             send_message('不符合签退条件', '打卡签退')
+
+
+if __name__ == '__main__':
+    daka = Daka()
+    print(daka.get_dingwei())
