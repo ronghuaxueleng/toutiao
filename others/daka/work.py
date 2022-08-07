@@ -1,66 +1,14 @@
 import argparse
-import time
 
-from others.daka.daka import Daka
-from utils.utils import randomtime, get_today_hm, get_today_hm_timestamp, timestamp_format, send_message
-
-signintime = randomtime(get_today_hm('08:50:00'), get_today_hm('08:59:00'))
-signouttime = randomtime(get_today_hm('18:00:00'), get_today_hm('18:10:00'))
-workfrom = get_today_hm_timestamp('09:00:00')
-workto = get_today_hm_timestamp('18:00:00')
-finished = get_today_hm_timestamp('18:10:00')
-
-
-def signin():
-    count = 0
-    run = Daka()
-    signin_time = timestamp_format(signintime / 1000)
-    send_message('等待签到，签到时间是：{}'.format(signin_time), '打卡签到')
-    print("等待签到，签到时间是：{}".format(signin_time))
-    while True:
-        now = int(time.time() * 1000)
-        print(timestamp_format(now / 1000))
-        if signintime < now < workfrom:
-            run.do_signin()
-            break
-        if count == 30 * 60:
-            break
-        time.sleep(1)
-        count = count + 1
-
-
-def signout():
-    count = 0
-    run = Daka()
-    now = int(time.time() * 1000)
-    if now > finished:
-        print("签退时间已过")
-    else:
-        signout_time = timestamp_format(signouttime / 1000)
-        send_message('等待签退，签退时间是：{}'.format(signout_time), '打卡签退')
-        print("等待签退，签退时间是：{}".format(signout_time))
-        while True:
-            now = int(time.time() * 1000)
-            print(timestamp_format(now / 1000))
-            if signouttime < now:
-                worklist = run.get_worklist()
-                for work in worklist:
-                    id = work.get('id')
-                    projectid = work.get('projectid')
-                    run.do_signout(id, projectid)
-                break
-            if count == 30 * 60:
-                break
-            time.sleep(1)
-            count = count + 1
-
+from others.daka.run import RunDaka
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='签卡运行')
     parser.add_argument('--type', '-t', help='signin：签到，signout：签退', required=True)
     args = parser.parse_args()
     type = args.type
+    run = RunDaka()
     if type == 'signin':
-        signin()
+        run.signin()
     elif type == 'signout':
-        signout()
+        run.signout()
