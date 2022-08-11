@@ -47,6 +47,6 @@
 # 飘云阁签到
 #0 8 * * * python3 /mitmproxy/others/pyg.py >> /mitmproxy/logs/pyg.log 2>&1
 # 签到
-50 8 * * * python3 /mitmproxy/others/daka/work.py -t signin
+#0 8 * * * python3 /mitmproxy/others/daka/work.py -t signin
 # 签退
-0 18 * * * python3 /mitmproxy/others/daka/work.py -t signout
+#0 18 * * * python3 /mitmproxy/others/daka/work.py -t signout
