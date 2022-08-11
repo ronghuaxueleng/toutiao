@@ -45,7 +45,7 @@
 # 小米步数提交
 0 7 * * * python3 /mitmproxy/others/xiaomistep.py
 # 飘云阁签到
-0 8 * * * python3 /mitmproxy/others/pyg.py >> /mitmproxy/logs/pyg.log 2>&1
+#0 8 * * * python3 /mitmproxy/others/pyg.py >> /mitmproxy/logs/pyg.log 2>&1
 # 签到
 50 8 * * * python3 /mitmproxy/others/daka/work.py -t signin
 # 签退
