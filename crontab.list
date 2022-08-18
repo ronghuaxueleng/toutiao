@@ -50,3 +50,5 @@
 #0 8 * * * python3 /mitmproxy/others/daka/work.py -t signin
 # 签退
 #0 18 * * * python3 /mitmproxy/others/daka/work.py -t signout
+# 签退提醒
+0 19 * * * python3 /mitmproxy/others/daka/work.py -t check_signout

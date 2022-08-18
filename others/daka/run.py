@@ -55,3 +55,7 @@ class RunDaka:
                         break
                     time.sleep(1)
                     count = count + 1
+
+    def check_signout(self):
+        if self.run.can_sign('out'):
+            send_message('今天还没有签退', '打卡签退')

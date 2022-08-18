@@ -12,3 +12,5 @@ if __name__ == '__main__':
         run.signin()
     elif type == 'signout':
         run.signout()
+    elif type == 'check_signout':
+        run.check_signout()

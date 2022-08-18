@@ -14,7 +14,9 @@ urls = {
 
 ssid = str(base64.b64decode("Sml1UWktT2ZmaWNl"), "utf-8")
 myphone = str(base64.b64decode("MTU5MDEyNTQ2ODA="), "utf-8")
-location = str(base64.b64decode("5YyX5Lqs5biC5rW35reA5Yy65b+X5by65Y2X5Zut5LmF5YW26L2v5Lu2KOaWh+aFp+WbreWKnuWFrOWMuik="), "utf-8")
+location = str(base64.b64decode("5YyX5Lqs5biC5rW35reA5Yy65b+X5by65Y2X5Zut5LmF5YW26L2v5Lu2KOaWh+aFp+WbreWKnuWFrOWMuik="),
+               "utf-8")
+
 
 def get_url(type):
     return str(base64.b64decode(urls[type]), "utf-8")
