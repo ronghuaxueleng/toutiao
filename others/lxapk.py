@@ -1,5 +1,7 @@
 import requests
 
+from others.qinglong import QingLong
+
 url = "https://www.lxapk.com/wp-admin/admin-ajax.php"
 
 payload = "action=user_checkin"
@@ -21,6 +23,10 @@ headers = {
   'Cookie': 'wordpress_sec_6b6a752c3623b1d09888c726dc9108af=%E7%BB%92%E8%8A%B1%E9%9B%AA%E5%86%B7%7C1668733546%7CEVJ1dSt6byQiBrimzZLG0jUYzfY32yabfH3MuYrDTuM%7C1d97418a9a46e3596af6640ec8ca7ccccfc14431bcbb5d066d7c998bdcb0553a; showed_sign_modal=showed; PHPSESSID=6jq4rig7qutuct1hpo4gl3dju1; wordpress_logged_in_6b6a752c3623b1d09888c726dc9108af=%E7%BB%92%E8%8A%B1%E9%9B%AA%E5%86%B7%7C1668733546%7CEVJ1dSt6byQiBrimzZLG0jUYzfY32yabfH3MuYrDTuM%7Cddd2f4dfa1407953c44ce9324dcec31e1cf90a5779e872bfffd6e37dcc1ce65a'
 }
 
-response = requests.request("POST", url, headers=headers, data=payload)
-
-print(response.text)
+response = QingLong().run('LXAPK_COOKIE')
+if response['code'] == 200:
+  cookies = response['data']
+  for cookie in cookies:
+    headers['Cookie'] = cookie['value']
+    response = requests.request("POST", url, headers=headers, data=payload)
+    print(response.text)
