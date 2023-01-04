@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 from others.qinglong import QingLong
@@ -29,4 +31,4 @@ if response['code'] == 200:
   for cookie in cookies:
     headers['Cookie'] = cookie['value']
     response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    print(json.loads(response.text))
