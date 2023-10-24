@@ -1,28 +1,27 @@
 import json
-
 import requests
 
 from others.qinglong import QingLong
 
-url = "https://www.lxapk.com/wp-admin/admin-ajax.php"
+url = "https://dfldata.cc/home.php?mod=spacecp&ac=credit&showcredit=1"
 
-payload = "action=user_checkin"
+payload = {}
 headers = {
-  'Connection': 'keep-alive',
+  'authority': 'dfldata.cc',
   'sec-ch-ua': '"Chromium";v="21", " Not;A Brand";v="99"',
-  'Accept': 'application/json, text/javascript, */*; q=0.01',
-  'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-  'X-Requested-With': 'XMLHttpRequest',
   'sec-ch-ua-mobile': '?0',
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
   'sec-ch-ua-platform': '"Windows"',
-  'Origin': 'https://www.lxapk.com',
-  'Sec-Fetch-Site': 'same-origin',
-  'Sec-Fetch-Mode': 'cors',
-  'Sec-Fetch-Dest': 'empty',
-  'Referer': 'https://www.lxapk.com/message/',
-  'Accept-Language': 'zh-CN,zh;q=0.9',
-  'Cookie': 'wordpress_sec_6b6a752c3623b1d09888c726dc9108af=%E7%BB%92%E8%8A%B1%E9%9B%AA%E5%86%B7%7C1668733546%7CEVJ1dSt6byQiBrimzZLG0jUYzfY32yabfH3MuYrDTuM%7C1d97418a9a46e3596af6640ec8ca7ccccfc14431bcbb5d066d7c998bdcb0553a; showed_sign_modal=showed; PHPSESSID=6jq4rig7qutuct1hpo4gl3dju1; wordpress_logged_in_6b6a752c3623b1d09888c726dc9108af=%E7%BB%92%E8%8A%B1%E9%9B%AA%E5%86%B7%7C1668733546%7CEVJ1dSt6byQiBrimzZLG0jUYzfY32yabfH3MuYrDTuM%7Cddd2f4dfa1407953c44ce9324dcec31e1cf90a5779e872bfffd6e37dcc1ce65a'
+  'upgrade-insecure-requests': '1',
+  'dnt': '1',
+  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
+  'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+  'sec-fetch-site': 'same-origin',
+  'sec-fetch-mode': 'navigate',
+  'sec-fetch-user': '?1',
+  'sec-fetch-dest': 'document',
+  'referer': 'https://dfldata.cc/',
+  'accept-language': 'zh-CN,zh;q=0.9',
+  'cookie': 'LKzz_2132_saltkey=NZ63y6rj; LKzz_2132_lastvisit=1698110795; LKzz_2132_seccodecSAhbLEoG7ij=155.511ab8e2490b115b1c; LKzz_2132_ulastactivity=4670JxKR4EJdsn4IpMXWFjyDNCQeBx2bGiZ2ThOgvVGJHUotBMHZ; LKzz_2132_auth=552dE1wN5l6zS%2FqxtAwwqx7k7A0XMlGX4tceDpzlHz7%2FgvJcXTwr6Qp6J%2F2lXfm5q8%2FBDD1yatnZGXBv97WujTxI7g; LKzz_2132_lastcheckfeed=55035%7C1698114425; LKzz_2132_nofavfid=1; LKzz_2132_sid=B8d1f1; LKzz_2132_lip=101.40.69.182%2C1698114425; LKzz_2132_onlineusernum=223; LKzz_2132_sendmail=1; LKzz_2132_checkpm=1; LKzz_2132_lastact=1698128335%09misc.php%09patch; LKzz_2132_lastact=1698128407%09home.php%09spacecp; LKzz_2132_sid=B8d1f1'
 }
 
 response = QingLong().run('LXAPK_COOKIE')
@@ -31,4 +30,4 @@ if response['code'] == 200:
   for cookie in cookies:
     headers['Cookie'] = cookie['value']
     response = requests.request("POST", url, headers=headers, data=payload)
-    print(json.loads(response.text))
+    print(response.text)
