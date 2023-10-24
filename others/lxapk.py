@@ -1,5 +1,6 @@
 import json
 import requests
+from bs4 import BeautifulSoup
 
 from others.qinglong import QingLong
 
@@ -28,6 +29,12 @@ response = QingLong().run('LXAPK_COOKIE')
 if response['code'] == 200:
   cookies = response['data']
   for cookie in cookies:
-    headers['Cookie'] = cookie['value']
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    try:
+      headers['Cookie'] = cookie['value']
+      response = requests.request("POST", url, headers=headers, data=payload)
+      text = response.text
+      soup = BeautifulSoup(text, "lxml")
+      vwmy = soup.select('.vwmy')
+      print(vwmy[0].text)
+    except Exception as e:
+      print(e)
