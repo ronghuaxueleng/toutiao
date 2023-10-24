@@ -38,3 +38,9 @@ if response['code'] == 200:
       print(vwmy[0].text)
     except Exception as e:
       print(e)
+      token = '258f84f44f0246c38bffb7d03733a825'
+      url = 'http://www.pushplus.plus/send'
+      title = "deepfacelab中文网"
+      content = "登录失败"
+      requests.post(url, data={"token": token, "title": title, "content": content, "channel": "cp", "webhook": "4680"})
+
