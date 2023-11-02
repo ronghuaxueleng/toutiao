@@ -8,13 +8,14 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='gb18030')
 with open('鱼羊史记.json', 'r', encoding='UTF-8') as f:
     data_list = json.load(f)
     pattern = r"data-src=\"(?P<url>https:\/\/mmbiz\.qpic\.cn\S+)\""
+    regex = re.compile(pattern)
     all_urls = []
     for data in data_list:
         url = data.get('链接')
         print(url)
         res = requests.get(url)
         text = res.text
-        urls = re.findall(pattern, text)
+        urls = regex.findall(text)
         if len(urls) > 0:
             all_urls.extend(urls)
     with open('data.json', 'w') as f1:
