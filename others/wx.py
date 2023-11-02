@@ -7,7 +7,7 @@ import requests
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='gb18030')
 with open('鱼羊史记.json', 'r', encoding='UTF-8') as f:
     data_list = json.load(f)
-    pattern = r"data-src=\"https:\/\/mmbiz\.qpic\.cn\S+\""
+    pattern = r"data-src=\"(?P<url>https:\/\/mmbiz\.qpic\.cn\S+)\""
     all_urls = []
     for data in data_list:
         url = data.get('链接')
