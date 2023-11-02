@@ -19,4 +19,4 @@ with open('鱼羊史记.json', 'r', encoding='UTF-8') as f:
             all_urls.extend(urls)
     with open('data.json', 'w') as f1:
         # 使用json.dump()函数将序列化后的JSON格式的数据写入到文件中
-        json.dump(data, f1, ensure_ascii=False)
+        json.dump(all_urls, f1, ensure_ascii=False)
