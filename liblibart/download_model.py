@@ -60,9 +60,16 @@ def download_model(token, pageNo):
 
 
 if __name__ == '__main__':
+    tokens = [
+        'd1894681b7c5438b9051b840431e9b59',
+        '3cc0cddb72874db49eb02f60d81fbf31',
+        '5035e42609394bdfa3ddaee8b88a1b78',
+        '66149bee12304248beb571d1c0d9e553',
+        '5dfe53b85ed947a6a92586182768a84e'
+    ]
     for pageNo in range(1, 5):
-        download_model('d1894681b7c5438b9051b840431e9b59', pageNo)
-        download_model('3cc0cddb72874db49eb02f60d81fbf31', pageNo)
-        download_model('5035e42609394bdfa3ddaee8b88a1b78', pageNo)
-        download_model('66149bee12304248beb571d1c0d9e553', pageNo)
-        download_model('5dfe53b85ed947a6a92586182768a84e', pageNo)
+        for token in tokens:
+            try:
+                download_model(token, pageNo)
+            except Exception as e:
+                print(e)
