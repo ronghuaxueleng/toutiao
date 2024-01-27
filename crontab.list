@@ -42,8 +42,6 @@
 30 18 * * * python3 /mitmproxy/run_task.py -t "challenge_info_task" >> /mitmproxy/logs/challenge_info_task.log 2>&1
 # 我要上岸签到
 0 9 * * * python3 /mitmproxy/others/51twx.py
-# 小米步数提交
-#0 7 * * * python3 /mitmproxy/others/xiaomistep.py
 # 乐享apk签到
 0 8 * * * python3 /mitmproxy/others/lxapk.py >> /mitmproxy/logs/lxapk.log 2>&1
 # 签到
@@ -52,3 +50,9 @@
 #0 18 * * * python3 /mitmproxy/others/daka/work.py -t signout
 # 签退提醒
 0 19 * * * python3 /mitmproxy/others/daka/work.py -t check_signout
+# 哩布哩布画图
+*/10 * * * * python3 /mitmproxy/liblibart/lib_gen.py
+# 哩布哩布下载
+*/5 * * * * python3 /mitmproxy/liblibart/download_model.py
+# 哩布哩布删除历史图片
+*/10 * * * * python3 /mitmproxy/liblibart/del_lib_history.py
