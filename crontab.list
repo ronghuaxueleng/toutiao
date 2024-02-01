@@ -51,8 +51,8 @@
 # 签退提醒
 0 19 * * * python3 /mitmproxy/others/daka/work.py -t check_signout
 # 哩布哩布画图
-*/10 */2 * * * python3 /mitmproxy/liblibart/lib_gen.py >> /mitmproxy/logs/lib_gen.log 2>&1
+#*/10 */2 * * * python3 /mitmproxy/liblibart/lib_gen.py >> /mitmproxy/logs/lib_gen.log 2>&1
 # 哩布哩布下载
 #*/6 * */5 * * python3 /mitmproxy/liblibart/download_model.py >> /mitmproxy/logs/download_model.log 2>&1
 # 哩布哩布删除历史图片
-*/10 * * * * python3 /mitmproxy/liblibart/del_lib_history.py >> /mitmproxy/logs/del_lib_history.log 2>&1
+#*/10 * * * * python3 /mitmproxy/liblibart/del_lib_history.py >> /mitmproxy/logs/del_lib_history.log 2>&1
