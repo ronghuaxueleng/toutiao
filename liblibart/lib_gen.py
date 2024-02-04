@@ -2,6 +2,8 @@
 """
 */10 * * * * lib_gen.py
 """
+import time
+
 import requests
 import json
 
@@ -95,6 +97,53 @@ def gen(token):
         'token': token,
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36'
     }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    res = json.loads(response.text)
+
+    url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/{res['data']}"
+
+    payload = json.dumps({})
+    response = requests.request("POST", url, headers=headers, data=payload)
+    res = json.loads(response.text)
+
+    url = "https://liblib-api.vibrou.com/api/www/log/acceptor/f"
+
+    payload = json.dumps({
+        "abtest": [
+            {
+                "name": "image_recommend",
+                "group": "IMAGE_REC_SERVICE"
+            },
+            {
+                "name": "model_recommend",
+                "group": "PERSONALIZED_RECOMMEND"
+            }
+        ],
+        "sys": "SD",
+        "t": 2,
+        "uuid": "02749e73219936808ff45d707b2d01cf",
+        "cid": "1701652270086cvpnqgrl",
+        "page": "SD_GENERATE",
+        "pageUrl": "https://www.liblib.art/v4/editor#/?id=1707050189693&defaultCheck=undefined&type=undefined",
+        "ct": time.time(),
+        "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
+        "referer": "https://www.liblib.art/sd",
+        "e": "sdp.generate.req",
+        "generateId": "dc42a421-8153-4fad-b434-5ee8adbfb9e8",
+        "var": {
+            "gen-img-req-param": {
+                "checkpointId": 159549,
+                "generateType": 1,
+                "frontCustomerReq": res['data']['frontCustomerReq'],
+                "text2img": param['text2img'],
+                "adetailerEnable": 0,
+                "additionalNetwork": param['additionalNetwork'],
+                "taskQueuePriority": 1
+            },
+            "gen-img-type": "txt2img"
+        }
+    })
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
