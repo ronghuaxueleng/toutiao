@@ -76,12 +76,7 @@ class qlenv(ql_api):
         """
         url = f"{self.url}/open/envs?searchValue={env}"
         res = self.s.get(url=url).json().get("data")
-        id_list = []
-        value_list = []
-        for i in res:
-            id_list.append(i.get('id'))
-            value_list.append(i.get('value'))
-        return zip(id_list, value_list)
+        return res
 
     def update(self, value, name, id, remarks=""):
         """
