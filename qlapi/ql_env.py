@@ -24,20 +24,34 @@ class qlenv(ql_api):
         )
         ql_env.list()
     """
+
     def __init__(self, url: str, port: int, client_id: str, client_secret: str):
         super().__init__(url, port, client_id, client_secret)
 
-    def add(self, new_env, value):
+    def add(self, new_env, value, remarks: ""):
         """
         添加环境变量
 
         :param new_env: 新环境变量名
         :param value: 新环境变量值
+        :param remarks: 新环境变量备注
         :return:  响应结果json
         """
         url = f"{self.url}/open/envs"
-        data = [{"value": value, "name": new_env}]
+        data = [{"value": value, "name": new_env, "remarks": remarks}]
         data = json.dumps(data)
+        res = self.s.post(url=url, data=data)
+        return res.json()
+
+    def add_list(self, valuelist):
+        """
+        添加环境变量
+
+        :param valuelist: 新环境变量列表 [{"value": value1, "name": new_env1, "remarks": remarks1}]
+        :return:  响应结果json
+        """
+        url = f"{self.url}/open/envs"
+        data = json.dumps(valuelist)
         res = self.s.post(url=url, data=data)
         return res.json()
 
