@@ -5,11 +5,13 @@
 import requests
 import json
 
+from liblibart.ql import ql_env
+
 
 def gen(token):
     url = "https://liblib-api.vibrou.com/gateway/sd-api/generate/image"
 
-    payload = json.dumps({
+    param = {
         "checkpointId": 125488,
         "generateType": 1,
         "frontCustomerReq": {
@@ -66,94 +68,16 @@ def gen(token):
                 }
             }
         ],
-        "additionalNetwork": [
-            {
-                "modelId": 323847,
-                "type": 0,
-                "modelName": "搞笑历史插画",
-                "modelVersionName": "v1.0",
-                "weight": 0.8
-            },
-            {
-                "modelId": 914436,
-                "type": 0,
-                "modelName": "美女-欧美纯欲风沙滩露背基础百搭低胸露脐纯色露背性感吊带背心",
-                "modelVersionName": "v2",
-                "weight": 0.8
-            },
-            {
-                "modelId": 912732,
-                "type": 0,
-                "modelName": "美女-水手服款裙子？",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 911010,
-                "type": 0,
-                "modelName": "真实系，亚洲美女脸型",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 881106,
-                "type": 0,
-                "modelName": "美女脸型-乐乐",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 848395,
-                "type": 0,
-                "modelName": "美女商务装深V长袖衬衫",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 834677,
-                "type": 0,
-                "modelName": "美女V领低胸紧身上衣",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 834652,
-                "type": 0,
-                "modelName": "#美女#性感拉链连帽长袖短款上衣",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 834610,
-                "type": 0,
-                "modelName": "美女T恤上衣短袖",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 807445,
-                "type": 0,
-                "modelName": "真实系-亚洲美女脸型-悦悦",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 806574,
-                "type": 0,
-                "modelName": "裙子配美女",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            },
-            {
-                "modelId": 794683,
-                "type": 0,
-                "modelName": "美女性感吊带背心",
-                "modelVersionName": "v1",
-                "weight": 0.8
-            }
-        ],
+        "additionalNetwork": [],
         "taskQueuePriority": 0
-    })
+    }
+
+    my_loras = ql_env.search("my_lora")
+    for my_lora in my_loras:
+        if my_lora['status'] == 0:
+            param['additionalNetwork'].append(json.loads(my_lora['value']))
+
+    payload = json.dumps(param)
     headers = {
         'authority': 'liblib-api.vibrou.com',
         'accept': 'application/json, text/plain, */*',

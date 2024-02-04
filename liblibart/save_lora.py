@@ -45,7 +45,7 @@ def get_models(token, pageNo):
         model_data = json.loads(response.text)
         for version in model_data['data']['versions']:
             to_save_data = {
-                "modelId": model["id"],
+                "modelId": version["id"],
                 "type": 0,
                 "modelName": model["name"],
                 "modelVersionName": version['name'],
