@@ -92,12 +92,7 @@ class Image(UserInfo):
         res = json.loads(response.text)
 
         if res['code'] == 0:
-            url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/{res['data']}"
-
-            payload = json.dumps({})
-            response = requests.request("POST", url, headers=headers, data=payload)
-            res = json.loads(response.text)
-
+            res = self.progress_msg(headers, res['data'])
             url = "https://liblib-api.vibrou.com/api/www/log/acceptor/f"
 
             payload = json.dumps({
@@ -141,6 +136,13 @@ class Image(UserInfo):
             self.logger.info(response.text)
         else:
             self.logger.error(res['msg'])
+
+    def progress_msg(self, headers, progress_code):
+        url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/{progress_code}"
+
+        payload = json.dumps({})
+        response = requests.request("POST", url, headers=headers, data=payload)
+        return json.loads(response.text)
 
 
 if __name__ == '__main__':
