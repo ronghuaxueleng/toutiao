@@ -89,12 +89,12 @@ class Image(UserInfo):
         headers['referer'] = 'https://www.liblib.art/v4/editor'
 
         response = requests.request("POST", url, headers=headers, data=payload)
+        self.logger.info(f"mobile：{self.userInfo['mobile']}，{response.text}")
         res = json.loads(response.text)
 
         if res['code'] == 0:
             res = self.progress_msg(headers, res['data'])
             url = "https://liblib-api.vibrou.com/api/www/log/acceptor/f"
-
             payload = json.dumps({
                 "abtest": [
                     {
@@ -130,12 +130,7 @@ class Image(UserInfo):
                     "gen-img-type": "txt2img"
                 }
             })
-
             response = requests.request("POST", url, headers=headers, data=payload)
-
-            self.logger.info(response.text)
-        else:
-            self.logger.error(res['msg'])
 
     def progress_msg(self, headers, progress_code):
         url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/{progress_code}"
