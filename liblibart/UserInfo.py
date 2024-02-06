@@ -4,9 +4,12 @@ import time
 
 import requests
 
+from liblibart.LogInfo import LogInfo
 
-class UserInfo(object):
+
+class UserInfo(LogInfo):
     def __init__(self, token):
+        super().__init__()
         self.headers = {
             'authority': 'liblib-api.vibrou.com',
             'accept': 'application/json, text/plain, */*',
