@@ -132,6 +132,37 @@ class Image(UserInfo):
             })
             response = requests.request("POST", url, headers=headers, data=payload)
 
+            payload = json.dumps({
+                "abtest": [
+                    {
+                        "name": "image_recommend",
+                        "group": "IMAGE_REC_SERVICE"
+                    },
+                    {
+                        "name": "model_recommend",
+                        "group": "PERSONALIZED_RECOMMEND"
+                    }
+                ],
+                "sys": "SD",
+                "t": 2,
+                "uuid": self.userInfo['uuid'],
+                "cid": "1701652270086cvpnqgrl",
+                "page": "SD_GENERATE",
+                "pageUrl": "https://www.liblib.art/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
+                "ct": time.time(),
+                "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
+                "referer": "https://www.liblib.art/sd",
+                "e": "sdp.generate.success",
+                "var": {
+                    "generateId": self.frontId,
+                    "gen-img-type": "txt2img",
+                    "serverId": res['data']['generateId']
+                }
+            })
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+            print(response.text)
+
     def progress_msg(self, headers, progress_code):
         url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/{progress_code}"
 
