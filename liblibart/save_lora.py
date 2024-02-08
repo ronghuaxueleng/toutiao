@@ -36,6 +36,12 @@ def get_models(token, pageNo):
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
+    my_loras = ql_env.search("my_lora")
+    saved_models = []
+    for my_lora in my_loras:
+        if my_lora['status'] == 0:
+            saved_models.append(json.loads(my_lora['value'])['modelId'])
+
     data = json.loads(response.text)
     for model in data['data']['list']:
         version_url = f"https://liblib-api.vibrou.com/api/www/model/getByUuid/{model['uuid']}?timestamp=1706338164206"
@@ -44,18 +50,16 @@ def get_models(token, pageNo):
 
         model_data = json.loads(response.text)
         for version in model_data['data']['versions']:
-            to_save_data = {
-                "modelId": version["id"],
-                "type": 0,
-                "modelName": model["name"],
-                "modelVersionName": version['name'],
-                "weight": 0.8
-            }
-            ql_env.add("my_lora", json.dumps(to_save_data,ensure_ascii=False), model["name"])
+            if version['id'] not in saved_models:
+                to_save_data = {
+                    "modelId": version["id"],
+                    "type": 0,
+                    "modelName": model["name"],
+                    "modelVersionName": version['name'],
+                    "weight": 0.8
+                }
+                ql_env.add("my_lora", json.dumps(to_save_data,ensure_ascii=False), model["name"])
 
 
 if __name__ == '__main__':
-    my_loras = ql_env.search("my_lora")
-    for my_lora in my_loras:
-        ql_env.delete(my_lora['id'])
     get_models('d1894681b7c5438b9051b840431e9b59', 1)
