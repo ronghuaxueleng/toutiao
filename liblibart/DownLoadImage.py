@@ -15,10 +15,14 @@ class DownLoadImage(UserInfo):
     def download(self):
         url = "https://liblib-api.vibrou.com/gateway/sd-api/generate/image/history"
 
+        day = datetime.datetime.now() - datetime.timedelta(days=7)
+        fromTime = datetime.datetime(day.year, day.month, day.day).strftime('%Y-%m-%d 00:00:00')
+
         payload = json.dumps({
             "pageSize": 1,
             "pageNo": 1,
-            "fromTime": datetime.datetime.now().strftime("%Y-%m-%d 00:00:00")
+            "fromTime": fromTime,
+            "toTime": datetime.datetime.now().strftime("%Y-%m-%d 24:00:00")
         })
         headers = self.headers
         headers['content-type'] = 'application/json'
@@ -75,7 +79,6 @@ class DownLoadImage(UserInfo):
         response = requests.request("POST", url, headers=headers, data=payload)
 
         print(response.text)
-
 
 
 if __name__ == '__main__':
