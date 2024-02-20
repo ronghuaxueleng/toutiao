@@ -82,7 +82,7 @@ class Image(UserInfo):
         for my_lora in my_loras:
             if my_lora['status'] == 0:
                 value = json.loads(my_lora['value'])
-                if self.userInfo['uuid'] == value['userUuid']:
+                if self.userInfo['uuid'] != value['userUuid']:
                     del value['userUuid']
                     param['additionalNetwork'].append(value)
         if len(param['additionalNetwork']) > 0:
