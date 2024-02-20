@@ -18,7 +18,7 @@ class Image(UserInfo):
         url = "https://liblib-api.vibrou.com/gateway/sd-api/generate/image"
 
         param = {
-            "checkpointId": 125488,
+            "checkpointId": 1094830,
             "generateType": 1,
             "frontCustomerReq": {
                 "frontId": self.frontId,
@@ -81,87 +81,90 @@ class Image(UserInfo):
         my_loras = ql_env.search("my_lora")
         for my_lora in my_loras:
             if my_lora['status'] == 0:
-                param['additionalNetwork'].append(json.loads(my_lora['value']))
+                value = json.loads(my_lora['value'])
+                if self.userInfo['uuid'] == value['userUuid']:
+                    del value['userUuid']
+                    param['additionalNetwork'].append(value)
+        if len(param['additionalNetwork']) > 0:
+            payload = json.dumps(param)
+            headers = self.headers
+            headers['content-type'] = 'application/json'
+            headers['referer'] = 'https://www.liblib.art/v4/editor'
 
-        payload = json.dumps(param)
-        headers = self.headers
-        headers['content-type'] = 'application/json'
-        headers['referer'] = 'https://www.liblib.art/v4/editor'
-
-        response = requests.request("POST", url, headers=headers, data=payload)
-        self.logger.info(f"mobile：{self.userInfo['mobile']}，{response.text}")
-        res = json.loads(response.text)
-
-        if res['code'] == 0:
-            res = self.progress_msg(headers, res['data'])
-            url = "https://liblib-api.vibrou.com/api/www/log/acceptor/f"
-            payload = json.dumps({
-                "abtest": [
-                    {
-                        "name": "image_recommend",
-                        "group": "IMAGE_REC_SERVICE"
-                    },
-                    {
-                        "name": "model_recommend",
-                        "group": "PERSONALIZED_RECOMMEND"
-                    }
-                ],
-                "sys": "SD",
-                "t": 2,
-                "uuid": self.userInfo['uuid'],
-                "cid": "1701652270086cvpnqgrl",
-                "page": "SD_GENERATE",
-                "pageUrl": "https://www.liblib.art/v4/editor#/?id=1707050189693&defaultCheck=undefined&type=undefined",
-                "ct": time.time(),
-                "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-                "referer": "https://www.liblib.art/sd",
-                "e": "sdp.generate.req",
-                "generateId": self.frontId,
-                "var": {
-                    "gen-img-req-param": {
-                        "checkpointId": 159549,
-                        "generateType": 1,
-                        "frontCustomerReq": res['data']['frontCustomerReq'],
-                        "text2img": param['text2img'],
-                        "adetailerEnable": 0,
-                        "additionalNetwork": param['additionalNetwork'],
-                        "taskQueuePriority": 1
-                    },
-                    "gen-img-type": "txt2img"
-                }
-            })
             response = requests.request("POST", url, headers=headers, data=payload)
+            self.logger.info(f"mobile：{self.userInfo['mobile']}，{response.text}")
+            res = json.loads(response.text)
 
-            payload = json.dumps({
-                "abtest": [
-                    {
-                        "name": "image_recommend",
-                        "group": "IMAGE_REC_SERVICE"
-                    },
-                    {
-                        "name": "model_recommend",
-                        "group": "PERSONALIZED_RECOMMEND"
-                    }
-                ],
-                "sys": "SD",
-                "t": 2,
-                "uuid": self.userInfo['uuid'],
-                "cid": "1701652270086cvpnqgrl",
-                "page": "SD_GENERATE",
-                "pageUrl": "https://www.liblib.art/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
-                "ct": time.time(),
-                "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-                "referer": "https://www.liblib.art/sd",
-                "e": "sdp.generate.success",
-                "var": {
+            if res['code'] == 0:
+                res = self.progress_msg(headers, res['data'])
+                url = "https://liblib-api.vibrou.com/api/www/log/acceptor/f"
+                payload = json.dumps({
+                    "abtest": [
+                        {
+                            "name": "image_recommend",
+                            "group": "IMAGE_REC_SERVICE"
+                        },
+                        {
+                            "name": "model_recommend",
+                            "group": "PERSONALIZED_RECOMMEND"
+                        }
+                    ],
+                    "sys": "SD",
+                    "t": 2,
+                    "uuid": self.userInfo['uuid'],
+                    "cid": "1701652270086cvpnqgrl",
+                    "page": "SD_GENERATE",
+                    "pageUrl": "https://www.liblib.art/v4/editor#/?id=1707050189693&defaultCheck=undefined&type=undefined",
+                    "ct": time.time(),
+                    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
+                    "referer": "https://www.liblib.art/sd",
+                    "e": "sdp.generate.req",
                     "generateId": self.frontId,
-                    "gen-img-type": "txt2img",
-                    "serverId": res['data']['generateId']
-                }
-            })
-            response = requests.request("POST", url, headers=headers, data=payload)
+                    "var": {
+                        "gen-img-req-param": {
+                            "checkpointId": 159549,
+                            "generateType": 1,
+                            "frontCustomerReq": res['data']['frontCustomerReq'],
+                            "text2img": param['text2img'],
+                            "adetailerEnable": 0,
+                            "additionalNetwork": param['additionalNetwork'],
+                            "taskQueuePriority": 1
+                        },
+                        "gen-img-type": "txt2img"
+                    }
+                })
+                response = requests.request("POST", url, headers=headers, data=payload)
 
-            print(response.text)
+                payload = json.dumps({
+                    "abtest": [
+                        {
+                            "name": "image_recommend",
+                            "group": "IMAGE_REC_SERVICE"
+                        },
+                        {
+                            "name": "model_recommend",
+                            "group": "PERSONALIZED_RECOMMEND"
+                        }
+                    ],
+                    "sys": "SD",
+                    "t": 2,
+                    "uuid": self.userInfo['uuid'],
+                    "cid": "1701652270086cvpnqgrl",
+                    "page": "SD_GENERATE",
+                    "pageUrl": "https://www.liblib.art/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
+                    "ct": time.time(),
+                    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
+                    "referer": "https://www.liblib.art/sd",
+                    "e": "sdp.generate.success",
+                    "var": {
+                        "generateId": self.frontId,
+                        "gen-img-type": "txt2img",
+                        "serverId": res['data']['generateId']
+                    }
+                })
+                response = requests.request("POST", url, headers=headers, data=payload)
+
+                print(response.text)
 
     def progress_msg(self, headers, progress_code):
         url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/{progress_code}"

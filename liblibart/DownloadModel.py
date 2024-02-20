@@ -14,76 +14,77 @@ class DownloadModel(UserInfo):
 
     def download_model(self, pageNo, download_models):
         url = f"https://liblib-api.vibrou.com/api/www/model/list?timestamp={time.time()}"
+        for uuid in self.uuids:
+            if self.userInfo['uuid'] != uuid:
+                payload = json.dumps({
+                    "pageNo": pageNo,
+                    "pageSize": 20,
+                    "uuid": uuid,
+                    "status": -2,
+                    "type": 0
+                })
+                headers = self.headers
+                headers['content-type'] = 'application/json'
+                headers['referer'] = f'https://www.liblib.art/userpage/{uuid}/publish'
 
-        payload = json.dumps({
-            "pageNo": pageNo,
-            "pageSize": 20,
-            "uuid": "02749e73219936808ff45d707b2d01cf",
-            "status": -2,
-            "type": 0
-        })
-        headers = self.headers
-        headers['content-type'] = 'application/json'
-        headers['referer'] = 'https://www.liblib.art/userpage/02749e73219936808ff45d707b2d01cf/publish'
+                response = requests.request("POST", url, headers=headers, data=payload)
 
-        response = requests.request("POST", url, headers=headers, data=payload)
-
-        data = json.loads(response.text)
-        for model in data['data']['list']:
-            url = f"https://liblib-api.vibrou.com/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
-            payload = {}
-            response = requests.request("POST", url, headers=headers, data=payload)
-
-            model_data = json.loads(response.text)
-            for version in model_data['data']['versions']:
-                if version['id'] in download_models:
-                    url = f"https://liblib-api.vibrou.com/api/www/community/downloadCheck?timestamp={time.time()}"
-                    payload = json.dumps({
-                        "uuid": model["uuid"],
-                        "cid": "1701652270086cvpnqgrl",
-                        "modelName": model["name"],
-                        "modelVersionId": version['uuid'],
-                        "modelId": model["id"]
-                    })
-
+                data = json.loads(response.text)
+                for model in data['data']['list']:
+                    url = f"https://liblib-api.vibrou.com/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
+                    payload = {}
                     response = requests.request("POST", url, headers=headers, data=payload)
 
-                    self.logger.info(f"token:{token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
+                    model_data = json.loads(response.text)
+                    for version in model_data['data']['versions']:
+                        if version['id'] in download_models:
+                            url = f"https://liblib-api.vibrou.com/api/www/community/downloadCheck?timestamp={time.time()}"
+                            payload = json.dumps({
+                                "uuid": model["uuid"],
+                                "cid": "1701652270086cvpnqgrl",
+                                "modelName": model["name"],
+                                "modelVersionId": version['uuid'],
+                                "modelId": model["id"]
+                            })
 
-                    url = f"https://liblib-api.vibrou.com/api/www/log/acceptor/f?timestamp={time.time()}"
+                            response = requests.request("POST", url, headers=headers, data=payload)
 
-                    payload = json.dumps({
-                        "t": 2,
-                        "e": "model.view.download",
-                        "page": 2,
-                        "var": {
-                            "download": "start",
-                            "model_id": model['uuid'],
-                            "version_id": version['id']
-                        },
-                        "cid": "1701652270086cvpnqgrl",
-                        "uuid": self.userInfo['uuid'],
-                        "ct": time.time(),
-                        "pageUrl": f"https://www.liblib.art/modelinfo/{model['uuid']}",
-                        "sys": "COMMUNITY",
-                        "abtest": [
-                            {
-                                "name": "image_recommend",
-                                "group": "IMAGE_REC_SERVICE"
-                            },
-                            {
-                                "name": "model_recommend",
-                                "group": "PERSONALIZED_RECOMMEND"
-                            }
-                        ],
-                        "ua": "mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/119.0.6045.160 safari/537.36"
-                    })
-                    headers['referer'] = f"https://www.liblib.art/modelinfo/{model['uuid']}"
+                            self.logger.info(f"token:{token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
 
-                    response = requests.request("POST", url, headers=headers, data=payload)
+                            url = f"https://liblib-api.vibrou.com/api/www/log/acceptor/f?timestamp={time.time()}"
 
-                    print(response.text)
-                    time.sleep(2)
+                            payload = json.dumps({
+                                "t": 2,
+                                "e": "model.view.download",
+                                "page": 2,
+                                "var": {
+                                    "download": "start",
+                                    "model_id": model['uuid'],
+                                    "version_id": version['id']
+                                },
+                                "cid": "1701652270086cvpnqgrl",
+                                "uuid": self.userInfo['uuid'],
+                                "ct": time.time(),
+                                "pageUrl": f"https://www.liblib.art/modelinfo/{model['uuid']}",
+                                "sys": "COMMUNITY",
+                                "abtest": [
+                                    {
+                                        "name": "image_recommend",
+                                        "group": "IMAGE_REC_SERVICE"
+                                    },
+                                    {
+                                        "name": "model_recommend",
+                                        "group": "PERSONALIZED_RECOMMEND"
+                                    }
+                                ],
+                                "ua": "mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/119.0.6045.160 safari/537.36"
+                            })
+                            headers['referer'] = f"https://www.liblib.art/modelinfo/{model['uuid']}"
+
+                            response = requests.request("POST", url, headers=headers, data=payload)
+
+                            print(response.text)
+                            time.sleep(2)
 
 
 if __name__ == '__main__':

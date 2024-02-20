@@ -31,6 +31,10 @@ class UserInfo(LogInfo):
         self.token = token
         self.userInfo = {}
         self.getUserInfo()
+        self.uuids = [
+            # cq
+            "02749e73219936808ff45d707b2d01cf"
+        ]
 
     def getUserInfo(self):
         url = f"https://liblib-api.vibrou.com/api/www/user/getUserInfo?timestamp={time.time()}"
