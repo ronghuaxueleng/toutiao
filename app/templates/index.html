@@ -42,19 +42,19 @@
         },
         mounted() {
             document.title = "哩布哩布";
-            this.getToutiao();
+            this.getLiblib();
         },
         methods: {
             handleClick() {
                 if (this.activeName === 'liblib') {
-                    this.getToutiao();
+                    this.getLiblib();
                     document.title = "哩布哩布";
                 }
             },
-            getToutiao() {
+            getLiblib() {
                 const that = this
-                $.get('/getToutiao?t=' + new Date().getTime()).then(res => {
-                    that.toutiao = res
+                $.get('/liblib?t=' + new Date().getTime()).then(res => {
+                    that.liblib = res
                 })
             }
         }
