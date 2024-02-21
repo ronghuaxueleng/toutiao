@@ -13,7 +13,7 @@ class SaveLora(UserInfo):
         super().__init__(token)
 
     def get_models(self, pageNo):
-        url = f"https://liblib-api.vibrou.com/api/www/model/list?timestamp={time.time()}"
+        url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
         payload = json.dumps({
             "pageNo": pageNo,
             "pageSize": 20,
@@ -22,13 +22,13 @@ class SaveLora(UserInfo):
             "type": 0
         })
         headers = {
-            'authority': 'liblib-api.vibrou.com',
+            'authority': self.api_host,
             'accept': 'application/json, text/plain, */*',
             'accept-language': 'zh-CN,zh;q=0.9',
             'content-type': 'application/json',
             'dnt': '1',
-            'origin': 'https://www.liblib.art',
-            'referer': f"https://www.liblib.art/userpage/{self.userInfo['uuid']}/publish",
+            'origin': f'https://{self.web_host}',
+            'referer': f"https://{self.web_host}/userpage/{self.userInfo['uuid']}/publish",
             'sec-ch-ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"Windows"',
@@ -50,7 +50,7 @@ class SaveLora(UserInfo):
 
         data = json.loads(response.text)
         for model in data['data']['list']:
-            version_url = f"https://liblib-api.vibrou.com/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
+            version_url = f"https://{self.api_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
             payload = {}
             response = requests.request("POST", version_url, headers=headers, data=payload)
 

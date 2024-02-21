@@ -15,7 +15,7 @@ class Image(UserInfo):
         self.frontId = str(uuid.uuid1())
 
     def gen_image(self):
-        url = "https://liblib-api.vibrou.com/gateway/sd-api/generate/image"
+        url = f"https://{self.api_host}/gateway/sd-api/generate/image"
 
         param = {
             "checkpointId": 1094830,
@@ -90,7 +90,7 @@ class Image(UserInfo):
             payload = json.dumps(param)
             headers = self.headers
             headers['content-type'] = 'application/json'
-            headers['referer'] = 'https://www.liblib.art/v4/editor'
+            headers['referer'] = f'https://{self.web_host}/v4/editor'
 
             response = requests.request("POST", url, headers=headers, data=payload)
             self.logger.info(f"mobile：{self.userInfo['mobile']}，{response.text}")
@@ -98,7 +98,7 @@ class Image(UserInfo):
 
             if res['code'] == 0:
                 res = self.progress_msg(headers, res['data'])
-                url = "https://liblib-api.vibrou.com/api/www/log/acceptor/f"
+                url = f"https://{self.api_host}/api/www/log/acceptor/f"
                 payload = json.dumps({
                     "abtest": [
                         {
@@ -115,10 +115,10 @@ class Image(UserInfo):
                     "uuid": self.userInfo['uuid'],
                     "cid": "1701652270086cvpnqgrl",
                     "page": "SD_GENERATE",
-                    "pageUrl": "https://www.liblib.art/v4/editor#/?id=1707050189693&defaultCheck=undefined&type=undefined",
+                    "pageUrl": f"https://{self.web_host}/v4/editor#/?id=1707050189693&defaultCheck=undefined&type=undefined",
                     "ct": time.time(),
                     "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-                    "referer": "https://www.liblib.art/sd",
+                    "referer": f"https://{self.web_host}/sd",
                     "e": "sdp.generate.req",
                     "generateId": self.frontId,
                     "var": {
@@ -152,10 +152,10 @@ class Image(UserInfo):
                     "uuid": self.userInfo['uuid'],
                     "cid": "1701652270086cvpnqgrl",
                     "page": "SD_GENERATE",
-                    "pageUrl": "https://www.liblib.art/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
+                    "pageUrl": f"https://{self.web_host}/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
                     "ct": time.time(),
                     "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-                    "referer": "https://www.liblib.art/sd",
+                    "referer": f"https://{self.web_host}/sd",
                     "e": "sdp.generate.success",
                     "var": {
                         "generateId": self.frontId,
@@ -168,7 +168,7 @@ class Image(UserInfo):
                 print(response.text)
 
     def progress_msg(self, headers, progress_code):
-        url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/{progress_code}"
+        url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/{progress_code}"
 
         payload = json.dumps({})
         response = requests.request("POST", url, headers=headers, data=payload)

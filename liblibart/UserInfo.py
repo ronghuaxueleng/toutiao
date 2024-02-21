@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import json
 import time
 
@@ -10,14 +11,18 @@ from liblibart.LogInfo import LogInfo
 class UserInfo(LogInfo):
     def __init__(self, token):
         super().__init__()
+        base64_web_host = 'd3d3LmxpYmxpYi5hcnQ='
+        base64_api_host = 'bGlibGliLWFwaS52aWJyb3UuY29t'
+        self.api_host = str(base64.b64decode(base64_api_host), 'utf-8')
+        self.web_host = str(base64.b64decode(base64_web_host), 'utf-8')
         self.headers = {
-            'authority': 'liblib-api.vibrou.com',
+            'authority': self.api_host,
             'accept': 'application/json, text/plain, */*',
             'accept-language': 'zh-CN,zh;q=0.9',
             'content-length': '0',
             'content-type': 'application/x-www-form-urlencoded',
             'dnt': '1',
-            'origin': 'https://www.liblib.art',
+            'origin': f'https://{self.web_host}',
             'sec-ch-ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"Windows"',
@@ -37,7 +42,7 @@ class UserInfo(LogInfo):
         ]
 
     def getUserInfo(self):
-        url = f"https://liblib-api.vibrou.com/api/www/user/getUserInfo?timestamp={time.time()}"
+        url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
         payload = {}
         response = requests.request("POST", url, headers=self.headers, data=payload)
         self.userInfo = json.loads(response.text)['data']

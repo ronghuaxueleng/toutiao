@@ -13,7 +13,7 @@ class DownLoadImage(UserInfo):
         super().__init__(token)
 
     def download(self):
-        url = "https://liblib-api.vibrou.com/gateway/sd-api/generate/image/history"
+        url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
 
         day = datetime.datetime.now() - datetime.timedelta(days=7)
         fromTime = datetime.datetime(day.year, day.month, day.day).strftime('%Y-%m-%d 00:00:00')
@@ -26,12 +26,12 @@ class DownLoadImage(UserInfo):
         })
         headers = self.headers
         headers['content-type'] = 'application/json'
-        headers['referer'] = 'https://www.liblib.art/v4/editor'
+        headers['referer'] = f'https://{self.web_host}/v4/editor'
 
         response = requests.request("POST", url, headers=headers, data=payload)
         res = json.loads(response.text)
 
-        url = "https://liblib-api.vibrou.com/api/www/log/acceptor/f"
+        url = f"https://{self.api_host}/api/www/log/acceptor/f"
 
         payload = json.dumps({
             "abtest": [
@@ -49,10 +49,10 @@ class DownLoadImage(UserInfo):
             "uuid": self.userInfo['uuid'],
             "cid": "1701652270086cvpnqgrl",
             "page": "SD_GENERATE",
-            "pageUrl": "https://www.liblib.art/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
+            "pageUrl": f"https://{self.web_host}/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
             "ct": time.time(),
             "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-            "referer": "https://www.liblib.art/sd",
+            "referer": f"https://{self.web_host}/sd",
             "e": "sdp.generate.resp.download",
             "var": {
                 "img-ids": [
@@ -70,7 +70,7 @@ class DownLoadImage(UserInfo):
         for img in res['data']['list']:
             idList.append(img['id'])
 
-        url = "https://liblib-api.vibrou.com/gateway/sd-api/generate/image/delete"
+        url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
 
         payload = json.dumps({
             "idList": idList
