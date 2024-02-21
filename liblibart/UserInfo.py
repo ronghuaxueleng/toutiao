@@ -6,6 +6,7 @@ import time
 import requests
 
 from liblibart.LogInfo import LogInfo
+from liblibart.ql import ql_env
 
 
 class UserInfo(LogInfo):
@@ -42,6 +43,11 @@ class UserInfo(LogInfo):
             # cq
             "02749e73219936808ff45d707b2d01cf"
         ]
+        my_loras = ql_env.search("my_lora")
+        self.model_dict = {}
+        for my_lora in my_loras:
+            value = json.loads(my_lora['value'])
+            self.model_dict[value['modelId']] = value['userUuid']
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
