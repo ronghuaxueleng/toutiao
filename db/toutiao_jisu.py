@@ -97,20 +97,6 @@ class Iad(Model):
         database = db
 
 
-# 爱步宝
-class Abb(Model):
-    uid = CharField(null=False)
-    real_name = CharField(null=True)
-    nick = CharField(null=False)
-    header = TextField(null=False)
-    phone = CharField(null=True)
-    alipay = CharField(null=True)
-    money = CharField(null=True)
-
-    class Meta:
-        database = db
-
-
 if __name__ == '__main__':
     db.connect()
-    db.create_tables([Abb])
+    db.create_tables([Iad])
