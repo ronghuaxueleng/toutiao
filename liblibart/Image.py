@@ -5,6 +5,7 @@ import uuid
 
 import requests
 
+from liblibart.Statistics import Statistics
 from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
@@ -77,12 +78,14 @@ class Image(UserInfo):
             "additionalNetwork": [],
             "taskQueuePriority": 0
         }
-
+        runCount = {}
         my_loras = ql_env.search("my_lora")
         for my_lora in my_loras:
             if my_lora['status'] == 0:
                 value = json.loads(my_lora['value'])
-                if self.userInfo['uuid'] != value['userUuid'] and value['modelType'] == 5:
+                if self.uuid != value['userUuid'] and value['modelType'] == 5:
+                    run_count = runCount.setdefault(value['userUuid'], 1)
+                    runCount[value['userUuid']] = run_count + 1
                     del value['userUuid']
                     del value['modelType']
                     param['additionalNetwork'].append(value)
@@ -166,6 +169,20 @@ class Image(UserInfo):
                 response = requests.request("POST", url, headers=headers, data=payload)
 
                 print(response.text)
+        for user_uuid, count in runCount.items():
+            query = Statistics.select().where(Statistics.user_uuid == user_uuid,
+                                              Statistics.day == self.day)
+            if query.exists():
+                runCount = int(query.dicts().get().get('runCount'))
+                Statistics.update(
+                    runCount=runCount + count
+                ).where(Statistics.user_uuid == user_uuid, Statistics.day == self.day).execute()
+            else:
+                Statistics.insert(
+                    user_uuid=user_uuid,
+                    runCount=count,
+                    day=self.day
+                ).execute()
 
     def progress_msg(self, headers, progress_code):
         url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/{progress_code}"

@@ -4,6 +4,7 @@ import time
 import requests
 import json
 
+from liblibart.Statistics import Statistics
 from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
@@ -15,7 +16,7 @@ class DownloadModel(UserInfo):
     def download_model(self, pageNo, download_models):
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
         for uuid in self.uuids:
-            if self.userInfo['uuid'] != uuid:
+            if self.uuid != uuid:
                 payload = json.dumps({
                     "pageNo": pageNo,
                     "pageSize": 20,
@@ -49,7 +50,8 @@ class DownloadModel(UserInfo):
 
                             response = requests.request("POST", url, headers=headers, data=payload)
 
-                            self.logger.info(f"token:{token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
+                            self.logger.info(
+                                f"token:{token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
 
                             url = f"https://{self.api_host}/api/www/log/acceptor/f?timestamp={time.time()}"
 
@@ -84,6 +86,19 @@ class DownloadModel(UserInfo):
                             response = requests.request("POST", url, headers=headers, data=payload)
 
                             print(response.text)
+                            query = Statistics.select().where(Statistics.user_uuid == uuid,
+                                                              Statistics.day == self.day)
+                            if query.exists():
+                                downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
+                                Statistics.update(
+                                    downloadModelCount=downloadModelCount + 1
+                                ).where(Statistics.user_uuid == uuid, Statistics.day == self.day).execute()
+                            else:
+                                Statistics.insert(
+                                    user_uuid=uuid,
+                                    downloadModelCount=1,
+                                    day=self.day
+                                ).execute()
                             time.sleep(2)
 
 

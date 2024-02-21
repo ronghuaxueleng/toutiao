@@ -15,6 +15,7 @@ class UserInfo(LogInfo):
         base64_api_host = 'bGlibGliLWFwaS52aWJyb3UuY29t'
         self.api_host = str(base64.b64decode(base64_api_host), 'utf-8')
         self.web_host = str(base64.b64decode(base64_web_host), 'utf-8')
+        self.day = time.strftime('%Y%m%d', time.localtime())
         self.headers = {
             'authority': self.api_host,
             'accept': 'application/json, text/plain, */*',
@@ -36,6 +37,7 @@ class UserInfo(LogInfo):
         self.token = token
         self.userInfo = {}
         self.getUserInfo()
+        self.uuid = self.userInfo['uuid']
         self.uuids = [
             # cq
             "02749e73219936808ff45d707b2d01cf"

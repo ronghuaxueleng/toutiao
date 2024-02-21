@@ -5,6 +5,7 @@ import time
 
 import requests
 
+from liblibart.Statistics import Statistics
 from liblibart.UserInfo import UserInfo
 
 
@@ -79,6 +80,19 @@ class DownLoadImage(UserInfo):
         response = requests.request("POST", url, headers=headers, data=payload)
 
         print(response.text)
+        query = Statistics.select().where(Statistics.user_uuid == self.uuid,
+                                          Statistics.day == self.day)
+        if query.exists():
+            downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
+            Statistics.update(
+                downloadImageCount=downloadImageCount + 1
+            ).where(Statistics.user_uuid == self.uuid, Statistics.day == self.day).execute()
+        else:
+            Statistics.insert(
+                user_uuid=self.uuid,
+                downloadImageCount=1,
+                day=self.day
+            ).execute()
 
 
 if __name__ == '__main__':
