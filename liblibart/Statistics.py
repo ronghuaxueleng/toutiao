@@ -4,7 +4,7 @@ import os
 
 from peewee import *
 
-dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'liblibart', 'statistics.db')
+dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'statistics.db')
 db = SqliteDatabase(dbpath)
 
 
