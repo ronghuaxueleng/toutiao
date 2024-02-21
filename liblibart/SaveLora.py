@@ -13,7 +13,7 @@ class SaveLora(UserInfo):
         super().__init__(token)
 
     def get_models(self, pageNo):
-        url = "https://liblib-api.vibrou.com/api/www/model/list?timestamp={time.time()}"
+        url = f"https://liblib-api.vibrou.com/api/www/model/list?timestamp={time.time()}"
         payload = json.dumps({
             "pageNo": pageNo,
             "pageSize": 20,
@@ -50,23 +50,23 @@ class SaveLora(UserInfo):
 
         data = json.loads(response.text)
         for model in data['data']['list']:
-            if model['modelType'] == 5:
-                version_url = f"https://liblib-api.vibrou.com/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
-                payload = {}
-                response = requests.request("POST", version_url, headers=headers, data=payload)
+            version_url = f"https://liblib-api.vibrou.com/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
+            payload = {}
+            response = requests.request("POST", version_url, headers=headers, data=payload)
 
-                model_data = json.loads(response.text)
-                for version in model_data['data']['versions']:
-                    if version['id'] not in saved_models:
-                        to_save_data = {
-                            "modelId": version["id"],
-                            "type": 0,
-                            "modelName": model["name"],
-                            "modelVersionName": version['name'],
-                            "weight": 0.8,
-                            "userUuid": self.userInfo['uuid']
-                        }
-                        ql_env.add("my_lora", json.dumps(to_save_data, ensure_ascii=False), model["name"])
+            model_data = json.loads(response.text)
+            for version in model_data['data']['versions']:
+                if version['id'] not in saved_models:
+                    to_save_data = {
+                        "modelId": version["id"],
+                        "type": 0,
+                        "modelName": model["name"],
+                        "modelVersionName": version['name'],
+                        "weight": 0.8,
+                        "userUuid": self.userInfo['uuid'],
+                        "modelType": model['modelType']
+                    }
+                    ql_env.add("my_lora", json.dumps(to_save_data, ensure_ascii=False), model["name"])
 
 
 if __name__ == '__main__':
