@@ -47,7 +47,7 @@ class UserInfo(LogInfo):
         self.model_dict = {}
         for my_lora in my_loras:
             value = json.loads(my_lora['value'])
-            self.model_dict[value['modelId']] = value['userUuid']
+            self.model_dict[value['modelId']] = value
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"

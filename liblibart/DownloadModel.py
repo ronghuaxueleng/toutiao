@@ -86,16 +86,18 @@ class DownloadModel(UserInfo):
                             response = requests.request("POST", url, headers=headers, data=payload)
 
                             print(response.text)
-                            query = Statistics.select().where(Statistics.user_uuid == uuid,
+                            query = Statistics.select().where(Statistics.user_uuid == uuid, Statistics.modelId == version['id'],
                                                               Statistics.day == self.day)
                             if query.exists():
                                 downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
                                 Statistics.update(
                                     downloadModelCount=downloadModelCount + 1
-                                ).where(Statistics.user_uuid == uuid, Statistics.day == self.day).execute()
+                                ).where(Statistics.user_uuid == uuid, Statistics.modelId == version['id'], Statistics.day == self.day).execute()
                             else:
                                 Statistics.insert(
                                     user_uuid=uuid,
+                                    modelId=version['id'],
+                                    modelName=model["name"],
                                     downloadModelCount=1,
                                     day=self.day
                                 ).execute()

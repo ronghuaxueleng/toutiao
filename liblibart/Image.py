@@ -83,9 +83,13 @@ class Image(UserInfo):
         for my_lora in my_loras:
             if my_lora['status'] == 0:
                 value = json.loads(my_lora['value'])
+                modelId = value['modelId']
+                userUuid = value['userUuid']
+                run_model = runCount.setdefault(userUuid, {})
+                __model = run_model.setdefault(modelId, value)
+                run_count = __model.setdefault('count', 0)
+                runCount[userUuid][modelId]['count'] = run_count + 1
                 if self.uuid != value['userUuid'] and value['modelType'] == 5:
-                    run_count = runCount.setdefault(value['userUuid'], 1)
-                    runCount[value['userUuid']] = run_count + 1
                     del value['userUuid']
                     del value['modelType']
                     param['additionalNetwork'].append(value)
@@ -169,20 +173,23 @@ class Image(UserInfo):
                 response = requests.request("POST", url, headers=headers, data=payload)
 
                 print(response.text)
-        for user_uuid, count in runCount.items():
-            query = Statistics.select().where(Statistics.user_uuid == user_uuid,
-                                              Statistics.day == self.day)
-            if query.exists():
-                runCount = int(query.dicts().get().get('runCount'))
-                Statistics.update(
-                    runCount=runCount + count
-                ).where(Statistics.user_uuid == user_uuid, Statistics.day == self.day).execute()
-            else:
-                Statistics.insert(
-                    user_uuid=user_uuid,
-                    runCount=count,
-                    day=self.day
-                ).execute()
+                for user_uuid, model_list in runCount.items():
+                    for modelId, model in model_list.items():
+                        query = Statistics.select().where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId,
+                                                          Statistics.day == self.day)
+                        if query.exists():
+                            runCount = int(query.dicts().get().get('runCount'))
+                            Statistics.update(
+                                runCount=runCount + model['count']
+                            ).where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId, Statistics.day == self.day).execute()
+                        else:
+                            Statistics.insert(
+                                user_uuid=user_uuid,
+                                modelId=modelId,
+                                modelName=model['modelName'],
+                                runCount=model['count'],
+                                day=self.day
+                            ).execute()
 
     def progress_msg(self, headers, progress_code):
         url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/{progress_code}"

@@ -12,6 +12,8 @@ db = SqliteDatabase(dbpath)
 class Statistics(Model):
     _id = PrimaryKeyField
     user_uuid = CharField(null=False)
+    modelId = CharField(null=False)
+    modelName = CharField(null=False)
     runCount = IntegerField(default=0, null=False)
     downloadModelCount = IntegerField(default=0, null=False)
     downloadImageCount = IntegerField(default=0, null=False)
