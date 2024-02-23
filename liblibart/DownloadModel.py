@@ -93,7 +93,7 @@ class DownloadModel(UserInfo):
                                 downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
                                 Statistics.update(
                                     downloadModelCount=downloadModelCount + 1,
-                                    timestamp=datetime.datetime.now
+                                    timestamp=datetime.datetime.now()
                                 ).where(Statistics.user_uuid == uuid, Statistics.modelId == version['id'], Statistics.day == self.day).execute()
                             else:
                                 Statistics.insert(

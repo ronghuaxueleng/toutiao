@@ -98,7 +98,7 @@ class DownLoadImage(UserInfo):
                     downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
                     Statistics.update(
                         downloadImageCount=downloadImageCount + model['count'],
-                        timestamp=datetime.datetime.now
+                        timestamp=datetime.datetime.now()
                     ).where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId, Statistics.day == self.day).execute()
                 else:
                     Statistics.insert(

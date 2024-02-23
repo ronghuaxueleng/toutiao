@@ -182,7 +182,7 @@ class Image(UserInfo):
                             runCount = int(query.dicts().get().get('runCount'))
                             Statistics.update(
                                 runCount=runCount + model['count'],
-                                timestamp=datetime.datetime.now
+                                timestamp=datetime.datetime.now()
                             ).where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId, Statistics.day == self.day).execute()
                         else:
                             Statistics.insert(
