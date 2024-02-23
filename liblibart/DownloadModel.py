@@ -5,7 +5,7 @@ import time
 import requests
 import json
 
-from liblibart.Statistics import Statistics
+from liblibart.Statistics import DownloadModelStatistics
 from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
@@ -87,16 +87,16 @@ class DownloadModel(UserInfo):
                             response = requests.request("POST", url, headers=headers, data=payload)
 
                             print(response.text)
-                            query = Statistics.select().where(Statistics.user_uuid == uuid, Statistics.modelId == version['id'],
-                                                              Statistics.day == self.day)
+                            query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
+                                                                           DownloadModelStatistics.day == self.day)
                             if query.exists():
                                 downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
-                                Statistics.update(
+                                DownloadModelStatistics.update(
                                     downloadModelCount=downloadModelCount + 1,
                                     timestamp=datetime.datetime.now()
-                                ).where(Statistics.user_uuid == uuid, Statistics.modelId == version['id'], Statistics.day == self.day).execute()
+                                ).where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'], DownloadModelStatistics.day == self.day).execute()
                             else:
-                                Statistics.insert(
+                                DownloadModelStatistics.insert(
                                     user_uuid=uuid,
                                     modelId=version['id'],
                                     modelName=model["name"],

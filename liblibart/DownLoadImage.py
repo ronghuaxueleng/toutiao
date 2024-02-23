@@ -5,7 +5,7 @@ import time
 
 import requests
 
-from liblibart.Statistics import Statistics
+from liblibart.Statistics import DownLoadImageStatistics
 from liblibart.UserInfo import UserInfo
 
 
@@ -92,16 +92,16 @@ class DownLoadImage(UserInfo):
         print(response.text)
         for user_uuid, model_list in downloadImageCount.items():
             for modelId, model in model_list.items():
-                query = Statistics.select().where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId,
-                                                  Statistics.day == self.day)
+                query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId,
+                                                               DownLoadImageStatistics.day == self.day)
                 if query.exists():
                     downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
-                    Statistics.update(
+                    DownLoadImageStatistics.update(
                         downloadImageCount=downloadImageCount + model['count'],
                         timestamp=datetime.datetime.now()
-                    ).where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId, Statistics.day == self.day).execute()
+                    ).where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId, DownLoadImageStatistics.day == self.day).execute()
                 else:
-                    Statistics.insert(
+                    DownLoadImageStatistics.insert(
                         user_uuid=user_uuid,
                         modelId=modelId,
                         modelName=model['modelName'],

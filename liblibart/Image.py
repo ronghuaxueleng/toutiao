@@ -6,7 +6,7 @@ import uuid
 
 import requests
 
-from liblibart.Statistics import Statistics
+from liblibart.Statistics import RunStatistics
 from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
@@ -176,16 +176,16 @@ class Image(UserInfo):
                 print(response.text)
                 for user_uuid, model_list in runCount.items():
                     for modelId, model in model_list.items():
-                        query = Statistics.select().where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId,
-                                                          Statistics.day == self.day)
+                        query = RunStatistics.select().where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId,
+                                                             RunStatistics.day == self.day)
                         if query.exists():
                             runCount = int(query.dicts().get().get('runCount'))
-                            Statistics.update(
+                            RunStatistics.update(
                                 runCount=runCount + model['count'],
                                 timestamp=datetime.datetime.now()
-                            ).where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId, Statistics.day == self.day).execute()
+                            ).where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId, RunStatistics.day == self.day).execute()
                         else:
-                            Statistics.insert(
+                            RunStatistics.insert(
                                 user_uuid=user_uuid,
                                 modelId=modelId,
                                 modelName=model['modelName'],
