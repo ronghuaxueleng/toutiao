@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import json
 import time
 import uuid
@@ -180,7 +181,8 @@ class Image(UserInfo):
                         if query.exists():
                             runCount = int(query.dicts().get().get('runCount'))
                             Statistics.update(
-                                runCount=runCount + model['count']
+                                runCount=runCount + model['count'],
+                                timestamp=datetime.datetime.now
                             ).where(Statistics.user_uuid == user_uuid, Statistics.modelId == modelId, Statistics.day == self.day).execute()
                         else:
                             Statistics.insert(
