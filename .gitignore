@@ -5,3 +5,4 @@ __pycache__
 /Kitsunebi-1.8.0-Android.apk
 /config/account.db
 /config/account_toutiao.db
+/config/statistics.db
