@@ -90,7 +90,7 @@ class Image(UserInfo):
                 __model = run_model.setdefault(modelId, value)
                 run_count = __model.setdefault('count', 0)
                 runCount[userUuid][modelId]['count'] = run_count + 1
-                if self.uuid != value['userUuid'] and value['modelType'] == 5:
+                if value['modelType'] == 5:
                     del value['userUuid']
                     del value['modelType']
                     param['additionalNetwork'].append(value)
