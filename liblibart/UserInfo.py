@@ -1,12 +1,35 @@
 # -*- coding: utf-8 -*-
 import base64
 import json
+import os
 import time
 
 import requests
+from peewee import *
 
 from liblibart.LogInfo import LogInfo
 from liblibart.ql import ql_env
+
+dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'statistics.db')
+db = SqliteDatabase(dbpath)
+
+
+class Account(Model):
+    _id = PrimaryKeyField
+    user_uuid = CharField(null=False)
+    nickname = CharField(null=False)
+    userInfo = TextField(null=False)
+
+    class Meta:
+        database = db
+
+
+def create_table(table):
+    u"""
+    如果table不存在，新建table
+    """
+    if not table.table_exists():
+        table.create_table()
 
 
 class UserInfo(LogInfo):
@@ -57,6 +80,32 @@ class UserInfo(LogInfo):
 
 
 if __name__ == '__main__':
-    token = 'd1894681b7c5438b9051b840431e9b59'
-    userInfo = UserInfo(token)
-    print(userInfo.userInfo)
+    create_table(Account)
+    tokens = [
+        'd1894681b7c5438b9051b840431e9b59',
+        '3cc0cddb72874db49eb02f60d81fbf31',
+        '5035e42609394bdfa3ddaee8b88a1b78',
+        '66149bee12304248beb571d1c0d9e553',
+        '5dfe53b85ed947a6a92586182768a84e'
+    ]
+    for token in tokens:
+        try:
+            userInfo = UserInfo(token)
+            user = userInfo.userInfo
+            uuid = user['uuid']
+            nickname = user['nickname']
+            query = Account.select().where(Account.user_uuid == uuid)
+            if query.exists():
+                Account.update(
+                    nickname=nickname,
+                    userInfo=json.dumps(user)
+                ).where(Account.user_uuid == uuid).execute()
+            else:
+                Account.insert(
+                    user_uuid=uuid,
+                    nickname=nickname,
+                    userInfo=json.dumps(user)
+                ).execute()
+        except Exception as e:
+            print(e)
+
