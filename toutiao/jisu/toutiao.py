@@ -6,7 +6,7 @@ from furl import furl
 from toutiao.toutiaoUserInfo import ToutiaoUserInfo
 from utils.logger import logger
 from db.toutiao import Task as ToutiaoTask, Account as ToutiaoAccount
-from db.toutiao_jisu import Task, Account, JOIN, Jd, Iad, Abb
+from db.toutiao_jisu import Task, Account, JOIN, Jd, Iad
 from toutiao.jisu.userInfo import UserInfo
 from utils.utils import convert_cookies_to_dict, send_message
 
