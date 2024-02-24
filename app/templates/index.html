@@ -24,6 +24,14 @@
                             <el-table-column prop="cash_amount" label="总收益（元）" align="center"></el-table-column>
                         </el-table>
                     </el-tab-pane>
+                    <el-tab-pane label="今日头条极速版" name="toutiao">
+                        <el-table v-loading="loading" :data="toutiao" stripe style="margin-top: 10px">
+                            <el-table-column prop="name" label="账号" align="center"></el-table-column>
+                            <el-table-column prop="score_balance" label="现有金币" align="center"></el-table-column>
+                            <el-table-column prop="cash_balance" label="现金收益（元）" align="center"></el-table-column>
+                            <el-table-column prop="cash_amount" label="总收益（元）" align="center"></el-table-column>
+                        </el-table>
+                    </el-tab-pane>
                 </el-tabs>
             </el-row>
         </el-container>
@@ -37,6 +45,7 @@
             return {
                 activeName: 'liblib',
                 liblib: [],
+                toutiao: [],
                 loading: false,
             };
         },
@@ -49,7 +58,16 @@
                 if (this.activeName === 'liblib') {
                     this.getLiblib();
                     document.title = "哩布哩布";
+                } else if (this.activeName === 'toutiao') {
+                    this.getToutiao();
+                    document.title = "账号详情 - 今日头条";
                 }
+            },
+            getToutiao() {
+                const that = this
+                $.get('/getToutiao?t=' + new Date().getTime()).then(res => {
+                    that.toutiao = res
+                })
             },
             getLiblib() {
                 const that = this

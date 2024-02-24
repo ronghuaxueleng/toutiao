@@ -5,9 +5,8 @@ from urllib.parse import urlencode
 from flask import Flask, jsonify
 from flask import render_template
 
-import run_task
-from run_task import profit_detail
 from db.toutiao_jisu import Account, CommonParams
+from run_task import profit_detail
 
 app = Flask(__name__)
 
@@ -29,9 +28,3 @@ def getToutiao():
         result = profit_detail(headers, query, account, True)
         results.append(result)
     return jsonify(results)
-
-
-@app.route('/pushtoutiao')
-def pushtoutiao():
-    run_task.run_accout_task('profit_detail')
-    return 'ok'
