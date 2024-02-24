@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*
+import calendar
+import datetime
 import json
 from urllib.parse import urlencode
 
@@ -35,24 +37,37 @@ def getToutiao():
 
 @app.route('/getLiblib')
 def getLiblib():
-    results = []
+    datas = []
     accounts = LiblibAccount.select()
+    now = datetime.datetime.now()
+    day = now.strftime('%d')
+    this_month_middle = datetime.datetime(now.year, now.month, 15).strftime('%Y%m%d')
+    this_month_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d') if int(day) <= 15 else this_month_middle
+    this_month_end = datetime.datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1]).strftime('%Y%m%d') if int(day) > 15 else this_month_middle
     for idx, account in enumerate(accounts):
         nickname = account.nickname
         user_uuid = account.user_uuid
         downloadImageCount = fn.SUM(DownLoadImageStatistics.downloadImageCount).alias('downloadImageCount')
-        downLoadImages = DownLoadImageStatistics.select(downloadImageCount).where(DownLoadImageStatistics.user_uuid == user_uuid).get()
+        downLoadImages = (DownLoadImageStatistics.select(downloadImageCount)
+                          .where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.day >= this_month_start, DownLoadImageStatistics.day <= this_month_end).get())
         downloadImageCounts = downLoadImages.downloadImageCount
         downloadModelCount = fn.SUM(DownloadModelStatistics.downloadModelCount).alias('downloadModelCount')
-        downloadModels = DownloadModelStatistics.select(downloadModelCount).where(DownloadModelStatistics.user_uuid == user_uuid).get()
+        downloadModels = (DownloadModelStatistics.select(downloadModelCount)
+                          .where(DownloadModelStatistics.user_uuid == user_uuid, DownloadModelStatistics.day >= this_month_start, DownloadModelStatistics.day <= this_month_end).get())
         downloadModelCounts = downloadModels.downloadModelCount
         runCount = fn.SUM(RunStatistics.runCount).alias('runCount')
-        runs = RunStatistics.select(runCount).where(RunStatistics.user_uuid == user_uuid).get()
+        runs = (RunStatistics.select(runCount)
+                .where(RunStatistics.user_uuid == user_uuid, RunStatistics.day >= this_month_start, RunStatistics.day <= this_month_end).get())
         runCounts = runs.runCount
-        results.append({
+        datas.append({
             'nickname': nickname,
             'runCounts': 0 if runCounts is None else runCounts,
             'downloadModelCounts': 0 if downloadModelCounts is None else downloadModelCounts,
             'downloadImageCounts': 0 if downloadImageCounts is None else downloadImageCounts
         })
-    return jsonify(results)
+    result = {
+        'datas': datas,
+        'month_start': this_month_start,
+        'month_end': this_month_end
+    }
+    return jsonify(result)
