@@ -18,7 +18,7 @@
                 <el-tabs v-model="activeName" @tab-click="handleClick">
                     <el-tab-pane label="哩布哩布" name="liblib">
                         <el-row :span="24" class="content-row" style="font-size: 14px;">
-                            期间：{{liblib.month_start}}-{{liblib.month_end}}
+                            期间：{{liblib.month_start - liblib.month_end}}
                         </el-row>
                         <el-row :span="24" class="content-row">
                             <el-table v-loading="loading" :data="liblib.datas" stripe style="margin-top: 10px">
