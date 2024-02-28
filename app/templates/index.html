@@ -18,7 +18,7 @@
                 <el-tabs v-model="activeName" @tab-click="handleClick">
                     <el-tab-pane label="哩布哩布" name="liblib">
                         <el-row :span="24" class="content-row" style="font-size: 14px;">
-                            期间：{{liblib.month_start - liblib.month_end}}
+                            <span v-text="liblibPeriod"></span>
                         </el-row>
                         <el-row :span="24" class="content-row">
                             <el-table v-loading="loading" :data="liblib.datas" stripe style="margin-top: 10px">
@@ -52,6 +52,7 @@
                 liblib: {},
                 toutiao: [],
                 loading: false,
+                liblibPeriod: ''
             };
         },
         mounted() {
@@ -78,6 +79,7 @@
                 const that = this
                 $.get('/getLiblib?t=' + new Date().getTime()).then(res => {
                     that.liblib = res
+                    that.liblibPeriod = '期间：' + res.month_start + '-' + res.month_end
                 })
             }
         }
