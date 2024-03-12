@@ -116,7 +116,8 @@ if __name__ == '__main__':
         '3cc0cddb72874db49eb02f60d81fbf31',
         '5035e42609394bdfa3ddaee8b88a1b78',
         '66149bee12304248beb571d1c0d9e553',
-        '5dfe53b85ed947a6a92586182768a84e'
+        '5dfe53b85ed947a6a92586182768a84e',
+        '48e8c753b8674b1499f274d8973b9e60'
     ]
     for token in tokens:
         try:
