@@ -42,7 +42,8 @@ def getLiblib():
     now = datetime.datetime.now()
     day = now.strftime('%d')
     this_month_middle = datetime.datetime(now.year, now.month, 15).strftime('%Y%m%d')
-    this_month_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d') if int(day) <= 15 else this_month_middle
+    this_month_sixteen = datetime.datetime(now.year, now.month, 16).strftime('%Y%m%d')
+    this_month_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d') if int(day) <= 15 else this_month_sixteen
     this_month_end = datetime.datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1]).strftime('%Y%m%d') if int(day) > 15 else this_month_middle
     for idx, account in enumerate(accounts):
         nickname = account.nickname
