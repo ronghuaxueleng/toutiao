@@ -65,10 +65,15 @@ class UserInfo(LogInfo):
         self.uuids = set()
         my_loras = ql_env.search("my_lora")
         self.model_dict = {}
+        self.user_model_dict = {}
         for my_lora in my_loras:
             value = json.loads(my_lora['value'])
             self.model_dict[value['modelId']] = value
             self.uuids.add(value['userUuid'])
+            if value['modelType'] == 5:
+                user_models = self.user_model_dict.setdefault(value['userUuid'], [])
+                user_models.append(value)
+                self.user_model_dict[value['userUuid']] = user_models
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"

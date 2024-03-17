@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+import random
 import time
 import uuid
 
@@ -80,20 +81,24 @@ class Image(UserInfo):
             "taskQueuePriority": 0
         }
         runCount = {}
-        my_loras = ql_env.search("my_lora")
-        for my_lora in my_loras:
-            if my_lora['status'] == 0:
-                value = json.loads(my_lora['value'])
-                modelId = value['modelId']
-                userUuid = value['userUuid']
-                run_model = runCount.setdefault(userUuid, {})
-                __model = run_model.setdefault(modelId, value)
-                run_count = __model.setdefault('count', 0)
-                runCount[userUuid][modelId]['count'] = run_count + 1
-                if value['modelType'] == 5:
-                    del value['userUuid']
-                    del value['modelType']
-                    param['additionalNetwork'].append(value)
+        for userUuid, models in self.user_model_dict.items():
+            if len(models) >= 6:
+                my_loras = random.sample(models, 6)
+            else:
+                my_loras = models
+            for my_lora in my_loras:
+                if my_lora['status'] == 0:
+                    value = json.loads(my_lora['value'])
+                    modelId = value['modelId']
+                    userUuid = value['userUuid']
+                    run_model = runCount.setdefault(userUuid, {})
+                    __model = run_model.setdefault(modelId, value)
+                    run_count = __model.setdefault('count', 0)
+                    runCount[userUuid][modelId]['count'] = run_count + 1
+                    if value['modelType'] == 5:
+                        del value['userUuid']
+                        del value['modelType']
+                        param['additionalNetwork'].append(value)
         if len(param['additionalNetwork']) > 0:
             payload = json.dumps(param)
             headers = self.headers
