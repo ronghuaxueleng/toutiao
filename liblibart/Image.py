@@ -20,7 +20,7 @@ class Image(UserInfo):
         url = f"https://{self.api_host}/gateway/sd-api/generate/image"
 
         param = {
-            "checkpointId": 1094830,
+            "checkpointId": 650910,
             "generateType": 1,
             "frontCustomerReq": {
                 "frontId": self.frontId,
