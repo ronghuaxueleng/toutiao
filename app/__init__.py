@@ -41,24 +41,24 @@ def getLiblib():
     accounts = LiblibAccount.select()
     now = datetime.datetime.now()
     day = now.strftime('%d')
-    this_month_middle = datetime.datetime(now.year, now.month, 15).strftime('%Y%m%d')
-    this_month_sixteen = datetime.datetime(now.year, now.month, 16).strftime('%Y%m%d')
-    this_month_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d') if int(day) <= 15 else this_month_sixteen
-    this_month_end = datetime.datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1]).strftime('%Y%m%d') if int(day) > 15 else this_month_middle
+    this_period_middle = datetime.datetime(now.year, now.month, 15).strftime('%Y%m%d')
+    this_period_sixteen = datetime.datetime(now.year, now.month, 16).strftime('%Y%m%d')
+    this_period_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d') if int(day) <= 15 else this_period_sixteen
+    this_period_end = datetime.datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1]).strftime('%Y%m%d') if int(day) > 15 else this_period_middle
     for idx, account in enumerate(accounts):
         nickname = account.nickname
         user_uuid = account.user_uuid
         downloadImageCount = fn.SUM(DownLoadImageStatistics.downloadImageCount).alias('downloadImageCount')
         downLoadImages = (DownLoadImageStatistics.select(downloadImageCount)
-                          .where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.day >= this_month_start, DownLoadImageStatistics.day <= this_month_end).get())
+                          .where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.day >= this_period_start, DownLoadImageStatistics.day <= this_period_end).get())
         downloadImageCounts = downLoadImages.downloadImageCount
         downloadModelCount = fn.SUM(DownloadModelStatistics.downloadModelCount).alias('downloadModelCount')
         downloadModels = (DownloadModelStatistics.select(downloadModelCount)
-                          .where(DownloadModelStatistics.user_uuid == user_uuid, DownloadModelStatistics.day >= this_month_start, DownloadModelStatistics.day <= this_month_end).get())
+                          .where(DownloadModelStatistics.user_uuid == user_uuid, DownloadModelStatistics.day >= this_period_start, DownloadModelStatistics.day <= this_period_end).get())
         downloadModelCounts = downloadModels.downloadModelCount
         runCount = fn.SUM(RunStatistics.runCount).alias('runCount')
         runs = (RunStatistics.select(runCount)
-                .where(RunStatistics.user_uuid == user_uuid, RunStatistics.day >= this_month_start, RunStatistics.day <= this_month_end).get())
+                .where(RunStatistics.user_uuid == user_uuid, RunStatistics.day >= this_period_start, RunStatistics.day <= this_period_end).get())
         runCounts = runs.runCount
         datas.append({
             'nickname': nickname,
@@ -68,7 +68,46 @@ def getLiblib():
         })
     result = {
         'datas': datas,
-        'month_start': this_month_start,
-        'month_end': this_month_end
+        'month_start': this_period_start,
+        'month_end': this_period_end
+    }
+    return jsonify(result)
+
+@app.route('/getLastLiblib')
+def getLastLiblib():
+    datas = []
+    accounts = LiblibAccount.select()
+    now = datetime.datetime.now()
+    day = now.strftime('%d')
+    this_period_middle = datetime.datetime(now.year, now.month, 15).strftime('%Y%m%d')
+    last = now.replace(day=1)
+    last_period_sixteen = datetime.datetime(now.year, last.month, 16).strftime('%Y%m%d')
+    last_period_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d') if int(day) > 15 else last_period_sixteen
+    last_period_end = this_period_middle if int(day) > 15 else datetime.datetime(now.year, last.month, calendar.monthrange(now.year, last.month)[1]).strftime('%Y%m%d')
+    for idx, account in enumerate(accounts):
+        nickname = account.nickname
+        user_uuid = account.user_uuid
+        downloadImageCount = fn.SUM(DownLoadImageStatistics.downloadImageCount).alias('downloadImageCount')
+        downLoadImages = (DownLoadImageStatistics.select(downloadImageCount)
+                          .where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.day >= last_period_start, DownLoadImageStatistics.day <= last_period_end).get())
+        downloadImageCounts = downLoadImages.downloadImageCount
+        downloadModelCount = fn.SUM(DownloadModelStatistics.downloadModelCount).alias('downloadModelCount')
+        downloadModels = (DownloadModelStatistics.select(downloadModelCount)
+                          .where(DownloadModelStatistics.user_uuid == user_uuid, DownloadModelStatistics.day >= last_period_start, DownloadModelStatistics.day <= last_period_end).get())
+        downloadModelCounts = downloadModels.downloadModelCount
+        runCount = fn.SUM(RunStatistics.runCount).alias('runCount')
+        runs = (RunStatistics.select(runCount)
+                .where(RunStatistics.user_uuid == user_uuid, RunStatistics.day >= last_period_start, RunStatistics.day <= last_period_end).get())
+        runCounts = runs.runCount
+        datas.append({
+            'nickname': nickname,
+            'runCounts': 0 if runCounts is None else runCounts,
+            'downloadModelCounts': 0 if downloadModelCounts is None else downloadModelCounts,
+            'downloadImageCounts': 0 if downloadImageCounts is None else downloadImageCounts
+        })
+    result = {
+        'datas': datas,
+        'month_start': last_period_start,
+        'month_end': last_period_end
     }
     return jsonify(result)

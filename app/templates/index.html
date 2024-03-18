@@ -29,6 +29,19 @@
                             </el-table>
                         </el-row>
                     </el-tab-pane>
+                    <el-tab-pane label="哩布哩布上一周期" name="lastliblib">
+                        <el-row :span="24" class="content-row" style="font-size: 14px;">
+                            <span v-text="liblibPeriod"></span>
+                        </el-row>
+                        <el-row :span="24" class="content-row">
+                            <el-table v-loading="loading" :data="liblib.datas" stripe style="margin-top: 10px">
+                                <el-table-column prop="nickname" label="账号" align="center"></el-table-column>
+                                <el-table-column prop="runCounts" label="运行数量" align="center"></el-table-column>
+                                <el-table-column prop="downloadModelCounts" label="模型下载数量" align="center"></el-table-column>
+                                <el-table-column prop="downloadImageCounts" label="图片下载数量" align="center"></el-table-column>
+                            </el-table>
+                        </el-row>
+                    </el-tab-pane>
                     <el-tab-pane label="今日头条极速版" name="toutiao">
                         <el-table v-loading="loading" :data="toutiao" stripe style="margin-top: 10px">
                             <el-table-column prop="name" label="账号" align="center"></el-table-column>
@@ -64,6 +77,9 @@
                 if (this.activeName === 'liblib') {
                     this.getLiblib();
                     document.title = "哩布哩布";
+                } else if (this.activeName === 'lastliblib') {
+                    this.getLastLiblib();
+                    document.title = "哩布哩布上一期";
                 } else if (this.activeName === 'toutiao') {
                     this.getToutiao();
                     document.title = "账号详情 - 今日头条";
@@ -78,6 +94,13 @@
             getLiblib() {
                 const that = this
                 $.get('/getLiblib?t=' + new Date().getTime()).then(res => {
+                    that.liblib = res
+                    that.liblibPeriod = '期间：' + res.month_start + '-' + res.month_end
+                })
+            },
+            getLastLiblib() {
+                const that = this
+                $.get('/getLastLiblib?t=' + new Date().getTime()).then(res => {
                     that.liblib = res
                     that.liblibPeriod = '期间：' + res.month_start + '-' + res.month_end
                 })
