@@ -9,7 +9,6 @@ import requests
 
 from liblibart.Statistics import RunStatistics
 from liblibart.UserInfo import UserInfo
-from liblibart.ql import ql_env
 
 
 class Image(UserInfo):
@@ -86,19 +85,17 @@ class Image(UserInfo):
                 my_loras = random.sample(models, 6)
             else:
                 my_loras = models
-            for my_lora in my_loras:
-                if my_lora['status'] == 0:
-                    value = json.loads(my_lora['value'])
-                    modelId = value['modelId']
-                    userUuid = value['userUuid']
-                    run_model = runCount.setdefault(userUuid, {})
-                    __model = run_model.setdefault(modelId, value)
-                    run_count = __model.setdefault('count', 0)
-                    runCount[userUuid][modelId]['count'] = run_count + 1
-                    if value['modelType'] == 5:
-                        del value['userUuid']
-                        del value['modelType']
-                        param['additionalNetwork'].append(value)
+            for value in my_loras:
+                modelId = value['modelId']
+                userUuid = value['userUuid']
+                run_model = runCount.setdefault(userUuid, {})
+                __model = run_model.setdefault(modelId, value)
+                run_count = __model.setdefault('count', 0)
+                runCount[userUuid][modelId]['count'] = run_count + 1
+                if value['modelType'] == 5:
+                    del value['userUuid']
+                    del value['modelType']
+                    param['additionalNetwork'].append(value)
         if len(param['additionalNetwork']) > 0:
             payload = json.dumps(param)
             headers = self.headers
