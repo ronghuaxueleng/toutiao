@@ -73,13 +73,16 @@ class DownLoadImage(UserInfo):
         for img in res['data']['list']:
             idList.append(img['id'])
             for model in img['param']['mixModels']:
-                modelVersionId = model['modelVersionId']
-                _model = self.model_dict[modelVersionId]
-                userUuid = _model['userUuid']
-                download_model = downloadImageCount.setdefault(userUuid, {})
-                __model = download_model.setdefault(modelVersionId, _model)
-                download_count = __model.setdefault('count', 0)
-                downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
+                try:
+                    modelVersionId = model['modelVersionId']
+                    _model = self.model_dict[modelVersionId]
+                    userUuid = _model['userUuid']
+                    download_model = downloadImageCount.setdefault(userUuid, {})
+                    __model = download_model.setdefault(modelVersionId, _model)
+                    download_count = __model.setdefault('count', 0)
+                    downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
+                except Exception as e:
+                    self.logger.error(e)
 
 
         url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
@@ -90,7 +93,7 @@ class DownLoadImage(UserInfo):
 
         response = requests.request("POST", url, headers=headers, data=payload)
 
-        print(response.text)
+        self.logger.info(response.text)
         for user_uuid, model_list in downloadImageCount.items():
             for modelId, model in model_list.items():
                 query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId,
