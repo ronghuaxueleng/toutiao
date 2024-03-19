@@ -86,16 +86,17 @@ class Image(UserInfo):
             else:
                 my_loras = models
             for value in my_loras:
-                modelId = value['modelId']
-                userUuid = value['userUuid']
-                run_model = runCount.setdefault(userUuid, {})
-                __model = run_model.setdefault(modelId, value)
-                run_count = __model.setdefault('count', 0)
-                runCount[userUuid][modelId]['count'] = run_count + 1
-                if value['modelType'] == 5:
-                    del value['userUuid']
-                    del value['modelType']
-                    param['additionalNetwork'].append(value)
+                if userUuid != self.uuid:
+                    modelId = value['modelId']
+                    userUuid = value['userUuid']
+                    run_model = runCount.setdefault(userUuid, {})
+                    __model = run_model.setdefault(modelId, value)
+                    run_count = __model.setdefault('count', 0)
+                    runCount[userUuid][modelId]['count'] = run_count + 1
+                    if value['modelType'] == 5:
+                        del value['userUuid']
+                        del value['modelType']
+                        param['additionalNetwork'].append(value)
         if len(param['additionalNetwork']) > 0:
             payload = json.dumps(param)
             headers = self.headers
