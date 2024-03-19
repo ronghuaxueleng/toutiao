@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+import random
 import time
 
 import requests
@@ -119,7 +120,7 @@ if __name__ == '__main__':
         '5dfe53b85ed947a6a92586182768a84e',
         '48e8c753b8674b1499f274d8973b9e60'
     ]
-    for token in tokens:
+    for token in random.sample(tokens, 4):
         try:
             DownLoadImage(token).download()
         except Exception as e:

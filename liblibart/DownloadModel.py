@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import random
 import time
 
 import requests
@@ -121,7 +122,7 @@ if __name__ == '__main__':
         '48e8c753b8674b1499f274d8973b9e60'
     ]
     for pageNo in range(1, 5):
-        for token in tokens:
+        for token in random.sample(tokens, 4):
             try:
                 DownloadModel(token).download_model(pageNo, download_models)
             except Exception as e:
