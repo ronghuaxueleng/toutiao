@@ -7,6 +7,7 @@ import time
 import requests
 from peewee import *
 
+from liblibart.CookieUtils import get_users
 from liblibart.LogInfo import LogInfo
 from liblibart.ql import ql_env
 
@@ -33,7 +34,7 @@ def create_table(table):
 
 
 class UserInfo(LogInfo):
-    def __init__(self, token):
+    def __init__(self, token, webid):
         super().__init__()
         base64_web_host = 'd3d3LmxpYmxpYi5hcnQ='
         base64_api_host = 'bGlibGliLWFwaS52aWJyb3UuY29t'
@@ -56,9 +57,10 @@ class UserInfo(LogInfo):
             'sec-fetch-site': 'cross-site',
             'token': token,
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36',
-            'webid': '1701652270086cvpnqgrl'
+            'webid': webid
         }
         self.token = token
+        self.webid = webid
         self.userInfo = {}
         self.getUserInfo()
         self.uuid = self.userInfo['uuid']
@@ -85,17 +87,10 @@ class UserInfo(LogInfo):
 
 if __name__ == '__main__':
     create_table(Account)
-    tokens = [
-        'd1894681b7c5438b9051b840431e9b59',
-        '3cc0cddb72874db49eb02f60d81fbf31',
-        '5035e42609394bdfa3ddaee8b88a1b78',
-        '66149bee12304248beb571d1c0d9e553',
-        '5dfe53b85ed947a6a92586182768a84e',
-        '48e8c753b8674b1499f274d8973b9e60'
-    ]
-    for token in tokens:
+    users = get_users()
+    for user in users:
         try:
-            userInfo = UserInfo(token)
+            userInfo = UserInfo(user['usertoken'], user['webid'])
             user = userInfo.userInfo
             uuid = user['uuid']
             nickname = user['nickname']

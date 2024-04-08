@@ -6,13 +6,14 @@ import time
 
 import requests
 
+from liblibart.CookieUtils import get_users
 from liblibart.Statistics import DownLoadImageStatistics
 from liblibart.UserInfo import UserInfo
 
 
 class DownLoadImage(UserInfo):
-    def __init__(self, token):
-        super().__init__(token)
+    def __init__(self, token, webid):
+        super().__init__(token, webid)
 
     def download(self):
         url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
@@ -49,7 +50,7 @@ class DownLoadImage(UserInfo):
             "sys": "SD",
             "t": 2,
             "uuid": self.userInfo['uuid'],
-            "cid": "1701652270086cvpnqgrl",
+            "cid": self.webid,
             "page": "SD_GENERATE",
             "pageUrl": f"https://{self.web_host}/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
             "ct": time.time(),
@@ -115,16 +116,9 @@ class DownLoadImage(UserInfo):
 
 
 if __name__ == '__main__':
-    tokens = [
-        'd1894681b7c5438b9051b840431e9b59',
-        '3cc0cddb72874db49eb02f60d81fbf31',
-        '5035e42609394bdfa3ddaee8b88a1b78',
-        '66149bee12304248beb571d1c0d9e553',
-        '5dfe53b85ed947a6a92586182768a84e',
-        '48e8c753b8674b1499f274d8973b9e60'
-    ]
-    for token in random.sample(tokens, 4):
+    users = get_users()
+    for user in random.sample(users, 4):
         try:
-            DownLoadImage(token).download()
+            DownLoadImage(user['usertoken'], user['webid']).download()
         except Exception as e:
             print(e)

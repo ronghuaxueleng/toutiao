@@ -6,14 +6,15 @@ import time
 import requests
 import json
 
+from liblibart.CookieUtils import get_users
 from liblibart.Statistics import DownloadModelStatistics
 from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
 
 class DownloadModel(UserInfo):
-    def __init__(self, token):
-        super().__init__(token)
+    def __init__(self, token, webid):
+        super().__init__(token, webid)
 
     def download_model(self, pageNo, download_models):
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
@@ -44,7 +45,7 @@ class DownloadModel(UserInfo):
                             url = f"https://{self.api_host}/api/www/community/downloadCheck?timestamp={time.time()}"
                             payload = json.dumps({
                                 "uuid": model["uuid"],
-                                "cid": "1701652270086cvpnqgrl",
+                                "cid": self.webid,
                                 "modelName": model["name"],
                                 "modelVersionId": version['uuid'],
                                 "modelId": model["id"]
@@ -66,7 +67,7 @@ class DownloadModel(UserInfo):
                                     "model_id": model['uuid'],
                                     "version_id": version['id']
                                 },
-                                "cid": "1701652270086cvpnqgrl",
+                                "cid": self.webid,
                                 "uuid": self.userInfo['uuid'],
                                 "ct": time.time(),
                                 "pageUrl": f"https://{self.web_host}/modelinfo/{model['uuid']}",
@@ -113,17 +114,10 @@ if __name__ == '__main__':
     for my_lora in my_loras:
         if my_lora['status'] == 0:
             download_models.append(json.loads(my_lora['value'])['modelId'])
-    tokens = [
-        'd1894681b7c5438b9051b840431e9b59',
-        '3cc0cddb72874db49eb02f60d81fbf31',
-        '5035e42609394bdfa3ddaee8b88a1b78',
-        '66149bee12304248beb571d1c0d9e553',
-        '5dfe53b85ed947a6a92586182768a84e',
-        '48e8c753b8674b1499f274d8973b9e60'
-    ]
     for pageNo in range(1, 5):
-        for token in random.sample(tokens, 4):
+        users = get_users()
+        for user in random.sample(users, 4):
             try:
-                DownloadModel(token).download_model(pageNo, download_models)
+                DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
             except Exception as e:
                 print(e)

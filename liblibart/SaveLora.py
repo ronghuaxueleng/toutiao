@@ -4,13 +4,14 @@ import time
 
 import requests
 
+from liblibart.CookieUtils import get_users
 from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
 
 class SaveLora(UserInfo):
-    def __init__(self, token):
-        super().__init__(token)
+    def __init__(self, token, webid):
+        super().__init__(token, webid)
 
     def get_models(self, pageNo):
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
@@ -37,7 +38,7 @@ class SaveLora(UserInfo):
             'sec-fetch-site': 'cross-site',
             'token': self.token,
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36',
-            'webid': '1701652270086cvpnqgrl'
+            'webid': self.webid
         }
 
         response = requests.request("POST", url, headers=headers, data=payload)
@@ -70,17 +71,10 @@ class SaveLora(UserInfo):
 
 
 if __name__ == '__main__':
-    tokens = [
-        'd1894681b7c5438b9051b840431e9b59',
-        '3cc0cddb72874db49eb02f60d81fbf31',
-        '5035e42609394bdfa3ddaee8b88a1b78',
-        '66149bee12304248beb571d1c0d9e553',
-        '5dfe53b85ed947a6a92586182768a84e',
-        '48e8c753b8674b1499f274d8973b9e60'
-    ]
     for pageNo in range(1, 5):
-        for token in tokens:
+        users = get_users()
+        for user in users:
             try:
-                SaveLora(token).get_models(pageNo)
+                SaveLora(user['usertoken'], user['webid']).get_models(pageNo)
             except Exception as e:
                 print(e)
