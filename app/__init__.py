@@ -40,11 +40,8 @@ def getLiblib():
     datas = []
     accounts = LiblibAccount.select()
     now = datetime.datetime.now()
-    day = now.strftime('%d')
-    this_period_middle = datetime.datetime(now.year, now.month, 15).strftime('%Y%m%d')
-    this_period_sixteen = datetime.datetime(now.year, now.month, 16).strftime('%Y%m%d')
-    this_period_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d') if int(day) <= 15 else this_period_sixteen
-    this_period_end = datetime.datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1]).strftime('%Y%m%d') if int(day) > 15 else this_period_middle
+    this_period_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d')
+    this_period_end = datetime.datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1]).strftime('%Y%m%d')
     for idx, account in enumerate(accounts):
         nickname = account.nickname
         user_uuid = account.user_uuid
@@ -78,12 +75,9 @@ def getLastLiblib():
     datas = []
     accounts = LiblibAccount.select()
     now = datetime.datetime.now()
-    day = now.strftime('%d')
-    this_period_middle = datetime.datetime(now.year, now.month, 15).strftime('%Y%m%d')
     last = now.replace(day=1)
-    last_period_sixteen = datetime.datetime(now.year, last.month - 1, 16).strftime('%Y%m%d')
-    last_period_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d') if int(day) > 15 else last_period_sixteen
-    last_period_end = this_period_middle if int(day) > 15 else datetime.datetime(now.year, last.month - 1, calendar.monthrange(now.year, last.month)[1]).strftime('%Y%m%d')
+    last_period_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d')
+    last_period_end = datetime.datetime(now.year, last.month - 1, calendar.monthrange(now.year, last.month)[1]).strftime('%Y%m%d')
     for idx, account in enumerate(accounts):
         nickname = account.nickname
         user_uuid = account.user_uuid
