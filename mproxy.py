@@ -2,7 +2,7 @@ import functools
 import logging
 import logging.handlers
 
-from toutiao.jisu.toutiao import save_task_data, save_request_data, save_jd_pin, save_abb_header
+from toutiao.jisu.toutiao import save_task_data, save_request_data, save_jd_pin
 
 # 日志配置
 
@@ -75,9 +75,6 @@ class mproxy:
             if '/passport/account/info/v2/?' in flow.request.path:
                 logger.info("更新/添加今日头条极速版用户信息")
                 save_request_data(flow)
-
-        if 'ncziliyun.com' in flow.request.host and '/user/person.html' in flow.request.path:
-            save_abb_header(flow)
 
 
 addons = [

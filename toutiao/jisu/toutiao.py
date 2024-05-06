@@ -9,6 +9,7 @@ from db.toutiao import Task as ToutiaoTask, Account as ToutiaoAccount
 from db.toutiao_jisu import Task, Account, JOIN, Jd, Iad
 from toutiao.jisu.userInfo import UserInfo
 from utils.utils import convert_cookies_to_dict, send_message
+from liblibart.ql import ql_env
 
 is_legal_header_name = re.compile(rb'[^:\s][^:\r\n]*').fullmatch
 
@@ -38,7 +39,8 @@ def save_toutiao_data(flow):
     if user_data["message"] != "success":
         return
     if "data" in user_data:
-        ToutiaoUserInfo(dict(flow.request.headers.items()), user_data["data"], dict(zip(params.args.keys(), params.args.values())))
+        ToutiaoUserInfo(dict(flow.request.headers.items()), user_data["data"],
+                        dict(zip(params.args.keys(), params.args.values())))
         userName = user_data["data"]["name"]
         user_data["data"]["name"] = userName + "(已成功接入头条系统)"
         flow.response.text = json.dumps(user_data)
@@ -117,7 +119,8 @@ def save_toutiao_task_data(flow, type):
     # 请求中body的内容，有一些http会把请求参数放在body里面，可通过此方法获取，返回字典类型
     body = flow.request.get_text()
     queryTask = ToutiaoTask.select(ToutiaoTask, ToutiaoAccount).join(ToutiaoAccount, JOIN.LEFT_OUTER,
-                                                on=(ToutiaoTask.session_key == ToutiaoAccount.session_key)) \
+                                                                     on=(
+                                                                                 ToutiaoTask.session_key == ToutiaoAccount.session_key)) \
         .where(ToutiaoTask.session_key == session_key, ToutiaoTask.type == type)
     if queryTask.exists():
         ToutiaoTask.update(
@@ -144,7 +147,8 @@ def save_toutiao_task_data(flow, type):
             type=type,
         )
         queryTask = ToutiaoTask.select(ToutiaoTask, ToutiaoAccount).join(ToutiaoAccount, JOIN.LEFT_OUTER,
-                                                    on=(ToutiaoTask.session_key == ToutiaoAccount.session_key)) \
+                                                                         on=(
+                                                                                     ToutiaoTask.session_key == ToutiaoAccount.session_key)) \
             .where(ToutiaoTask.session_key == session_key, ToutiaoTask.type == type)
         result = queryTask.dicts().get()
         send_message("用户【{}】添加任务【{}】成功".format(result.get('name'), type))
@@ -158,19 +162,18 @@ def save_jd_pin(flow):
     pin = cookies.get("pin")
     wskey = cookies.get("wskey")
     if pin is not None and wskey is not None:
-        query = Jd.select().where(Jd.pin == pin)
-        if query.exists():
-            Jd.update(
-                pin=pin,
-                wskey=wskey,
-            ).where(Jd.pin == pin).execute()
-            logger.info("更新京东用户【{}】信息".format(pin))
-            send_message("更新京东用户【{}】信息".format(pin))
-        else:
-            Jd.insert(
-                pin=pin,
-                wskey=wskey,
-            ).execute()
+        pin_exist = False
+        value = f"pin={pin};wskey={wskey}"
+        jd_wscks = ql_env.search("JD_WSCK")
+        for jd_wsck in jd_wscks:
+            if jd_wsck['status'] == 0 and pin in jd_wsck['pin']:
+                pin_exist = True
+                ql_env.update(value, jd_wsck['name'], jd_wsck['id'])
+                logger.info("更新京东用户【{}】信息".format(pin))
+                send_message("更新京东用户【{}】信息".format(pin))
+                break
+        if not pin_exist:
+            ql_env.add("JD_WSCK", value)
             logger.info("添加京东用户【{}】信息".format(pin))
             send_message("添加京东用户【{}】信息".format(pin))
 
@@ -191,35 +194,3 @@ def save_ad(source, web_url):
         ).where(Iad.source == source).execute()
         logger.info("更新广告【{}】信息".format(source))
         send_message("更新广告【{}】信息\n下载地址：{}".format(source, web_url))
-
-
-def save_abb_header(flow):
-    body = flow.response.text
-    userMatch = abbUserReg.search(body)
-    phoneMatch = abbPhoneReg.search(body)
-    userIdMatch = abbUserIdReg.search(body)
-    if userMatch is not None and userIdMatch is not None and phoneMatch is not None:
-        usernames = userMatch.groupdict()
-        username = usernames.get("username")
-        userIds = userIdMatch.groupdict()
-        userId = userIds.get("uid")
-        phones = phoneMatch.groupdict()
-        phone = phones.get("phone")
-        headers_json = json.dumps(dict(flow.request.headers.items()))
-        query = Abb.select().where(Abb.uid == userId)
-        if not query.exists():
-            Abb.insert(
-                uid=userId,
-                nick=username,
-                header=headers_json,
-                phone=phone
-            ).execute()
-            logger.info("添加用户【{}】信息".format(username))
-            send_message("添加用户【{}】信息".format(username), "爱步宝")
-        else:
-            Abb.update(
-                phone=phone,
-                header=headers_json,
-            ).where(Abb.uid == userId).execute()
-            logger.info("更新用户【{}】信息".format(username))
-            send_message("更新用户【{}】信息".format(username), "爱步宝")
