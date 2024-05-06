@@ -76,8 +76,9 @@ def getLastLiblib():
     accounts = LiblibAccount.select()
     now = datetime.datetime.now()
     last = now.replace(day=1)
-    last_period_start = datetime.datetime(now.year, last.month - 1, 1).strftime('%Y%m%d')
-    last_period_end = datetime.datetime(now.year, last.month - 1, calendar.monthrange(now.year, last.month)[1]).strftime('%Y%m%d')
+    last_month = last.month - 1
+    last_period_start = datetime.datetime(now.year, last_month, 1).strftime('%Y%m%d')
+    last_period_end = datetime.datetime(now.year, last_month, calendar.monthrange(now.year, last_month)[1]).strftime('%Y%m%d')
     for idx, account in enumerate(accounts):
         nickname = account.nickname
         user_uuid = account.user_uuid
