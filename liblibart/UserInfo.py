@@ -63,7 +63,8 @@ class UserInfo(LogInfo):
         self.webid = webid
         self.userInfo = {}
         self.getUserInfo()
-        self.uuid = self.userInfo['uuid']
+        if self.userInfo is not None:
+            self.uuid = self.userInfo['uuid']
         self.uuids = set()
         my_loras = ql_env.search("my_lora")
         self.model_dict = {}
@@ -82,30 +83,40 @@ class UserInfo(LogInfo):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
         payload = {}
         response = requests.request("POST", url, headers=self.headers, data=payload)
-        self.userInfo = json.loads(response.text)['data']
+        data = json.loads(response.text)['data']
+        self.userInfo = data
 
 
 if __name__ == '__main__':
     create_table(Account)
     users = get_users()
+    disable_ids = []
+    enable_ids = []
     for user in users:
         try:
             userInfo = UserInfo(user['usertoken'], user['webid'])
-            user = userInfo.userInfo
-            uuid = user['uuid']
-            nickname = user['nickname']
-            query = Account.select().where(Account.user_uuid == uuid)
-            if query.exists():
-                Account.update(
-                    nickname=nickname,
-                    userInfo=json.dumps(user)
-                ).where(Account.user_uuid == uuid).execute()
+            realUser = userInfo.userInfo
+            if realUser is not None:
+                enable_ids.append(user['id'])
+                uuid = realUser['uuid']
+                nickname = realUser['nickname']
+                query = Account.select().where(Account.user_uuid == uuid)
+                if query.exists():
+                    Account.update(
+                        nickname=nickname,
+                        userInfo=json.dumps(realUser)
+                    ).where(Account.user_uuid == uuid).execute()
+                else:
+                    Account.insert(
+                        user_uuid=uuid,
+                        nickname=nickname,
+                        userInfo=json.dumps(realUser)
+                    ).execute()
             else:
-                Account.insert(
-                    user_uuid=uuid,
-                    nickname=nickname,
-                    userInfo=json.dumps(user)
-                ).execute()
+                disable_ids.append(user['id'])
         except Exception as e:
             print(e)
-
+    if len(disable_ids) > 0:
+        ql_env.disable(disable_ids)
+    if len(enable_ids) > 0:
+        ql_env.enable(enable_ids)

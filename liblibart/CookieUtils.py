@@ -10,7 +10,9 @@ def get_users():
     for liblib_cookie in liblib_cookies:
         if liblib_cookie['status'] == 0:
             values = json.loads(liblib_cookie['value'])
-            user = {}
+            user = {
+                'id': liblib_cookie['id'],
+            }
             for value in values:
                 if value['name'] == 'usertoken':
                     user['usertoken'] = value['value']
