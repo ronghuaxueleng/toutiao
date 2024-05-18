@@ -4,11 +4,11 @@ import json
 from liblibart.ql import ql_env
 
 
-def get_users():
+def get_users(get_all=False):
     liblib_cookies = ql_env.search("liblib_cookie")
     users = []
     for liblib_cookie in liblib_cookies:
-        if liblib_cookie['status'] == 0:
+        if get_all or liblib_cookie['status'] == 0:
             values = json.loads(liblib_cookie['value'])
             user = {
                 'id': liblib_cookie['id'],

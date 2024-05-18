@@ -89,7 +89,7 @@ class UserInfo(LogInfo):
 
 if __name__ == '__main__':
     create_table(Account)
-    users = get_users()
+    users = get_users(True)
     disable_ids = []
     enable_ids = []
     for user in users:
