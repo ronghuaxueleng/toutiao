@@ -54,7 +54,7 @@ class DownloadModel(UserInfo):
                             response = requests.request("POST", url, headers=headers, data=payload)
 
                             self.logger.info(
-                                f"token:{token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
+                                f"token:{self.token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
 
                             url = f"https://{self.api_host}/api/www/log/acceptor/f?timestamp={time.time()}"
 
