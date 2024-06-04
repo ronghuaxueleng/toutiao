@@ -53,7 +53,7 @@
 # 哩布哩布画图
 13,17,25,33,46,53 */3 * * * python3 /mitmproxy/liblibart/Image.py >> /mitmproxy/logs/lib_gen.log 2>&1
 # 哩布哩布下载
-*/38 * */2 * * python3 /mitmproxy/liblibart/DownloadModel.py >> /mitmproxy/logs/download_model.log 2>&1
+0 0 * * * /mitmproxy/liblibart/DownloadModel.sh
 # 哩布哩布保存下载事件并删除历史图片
 11,23,37,42,57 */3 * * * python3 /mitmproxy/liblibart/DownLoadImage.py >> /mitmproxy/logs/del_lib_history.log 2>&1
 # 哩布哩布用户信息更新
