@@ -1,11 +1,8 @@
 import datetime
 import json
 import random
-import time
-from urllib.parse import urlencode
 
 from apscheduler.schedulers.blocking import BlockingScheduler
-from peewee import JOIN
 
 from liblibart.CookieUtils import get_users
 from liblibart.DownLoadImage import DownLoadImage
@@ -39,7 +36,7 @@ class LiblibTasks:
         for pageNo in range(1, 5):
             users = get_users()
             for user in random.sample(users, 4):
-                job_id = user['usertoken'] + 'downloadModel' + pageNo
+                job_id = f"{user['usertoken']}_downloadModel_{pageNo}"
                 if scheduler.get_job(job_id) is None:
                     try:
                         DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
@@ -56,7 +53,7 @@ class LiblibTasks:
     def downLoadImage(self):
         users = get_users()
         for user in users:
-            job_id = user['usertoken'] + 'downLoadImage'
+            job_id = f"{user['usertoken']}_downLoadImage"
             if scheduler.get_job(job_id) is None:
                 try:
                     DownLoadImage(user['usertoken'], user['webid']).download()
@@ -75,7 +72,7 @@ class LiblibTasks:
     def drawImage(self):
         users = get_users()
         for user in users:
-            job_id = user['usertoken'] + 'drawImage'
+            job_id = f"{user['usertoken']}_drawImage"
             if scheduler.get_job(job_id) is None:
                 try:
                     Image(user['usertoken'], user['webid']).gen_image()
@@ -87,7 +84,7 @@ class LiblibTasks:
                     trigger='date',
                     run_date=datetime.datetime.now() + datetime.timedelta(hours=3,
                                                                           minutes=random.sample([11, 23, 37, 42, 57],
-                                                                                                1),
+                                                                                                1)[0],
                                                                           seconds=random.randint(0, 59)),
                 )
 
