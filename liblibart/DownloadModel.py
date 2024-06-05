@@ -116,7 +116,7 @@ if __name__ == '__main__':
             download_models.append(json.loads(my_lora['value'])['modelId'])
     for pageNo in range(1, 5):
         users = get_users()
-        for user in random.sample(users, 4):
+        for user in users:
             try:
                 DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
             except Exception as e:
