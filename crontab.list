@@ -1,4 +1,4 @@
-28,43 * * * * bash /mitmproxy/git_pull.sh >> /mitmproxy/logs/git_pull.log 2>&1
+#28,43 * * * * bash /mitmproxy/git_pull.sh >> /mitmproxy/logs/git_pull.log 2>&1
 # 全场景计时
 * * * * * python3 /mitmproxy/run_task.py -lt 1 -t "done_whole_scene_task" >> /mitmproxy/logs/done_whole_scene_task.log 2>&1
 # 头条全场景计时

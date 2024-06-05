@@ -117,7 +117,7 @@ class DownLoadImage(UserInfo):
 
 if __name__ == '__main__':
     users = get_users()
-    for user in random.sample(users, 4):
+    for user in users:
         try:
             DownLoadImage(user['usertoken'], user['webid']).download()
         except Exception as e:
