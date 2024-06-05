@@ -55,8 +55,8 @@
 # 哩布哩布下载
 #0 0 * * * bash /mitmproxy/liblibart/DownloadModel.sh
 # 哩布哩布保存下载事件并删除历史图片
-11,23,37,42,57 */3 * * * python3 /mitmproxy/liblibart/DownLoadImage.py >> /mitmproxy/logs/del_lib_history.log 2>&1
+#11,23,37,42,57 */3 * * * python3 /mitmproxy/liblibart/DownLoadImage.py >> /mitmproxy/logs/del_lib_history.log 2>&1
 # 哩布哩布用户信息更新
-#*/15 * * * * python3 /mitmproxy/liblibart/UserInfo.py >> /mitmproxy/logs/liblibUserInfo.log 2>&1
+*/15 * * * * python3 /mitmproxy/liblibart/UserInfo.py >> /mitmproxy/logs/liblibUserInfo.log 2>&1
 # 哩布哩布lora列表更新
 */30 * * * * python3 /mitmproxy/liblibart/SaveLora.py >> /mitmproxy/logs/liblibSaveLora.log 2>&1
