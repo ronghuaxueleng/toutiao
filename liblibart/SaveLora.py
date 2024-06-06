@@ -45,9 +45,13 @@ class SaveLora(UserInfo):
 
         my_loras = ql_env.search("my_lora")
         saved_models = []
+        saved_model_id_map = {}
         for my_lora in my_loras:
             if my_lora['status'] == 0:
-                saved_models.append(json.loads(my_lora['value'])['modelId'])
+                value = json.loads(my_lora['value'])
+                modelId = value['modelId']
+                saved_models.append(modelId)
+                saved_model_id_map[modelId] = my_lora['id']
 
         data = json.loads(response.text)
         for model in data['data']['list']:
@@ -57,17 +61,19 @@ class SaveLora(UserInfo):
 
             model_data = json.loads(response.text)
             for version in model_data['data']['versions']:
+                to_save_data = {
+                    "modelId": version["id"],
+                    "type": 0,
+                    "modelName": model["name"],
+                    "modelVersionName": version['name'],
+                    "weight": 0.8,
+                    "userUuid": self.userInfo['uuid'],
+                    "modelType": model['modelType']
+                }
                 if version['id'] not in saved_models:
-                    to_save_data = {
-                        "modelId": version["id"],
-                        "type": 0,
-                        "modelName": model["name"],
-                        "modelVersionName": version['name'],
-                        "weight": 0.8,
-                        "userUuid": self.userInfo['uuid'],
-                        "modelType": model['modelType']
-                    }
                     ql_env.add("my_lora", json.dumps(to_save_data, ensure_ascii=False), model["name"])
+                else:
+                    ql_env.update(json.dumps(to_save_data, ensure_ascii=False), model["name"], saved_model_id_map[version['id']])
 
 
 if __name__ == '__main__':
@@ -77,4 +83,5 @@ if __name__ == '__main__':
             try:
                 SaveLora(user['usertoken'], user['webid']).get_models(pageNo)
             except Exception as e:
+                print('error', e)
                 print(e)

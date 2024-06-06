@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import datetime
 import json
 import random
@@ -7,79 +8,19 @@ import uuid
 
 import requests
 
+from liblibart.Base import Base
 from liblibart.CookieUtils import get_users
 from liblibart.Statistics import RunStatistics
-from liblibart.UserInfo import UserInfo
 
 
-class Image(UserInfo):
+class Image(Base):
     def __init__(self, token, webid):
         super().__init__(token, webid)
         self.frontId = str(uuid.uuid1())
+        self.param = copy.deepcopy(self.gen_param)
+        self.param['frontCustomerReq']['frontId'] = self.frontId
 
     def gen_image(self):
-        url = f"https://{self.api_host}/gateway/sd-api/generate/image"
-
-        param = {
-            "checkpointId": 650910,
-            "generateType": 1,
-            "frontCustomerReq": {
-                "frontId": self.frontId,
-                "windowId": "",
-                "tabType": "txt2img",
-                "conAndSegAndGen": "gen"
-            },
-            "text2img": {
-                "prompt": ",1girl,chinese new year,photorealistic,photography,jewelry,indoors,red sweater,simple background,tassel,lantern,make up,Chinese fan,hair ornament,dress ",
-                "negativePrompt": "text,chinese red packet,leg,(worst quality, low quality:2), monochrome, zombie,overexposure, watermark,text,bad anatomy,bad hand,extra hands,extra fingers,too many fingers,fused fingers,bad arm,distorted arm,extra arms,fused arms,extra legs,missing leg,disembodied leg,extra nipples, detached arm, liquid hand,inverted hand,disembodied limb, small breasts, loli, oversized head,extra body,completely nude,",
-                "extraNetwork": "",
-                "samplingMethod": 24,
-                "samplingStep": 30,
-                "width": 512,
-                "height": 768,
-                "imgCount": 1,
-                "cfgScale": 5,
-                "seed": -1,
-                "seedExtra": 0,
-                "hiResFix": 0,
-                "restoreFaces": 0,
-                "tiling": 0,
-                "clipSkip": 2
-            },
-            "adetailerEnable": 0,
-            "adetailerList": [
-                {
-                    "adetailerModelVerId": 0,
-                    "prompt": "",
-                    "negativePrompt": "",
-                    "detection": {
-                        "threshold": 0.3,
-                        "maskMinAreaRatio": 0,
-                        "maskMaxAreaRatio": 1
-                    },
-                    "maskPreprocessing": {
-                        "maskXOffset": 0,
-                        "maskYOffset": 0,
-                        "maskScaling": 4,
-                        "maskMergeMode": 1
-                    },
-                    "inpainting": {
-                        "maskBlur": 4,
-                        "denoisingStrength": 0.4,
-                        "onlyMasked": True,
-                        "onlyMaskedPaddingPixels": 32,
-                        "separateWH": False,
-                        "separateSteps": True,
-                        "adetailerSteps": 25,
-                        "separateCFGScale": False,
-                        "separateNoiseMultiplier": False,
-                        "restoreFacesAfterADetailer": False
-                    }
-                }
-            ],
-            "additionalNetwork": [],
-            "taskQueuePriority": 0
-        }
         runCount = {}
         for userUuid, models in self.user_model_dict.items():
             if len(models) >= 6:
@@ -97,13 +38,17 @@ class Image(UserInfo):
                     if value['modelType'] == 5:
                         del value['userUuid']
                         del value['modelType']
-                        param['additionalNetwork'].append(value)
-        if len(param['additionalNetwork']) > 0:
-            payload = json.dumps(param)
+                        self.param['additionalNetwork'].append(value)
+
+        self.gen(runCount)
+
+    def gen(self, runCount):
+        if len(self.param['additionalNetwork']) > 0:
+            payload = json.dumps(self.param)
             headers = self.headers
             headers['content-type'] = 'application/json'
             headers['referer'] = f'https://{self.web_host}/v4/editor'
-
+            url = f"https://{self.api_host}/gateway/sd-api/generate/image"
             response = requests.request("POST", url, headers=headers, data=payload)
             self.logger.info(f"mobile：{self.userInfo['mobile']}，{response.text}")
             res = json.loads(response.text)
@@ -138,9 +83,9 @@ class Image(UserInfo):
                             "checkpointId": 159549,
                             "generateType": 1,
                             "frontCustomerReq": res['data']['frontCustomerReq'],
-                            "text2img": param['text2img'],
+                            "text2img": self.param['text2img'],
                             "adetailerEnable": 0,
-                            "additionalNetwork": param['additionalNetwork'],
+                            "additionalNetwork": self.param['additionalNetwork'],
                             "taskQueuePriority": 1
                         },
                         "gen-img-type": "txt2img"

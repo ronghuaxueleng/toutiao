@@ -103,6 +103,7 @@ if __name__ == '__main__':
                 query = Account.select().where(Account.user_uuid == uuid)
                 if query.exists():
                     Account.update(
+                        user_uuid=uuid,
                         nickname=nickname,
                         userInfo=json.dumps(realUser)
                     ).where(Account.user_uuid == uuid).execute()
