@@ -19,9 +19,9 @@ class LiblibTasks:
         pass
 
     def init(self):
-        self.drawImage()
+        # self.drawImage()
         self.downloadModel()
-        self.downLoadImage()
+        # self.downLoadImage()
         return self
 
     def start(self):
@@ -133,5 +133,6 @@ class LiblibTasks:
 liblibTasks = LiblibTasks()
 
 if __name__ == '__main__':
-    models = liblibTasks.drawImage()
-    print(models)
+    liblibTasks.drawImage()
+    all_jobs = scheduler.get_jobs()
+    print(all_jobs)
