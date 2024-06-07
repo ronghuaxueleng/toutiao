@@ -1,7 +1,9 @@
 import copy
 import datetime
 import json
+import queue
 import random
+import time
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -19,9 +21,9 @@ class LiblibTasks:
         pass
 
     def init(self):
-        # self.drawImage()
+        self.drawImage()
         self.downloadModel()
-        # self.downLoadImage()
+        self.downLoadImage()
         return self
 
     def start(self):
@@ -51,12 +53,6 @@ class LiblibTasks:
         return final_user_model_dict
 
     def downloadModel(self):
-        def doDownloadModel(user):
-            try:
-                DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
-            except Exception as e:
-                print(e)
-
         my_loras = ql_env.search("my_lora")
         download_models = []
         for my_lora in my_loras:
@@ -64,17 +60,18 @@ class LiblibTasks:
                 download_models.append(json.loads(my_lora['value'])['modelId'])
         for pageNo in range(1, 5):
             users = get_users()
-            for user in random.sample(users, 4):
-                job_id = f"{user['usertoken']}_downloadModel_{pageNo}"
-                if scheduler.get_job(job_id) is None:
-                    scheduler.add_job(
-                        doDownloadModel,
-                        id=job_id,
-                        trigger='date',
-                        args=[user],
-                        run_date=datetime.datetime.now() + datetime.timedelta(hours=4, minutes=random.randint(0, 59),
-                                                                              seconds=random.randint(0, 59)),
-                    )
+            for user in users:
+                try:
+                    DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
+                except Exception as e:
+                    print(e)
+        scheduler.add_job(
+            self.downloadModel,
+            id='downloadModel',
+            trigger='date',
+            run_date=datetime.datetime.now() + datetime.timedelta(hours=4, minutes=random.randint(0, 59),
+                                                                  seconds=random.randint(0, 59)),
+        )
 
     def downLoadImage(self):
         def doDownloadImage(user):
@@ -99,6 +96,35 @@ class LiblibTasks:
                 )
 
     def drawImage(self):
+        q = queue.Queue()
+
+        def get_percent(image, image_num):
+            res = image.get_percent(image_num)
+            if res['code'] == 0:
+                percentCompleted = res['data']['percentCompleted']
+                print(percentCompleted)
+                if percentCompleted != 100:
+                    time.sleep(2)
+                    get_percent(image, image_num)
+                else:
+                    image.nps()
+                    try:
+                        DownLoadImage(user['usertoken'], user['webid']).download()
+                    except Exception as e:
+                        print(e)
+                    if q.not_empty:
+                        r = q.get()
+                        doDrawImage(r[0], r[1])
+                    else:
+                        job_id = f"drawImage"
+                        scheduler.add_job(
+                            self.drawImage,
+                            id=job_id,
+                            trigger='date',
+                            run_date=datetime.datetime.now() + datetime.timedelta(minutes=random.randint(5, 20),
+                                                                                  seconds=random.randint(0, 59)),
+                        )
+
         def doDrawImage(user, model):
             try:
                 image = Image(user['usertoken'], user['webid'])
@@ -109,7 +135,9 @@ class LiblibTasks:
                 run_model = runCount.setdefault(user['usertoken'], {})
                 __model = run_model.setdefault(model['modelId'], model)
                 run_count = __model.setdefault('count', 0)
-                image.gen(run_count)
+                runCount[user['usertoken']][model['modelId']]['count'] = run_count + 1
+                image_num = image.gen(runCount)
+                get_percent(image, image_num)
             except Exception as e:
                 print(e)
 
@@ -118,16 +146,9 @@ class LiblibTasks:
         for user in users:
             to_run_models = user_model_dict[user['usertoken']]
             for to_run_model in to_run_models:
-                job_id = f"{user['usertoken']}_{to_run_model['modelId']}_drawImage"
-                if scheduler.get_job(job_id) is None:
-                    scheduler.add_job(
-                        doDrawImage,
-                        id=job_id,
-                        trigger='date',
-                        args=[user, to_run_model],
-                        run_date=datetime.datetime.now() + datetime.timedelta(minutes=random.randint(5, 20),
-                                                                              seconds=random.randint(0, 59)),
-                    )
+                q.put((user, to_run_model))
+        r = q.get()
+        doDrawImage(r[0], r[1])
 
 
 liblibTasks = LiblibTasks()

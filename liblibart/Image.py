@@ -41,7 +41,18 @@ class Image(Base):
                         del value['modelType']
                         self.param['additionalNetwork'].append(value)
 
-        self.gen(runCount)
+        image_num = self.gen(runCount)
+        res = self.get_percent(image_num)
+        if res['code'] == 0:
+            if res['data']['percentCompleted'] != 100:
+                self.get_percent(image_num)
+            else:
+                self.nps()
+                try:
+                    DownLoadImage(self.token, self.webid).download()
+                except Exception as e:
+                    print(e)
+                return True
 
     def gen(self, runCount):
         if len(self.param['additionalNetwork']) > 0:
@@ -55,7 +66,7 @@ class Image(Base):
             res = json.loads(response.text)
 
             if res['code'] == 0:
-                res = self.progress_msg(headers, res['data'])
+                res1 = self.progress_msg(headers, res['data'])
                 url = f"https://{self.api_host}/api/www/log/acceptor/f"
                 payload = json.dumps({
                     "abtest": [
@@ -83,7 +94,7 @@ class Image(Base):
                         "gen-img-req-param": {
                             "checkpointId": 159549,
                             "generateType": 1,
-                            "frontCustomerReq": res['data']['frontCustomerReq'],
+                            "frontCustomerReq": res1['data']['frontCustomerReq'],
                             "text2img": self.param['text2img'],
                             "adetailerEnable": 0,
                             "additionalNetwork": self.param['additionalNetwork'],
@@ -94,8 +105,6 @@ class Image(Base):
                 })
                 response = requests.request("POST", url, headers=headers, data=payload)
                 print(response.text)
-
-                self.get_percent(res['data'])
 
                 for user_uuid, model_list in runCount.items():
                     for modelId, model in model_list.items():
@@ -117,6 +126,7 @@ class Image(Base):
                                 runCount=model['count'],
                                 day=self.day
                             ).execute()
+                return res['data']
 
     def get_percent(self, image_num):
         url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/v1/{image_num}"
@@ -126,18 +136,10 @@ class Image(Base):
         headers = copy.deepcopy(self.headers)
         del headers['authority']
         headers['content-type'] = 'application/json'
-        headers['referer'] = f'https://{self.web_host}',
+        headers['referer'] = f'https://{self.web_host}'
         response = requests.request("POST", url, headers=headers, data=payload)
-        res = json.loads(response.text)
-        if res['code'] == 0:
-            if res['data']['percentCompleted'] != 100:
-                self.get_percent(image_num)
-            else:
-                self.nps()
-                try:
-                    DownLoadImage(self.token, self.webid).download()
-                except Exception as e:
-                    print(e)
+        return json.loads(response.text)
+
 
     def nps(self):
         url = "https://liblib-api.vibrou.com/gateway/sd-api/common/getStatisticsCount"
@@ -149,7 +151,7 @@ class Image(Base):
         headers = copy.deepcopy(self.headers)
         del headers['authority']
         headers['content-type'] = 'application/json'
-        headers['referer'] = f'https://{self.web_host}',
+        headers['referer'] = f'https://{self.web_host}'
 
         response = requests.request("POST", url, headers=headers, data=payload)
 

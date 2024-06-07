@@ -68,7 +68,7 @@ class DownLoadImage(UserInfo):
             }
         })
         response = requests.request("POST", url, headers=headers, data=payload)
-
+        self.logger.info(response.text)
         idList = []
         downloadImageCount = {}
         for img in res['data']['list']:
