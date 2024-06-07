@@ -3,16 +3,15 @@ import datetime
 import json
 import random
 
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 from liblibart.CookieUtils import get_users
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image
-from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
-scheduler = BackgroundScheduler()
+scheduler = BlockingScheduler()
 
 
 class LiblibTasks:
