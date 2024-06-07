@@ -63,5 +63,5 @@ class Base(UserInfo):
                 }
             ],
             "additionalNetwork": [],
-            "taskQueuePriority": 0
+            "taskQueuePriority": 1
         }
