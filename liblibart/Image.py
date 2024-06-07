@@ -10,6 +10,7 @@ import requests
 
 from liblibart.Base import Base
 from liblibart.CookieUtils import get_users
+from liblibart.DownLoadImage import DownLoadImage
 from liblibart.Statistics import RunStatistics
 
 
@@ -92,47 +93,22 @@ class Image(Base):
                     }
                 })
                 response = requests.request("POST", url, headers=headers, data=payload)
-
-                payload = json.dumps({
-                    "abtest": [
-                        {
-                            "name": "image_recommend",
-                            "group": "IMAGE_REC_SERVICE"
-                        },
-                        {
-                            "name": "model_recommend",
-                            "group": "PERSONALIZED_RECOMMEND"
-                        }
-                    ],
-                    "sys": "SD",
-                    "t": 2,
-                    "uuid": self.userInfo['uuid'],
-                    "cid": self.webid,
-                    "page": "SD_GENERATE",
-                    "pageUrl": f"https://{self.web_host}/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
-                    "ct": time.time(),
-                    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-                    "referer": f"https://{self.web_host}/sd",
-                    "e": "sdp.generate.success",
-                    "var": {
-                        "generateId": self.frontId,
-                        "gen-img-type": "txt2img",
-                        "serverId": res['data']['generateId']
-                    }
-                })
-                response = requests.request("POST", url, headers=headers, data=payload)
-
                 print(response.text)
+
+                self.get_percent(res['data'])
+
                 for user_uuid, model_list in runCount.items():
                     for modelId, model in model_list.items():
-                        query = RunStatistics.select().where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId,
+                        query = RunStatistics.select().where(RunStatistics.user_uuid == user_uuid,
+                                                             RunStatistics.modelId == modelId,
                                                              RunStatistics.day == self.day)
                         if query.exists():
                             runCount = int(query.dicts().get().get('runCount'))
                             RunStatistics.update(
                                 runCount=runCount + model['count'],
                                 timestamp=datetime.datetime.now()
-                            ).where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId, RunStatistics.day == self.day).execute()
+                            ).where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId,
+                                    RunStatistics.day == self.day).execute()
                         else:
                             RunStatistics.insert(
                                 user_uuid=user_uuid,
@@ -141,6 +117,44 @@ class Image(Base):
                                 runCount=model['count'],
                                 day=self.day
                             ).execute()
+
+    def get_percent(self, image_num):
+        url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/v1/{image_num}"
+        payload = json.dumps({
+            "flag": 0
+        })
+        headers = copy.deepcopy(self.headers)
+        del headers['authority']
+        headers['content-type'] = 'application/json'
+        headers['referer'] = f'https://{self.web_host}',
+        response = requests.request("POST", url, headers=headers, data=payload)
+        res = json.loads(response.text)
+        if res['code'] == 0:
+            if res['data']['percentCompleted'] != 100:
+                self.get_percent(image_num)
+            else:
+                self.nps()
+                try:
+                    DownLoadImage(self.token, self.webid).download()
+                except Exception as e:
+                    print(e)
+
+    def nps(self):
+        url = "https://liblib-api.vibrou.com/gateway/sd-api/common/getStatisticsCount"
+
+        payload = json.dumps({
+            "businessType": "nps",
+            "source": 0
+        })
+        headers = copy.deepcopy(self.headers)
+        del headers['authority']
+        headers['content-type'] = 'application/json'
+        headers['referer'] = f'https://{self.web_host}',
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        print(response.text)
+
 
     def progress_msg(self, headers, progress_code):
         url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/{progress_code}"

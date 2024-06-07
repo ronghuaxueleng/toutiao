@@ -40,11 +40,11 @@ class DownLoadImage(UserInfo):
             "abtest": [
                 {
                     "name": "image_recommend",
-                    "group": "IMAGE_REC_SERVICE"
+                    "group": "IMAGE_REC_SERVICE_DEFAULT"
                 },
                 {
                     "name": "model_recommend",
-                    "group": "PERSONALIZED_RECOMMEND"
+                    "group": "PERSONALIZED_RECOMMEND_V11"
                 }
             ],
             "sys": "SD",
