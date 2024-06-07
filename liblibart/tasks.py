@@ -51,7 +51,6 @@ class LiblibTasks:
             final_user_model_dict[usertoken] = final_user_model_list
         return final_user_model_dict
 
-
     def downloadModel(self):
         def doDownloadModel(user):
             try:
@@ -84,6 +83,7 @@ class LiblibTasks:
                 DownLoadImage(user['usertoken'], user['webid']).download()
             except Exception as e:
                 print(e)
+
         users = get_users()
         for user in users:
             job_id = f"{user['usertoken']}_downLoadImage"
@@ -113,6 +113,7 @@ class LiblibTasks:
                 image.gen(run_count)
             except Exception as e:
                 print(e)
+
         users = get_users()
         user_model_dict = self.get_models()
         for user in users:
@@ -124,7 +125,7 @@ class LiblibTasks:
                         doDrawImage,
                         id=job_id,
                         trigger='date',
-                        args=[user, to_run_models],
+                        args=[user, to_run_model],
                         run_date=datetime.datetime.now() + datetime.timedelta(minutes=random.randint(5, 20),
                                                                               seconds=random.randint(0, 59)),
                     )
@@ -133,4 +134,5 @@ class LiblibTasks:
 liblibTasks = LiblibTasks()
 
 if __name__ == '__main__':
-    LiblibTasks().get_models()
+    models = liblibTasks.drawImage()
+    print(models)
