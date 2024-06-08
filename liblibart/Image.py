@@ -42,17 +42,18 @@ class Image(Base):
                         self.param['additionalNetwork'].append(value)
 
         image_num = self.gen(runCount)
-        res = self.get_percent(image_num)
-        if res['code'] == 0:
-            if res['data']['percentCompleted'] != 100:
-                self.get_percent(image_num)
-            else:
-                self.nps()
-                try:
-                    DownLoadImage(self.token, self.webid).download()
-                except Exception as e:
-                    print(e)
-                return True
+        if image_num != 'suanlibuzu':
+            res = self.get_percent(image_num)
+            if res['code'] == 0:
+                if res['data']['percentCompleted'] != 100:
+                    self.get_percent(image_num)
+                else:
+                    self.nps()
+                    try:
+                        DownLoadImage(self.token, self.webid).download()
+                    except Exception as e:
+                        print(e)
+                    return True
 
     def gen(self, runCount):
         if len(self.param['additionalNetwork']) > 0:
@@ -127,6 +128,8 @@ class Image(Base):
                                 day=self.day
                             ).execute()
                 return res['data']
+            elif res['code'] == 1200000136:
+                return 'suanlibuzu'
 
     def get_percent(self, image_num):
         url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/v1/{image_num}"

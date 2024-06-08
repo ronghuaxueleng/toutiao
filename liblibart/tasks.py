@@ -137,7 +137,21 @@ class LiblibTasks:
                 run_count = __model.setdefault('count', 0)
                 runCount[user['usertoken']][model['modelId']]['count'] = run_count + 1
                 image_num = image.gen(runCount)
-                get_percent(image, image_num)
+                if image_num != 'suanlibuzu':
+                    get_percent(image, image_num)
+                else:
+                    if q.not_empty:
+                        r = q.get()
+                        doDrawImage(r[0], r[1])
+                    else:
+                        job_id = f"drawImage"
+                        scheduler.add_job(
+                            self.drawImage,
+                            id=job_id,
+                            trigger='date',
+                            run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                                                                  seconds=random.randint(0, 59)),
+                        )
             except Exception as e:
                 print(e)
 
