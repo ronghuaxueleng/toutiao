@@ -127,12 +127,12 @@ def drawImage(self):
             res = image.get_percent(image_num)
             if res['code'] == 0:
                 percentCompleted = res['data']['percentCompleted']
-                print(f'{percentCompleted}%.....')
+                image.logger.info(f"mobile：{image.userInfo['mobile']}，{percentCompleted}%.....")
                 if percentCompleted != 100:
                     time.sleep(7)
                     yield get_percent(image, image_num)
                 else:
-                    print("100%.....")
+                    image.logger.info(f"mobile：{image.userInfo['mobile']}，100%.....")
                     image.nps()
                     try:
                         DownLoadImage(user['usertoken'], user['webid']).download()
