@@ -112,10 +112,10 @@ class LiblibTasks:
                                                                       seconds=random.randint(0, 59)),
             )
 
-
-def drawImage(self):
+    def drawImage(self):
         q = queue.Queue()
         job_id = f"drawImage"
+
         def f_percent_wapper(generator, image, image_num):
             gen = generator(image, image_num)
             while isinstance(gen, types.GeneratorType):
@@ -148,13 +148,15 @@ def drawImage(self):
                                 self.drawImage,
                                 id=job_id,
                                 trigger='date',
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(20, 24),
+                                                                                      minutes=random.randint(5, 20),
                                                                                       seconds=random.randint(0, 59)),
                             )
                         else:
                             scheduler.reschedule_job(
                                 job_id,
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(20, 24),
+                                                                                      minutes=random.randint(5, 20),
                                                                                       seconds=random.randint(0, 59)),
                             )
 
@@ -183,13 +185,15 @@ def drawImage(self):
                                 self.drawImage,
                                 id=job_id,
                                 trigger='date',
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(20, 24),
+                                                                                      minutes=random.randint(5, 20),
                                                                                       seconds=random.randint(0, 59)),
                             )
                         else:
                             scheduler.reschedule_job(
                                 job_id,
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(20, 24),
+                                                                                      minutes=random.randint(5, 20),
                                                                                       seconds=random.randint(0, 59)),
                             )
             except Exception as e:
