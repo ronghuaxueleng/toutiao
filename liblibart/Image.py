@@ -128,7 +128,7 @@ class Image(Base):
                                 day=self.day
                             ).execute()
                 return res['data']
-            elif res['code'] == 1200000136:
+            else:
                 return 'suanlibuzu'
 
     def get_percent(self, image_num):

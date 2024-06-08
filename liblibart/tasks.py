@@ -4,6 +4,7 @@ import json
 import queue
 import random
 import time
+import types
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -53,6 +54,7 @@ class LiblibTasks:
         return final_user_model_dict
 
     def downloadModel(self):
+        job_id = 'downloadModel'
         my_loras = ql_env.search("my_lora")
         download_models = []
         for my_lora in my_loras:
@@ -65,48 +67,72 @@ class LiblibTasks:
                     DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
                 except Exception as e:
                     print(e)
-        scheduler.add_job(
-            self.downloadModel,
-            id='downloadModel',
-            trigger='date',
-            run_date=datetime.datetime.now() + datetime.timedelta(hours=4, minutes=random.randint(0, 59),
-                                                                  seconds=random.randint(0, 59)),
-        )
+        s = scheduler.get_job(job_id)
+        if s is None:
+            scheduler.add_job(
+                self.downloadModel,
+                id=job_id,
+                trigger='date',
+                run_date=datetime.datetime.now() + datetime.timedelta(hours=4, minutes=random.randint(0, 59),
+                                                                      seconds=random.randint(0, 59)),
+            )
+        else:
+            scheduler.reschedule_job(
+                job_id,
+                run_date=datetime.datetime.now() + datetime.timedelta(hours=4, minutes=random.randint(0, 59),
+                                                                      seconds=random.randint(0, 59))
+            )
 
     def downLoadImage(self):
-        def doDownloadImage(user):
+        job_id = "downLoadImage"
+        users = get_users()
+        for user in users:
             try:
                 DownLoadImage(user['usertoken'], user['webid']).download()
             except Exception as e:
                 print(e)
-
-        users = get_users()
-        for user in users:
-            job_id = f"{user['usertoken']}_downLoadImage"
+        s = scheduler.get_job(job_id)
+        if s is None:
             if scheduler.get_job(job_id) is None:
                 scheduler.add_job(
-                    doDownloadImage,
+                    self.downLoadImage,
                     id=job_id,
                     trigger='date',
-                    args=[user],
-                    run_date=datetime.datetime.now() + datetime.timedelta(hours=3,
+                    run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
                                                                           minutes=random.sample([11, 23, 37, 42, 57],
                                                                                                 1)[0],
                                                                           seconds=random.randint(0, 59)),
                 )
+        else:
+            scheduler.reschedule_job(
+                job_id,
+                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
+                                                                      minutes=random.sample([11, 23, 37, 42, 57],
+                                                                                            1)[0],
+                                                                      seconds=random.randint(0, 59)),
+            )
 
-    def drawImage(self):
+
+def drawImage(self):
         q = queue.Queue()
+        job_id = f"drawImage"
+        def f_percent_wapper(generator, image, image_num):
+            gen = generator(image, image_num)
+            while isinstance(gen, types.GeneratorType):
+                gen = gen.__next__()
+
+            return gen
 
         def get_percent(image, image_num):
             res = image.get_percent(image_num)
             if res['code'] == 0:
                 percentCompleted = res['data']['percentCompleted']
-                print(percentCompleted)
+                print(f'{percentCompleted}%.....')
                 if percentCompleted != 100:
-                    time.sleep(2)
-                    get_percent(image, image_num)
+                    time.sleep(7)
+                    yield get_percent(image, image_num)
                 else:
+                    print("100%.....")
                     image.nps()
                     try:
                         DownLoadImage(user['usertoken'], user['webid']).download()
@@ -116,14 +142,21 @@ class LiblibTasks:
                         r = q.get()
                         doDrawImage(r[0], r[1])
                     else:
-                        job_id = f"drawImage"
-                        scheduler.add_job(
-                            self.drawImage,
-                            id=job_id,
-                            trigger='date',
-                            run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
-                                                                                  seconds=random.randint(0, 59)),
-                        )
+                        s = scheduler.get_job(job_id)
+                        if s is None:
+                            scheduler.add_job(
+                                self.drawImage,
+                                id=job_id,
+                                trigger='date',
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                                                                      seconds=random.randint(0, 59)),
+                            )
+                        else:
+                            scheduler.reschedule_job(
+                                job_id,
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                                                                      seconds=random.randint(0, 59)),
+                            )
 
         def doDrawImage(user, model):
             try:
@@ -138,20 +171,27 @@ class LiblibTasks:
                 runCount[user['usertoken']][model['modelId']]['count'] = run_count + 1
                 image_num = image.gen(runCount)
                 if image_num != 'suanlibuzu':
-                    get_percent(image, image_num)
+                    f_percent_wapper(get_percent, image, image_num)
                 else:
                     if q.not_empty:
                         r = q.get()
                         doDrawImage(r[0], r[1])
                     else:
-                        job_id = f"drawImage"
-                        scheduler.add_job(
-                            self.drawImage,
-                            id=job_id,
-                            trigger='date',
-                            run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
-                                                                                  seconds=random.randint(0, 59)),
-                        )
+                        s = scheduler.get_job(job_id)
+                        if s is None:
+                            scheduler.add_job(
+                                self.drawImage,
+                                id=job_id,
+                                trigger='date',
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                                                                      seconds=random.randint(0, 59)),
+                            )
+                        else:
+                            scheduler.reschedule_job(
+                                job_id,
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(5, 7), minutes=random.randint(5, 20),
+                                                                                      seconds=random.randint(0, 59)),
+                            )
             except Exception as e:
                 print(e)
 
