@@ -2,6 +2,7 @@
 import datetime
 import json
 import random
+import sys
 import time
 
 import requests
@@ -18,7 +19,7 @@ class DownLoadImage(UserInfo):
     def download(self):
         url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
 
-        day = datetime.datetime.now() - datetime.timedelta(days=7)
+        day = datetime.datetime.now() - datetime.timedelta(days=90)
         fromTime = datetime.datetime(day.year, day.month, day.day).strftime('%Y-%m-%d 00:00:00')
 
         payload = json.dumps({
@@ -77,10 +78,12 @@ class DownLoadImage(UserInfo):
                 try:
                     modelVersionId = model['modelVersionId']
                     _model = self.model_dict[modelVersionId]
+                    print(_model)
                     userUuid = _model['userUuid']
                     download_model = downloadImageCount.setdefault(userUuid, {})
                     __model = download_model.setdefault(modelVersionId, _model)
                     download_count = __model.setdefault('count', 0)
+                    print(download_count)
                     downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
                 except Exception as e:
                     self.logger.error(e)

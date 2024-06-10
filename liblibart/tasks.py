@@ -214,6 +214,6 @@ class LiblibTasks:
 liblibTasks = LiblibTasks()
 
 if __name__ == '__main__':
-    liblibTasks.drawImage()
+    liblibTasks.downLoadImage()
     all_jobs = scheduler.get_jobs()
     print(all_jobs)
