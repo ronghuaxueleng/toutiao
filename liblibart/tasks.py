@@ -73,13 +73,15 @@ class LiblibTasks:
                 self.downloadModel,
                 id=job_id,
                 trigger='date',
-                run_date=datetime.datetime.now() + datetime.timedelta(hours=4, minutes=random.randint(0, 59),
+                run_date=datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 7), hours=4,
+                                                                      minutes=random.randint(0, 59),
                                                                       seconds=random.randint(0, 59)),
             )
         else:
             scheduler.reschedule_job(
                 job_id,
-                run_date=datetime.datetime.now() + datetime.timedelta(hours=4, minutes=random.randint(0, 59),
+                run_date=datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 7), hours=4,
+                                                                      minutes=random.randint(0, 59),
                                                                       seconds=random.randint(0, 59))
             )
 
