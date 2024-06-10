@@ -84,6 +84,7 @@ class UserInfo(LogInfo):
         payload = {}
         response = requests.request("POST", url, headers=self.headers, data=payload)
         data = json.loads(response.text)['data']
+        print(data['nickname'], data['uuid'])
         self.userInfo = data
 
 

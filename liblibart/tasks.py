@@ -12,6 +12,7 @@ from liblibart.CookieUtils import get_users
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image
+from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
 scheduler = BlockingScheduler()
@@ -164,15 +165,16 @@ class LiblibTasks:
 
         def doDrawImage(user, model):
             try:
+                userUuid = model['userUuid']
                 image = Image(user['usertoken'], user['webid'])
                 del model['userUuid']
                 del model['modelType']
                 image.param['additionalNetwork'].append(model)
                 runCount = {}
-                run_model = runCount.setdefault(user['usertoken'], {})
+                run_model = runCount.setdefault(userUuid, {})
                 __model = run_model.setdefault(model['modelId'], model)
                 run_count = __model.setdefault('count', 0)
-                runCount[user['usertoken']][model['modelId']]['count'] = run_count + 1
+                runCount[userUuid][model['modelId']]['count'] = run_count + 1
                 image_num = image.gen(runCount)
                 if image_num != 'suanlibuzu':
                     f_percent_wapper(get_percent, image, image_num)

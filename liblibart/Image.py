@@ -119,9 +119,6 @@ class Image(Base):
                                 timestamp=datetime.datetime.now()
                             ).where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId,
                                     RunStatistics.day == self.day).execute()
-                            print(f"update day is {self.day}")
-                            print(f"update runCount is {runCount}")
-                            print(f"update model is {model['count']}")
                         else:
                             RunStatistics.insert(
                                 user_uuid=user_uuid,
@@ -130,8 +127,6 @@ class Image(Base):
                                 runCount=model['count'],
                                 day=self.day
                             ).execute()
-                            print(f"add day is {self.day}")
-                            print(f"add model is {model['count']}")
                 return res['data']
             else:
                 return 'suanlibuzu'
