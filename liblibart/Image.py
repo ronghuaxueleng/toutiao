@@ -3,7 +3,6 @@ import copy
 import datetime
 import json
 import random
-import subprocess
 import time
 import uuid
 
@@ -115,19 +114,19 @@ class Image(Base):
                                                              RunStatistics.day == self.day)
                         if query.exists():
                             runCount = int(query.dicts().get().get('runCount'))
-                            subprocess.Popen(RunStatistics.update(
+                            RunStatistics.update(
                                 runCount=runCount + model['count'],
                                 timestamp=datetime.datetime.now()
                             ).where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId,
-                                    RunStatistics.day == self.day).execute())
+                                    RunStatistics.day == self.day).execute()
                         else:
-                            subprocess.Popen(RunStatistics.insert(
+                            RunStatistics.insert(
                                 user_uuid=user_uuid,
                                 modelId=modelId,
                                 modelName=model['modelName'],
                                 runCount=model['count'],
                                 day=self.day
-                            ).execute())
+                            ).execute()
                 return res['data']
             else:
                 return 'suanlibuzu'
