@@ -13,7 +13,7 @@ from liblibart.UserInfo import UserInfo
 
 class DownLoadImage(UserInfo):
     def __init__(self, token, webid):
-        super().__init__(token, webid)
+        super().__init__(token, webid, f'logs/DownLoadImage.log')
 
     def download(self):
         url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"

@@ -16,7 +16,7 @@ from liblibart.Statistics import RunStatistics
 
 class Image(Base):
     def __init__(self, token, webid):
-        super().__init__(token, webid)
+        super().__init__(token, webid, 'logs/Image.log')
         self.frontId = str(uuid.uuid1())
         self.param = copy.deepcopy(self.gen_param)
         self.param['frontCustomerReq']['frontId'] = self.frontId
@@ -63,7 +63,7 @@ class Image(Base):
             headers['referer'] = f'https://{self.web_host}/v4/editor'
             url = f"https://{self.api_host}/gateway/sd-api/generate/image"
             response = requests.request("POST", url, headers=headers, data=payload)
-            self.logger.info(f"mobile：{self.userInfo['mobile']}，{response.text}")
+            self.logger.info(f"mobile：{self.userInfo['mobile']} generate image，{response.text}")
             res = json.loads(response.text)
 
             if res['code'] == 0:
@@ -105,7 +105,7 @@ class Image(Base):
                     }
                 })
                 response = requests.request("POST", url, headers=headers, data=payload)
-                print(response.text)
+                self.logger.info(f"mobile：{self.userInfo['mobile']} log acceptor，{response.text}")
 
                 for user_uuid, model_list in runCount.items():
                     for modelId, model in model_list.items():
@@ -157,8 +157,7 @@ class Image(Base):
         headers['referer'] = f'https://{self.web_host}'
 
         response = requests.request("POST", url, headers=headers, data=payload)
-
-        print(response.text)
+        self.logger.info(f"mobile：{self.userInfo['mobile']} getStatisticsCount，{response.text}")
 
 
     def progress_msg(self, headers, progress_code):

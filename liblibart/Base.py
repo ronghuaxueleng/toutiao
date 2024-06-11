@@ -3,8 +3,8 @@ from liblibart.UserInfo import UserInfo
 
 
 class Base(UserInfo):
-    def __init__(self, token, webid):
-        super().__init__(token, webid)
+    def __init__(self, token, webid, filename=None):
+        super().__init__(token, webid, filename)
         self.gen_param = {
             "checkpointId": 650910,
             "generateType": 1,

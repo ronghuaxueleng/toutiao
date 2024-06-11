@@ -14,7 +14,7 @@ from liblibart.ql import ql_env
 
 class DownloadModel(UserInfo):
     def __init__(self, token, webid):
-        super().__init__(token, webid)
+        super().__init__(token, webid, f'logs/DownLoadImage.log')
 
     def download_model(self, pageNo, download_models):
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
