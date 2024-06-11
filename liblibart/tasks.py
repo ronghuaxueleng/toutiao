@@ -151,14 +151,14 @@ class LiblibTasks:
                                 self.drawImage,
                                 id=job_id,
                                 trigger='date',
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(20, 24),
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 9),
                                                                                       minutes=random.randint(5, 20),
                                                                                       seconds=random.randint(0, 59)),
                             )
                         else:
                             scheduler.reschedule_job(
                                 job_id,
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(20, 24),
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 9),
                                                                                       minutes=random.randint(5, 20),
                                                                                       seconds=random.randint(0, 59)),
                             )
@@ -189,14 +189,14 @@ class LiblibTasks:
                                 self.drawImage,
                                 id=job_id,
                                 trigger='date',
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(20, 24),
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 9),
                                                                                       minutes=random.randint(5, 20),
                                                                                       seconds=random.randint(0, 59)),
                             )
                         else:
                             scheduler.reschedule_job(
                                 job_id,
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(20, 24),
+                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 9),
                                                                                       minutes=random.randint(5, 20),
                                                                                       seconds=random.randint(0, 59)),
                             )
