@@ -12,7 +12,6 @@ from liblibart.CookieUtils import get_users
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image
-from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
 
 scheduler = BlockingScheduler()
@@ -56,6 +55,12 @@ class LiblibTasks:
 
     def downloadModel(self):
         job_id = 'downloadModel'
+
+        def get_run_date():
+            datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 7), hours=4,
+                                                         minutes=random.randint(0, 59),
+                                                         seconds=random.randint(0, 59))
+
         my_loras = ql_env.search("my_lora")
         download_models = []
         for my_lora in my_loras:
@@ -74,20 +79,23 @@ class LiblibTasks:
                 self.downloadModel,
                 id=job_id,
                 trigger='date',
-                run_date=datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 7), hours=4,
-                                                                      minutes=random.randint(0, 59),
-                                                                      seconds=random.randint(0, 59)),
+                run_date=get_run_date(),
             )
         else:
             scheduler.reschedule_job(
                 job_id,
-                run_date=datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 7), hours=4,
-                                                                      minutes=random.randint(0, 59),
-                                                                      seconds=random.randint(0, 59))
+                run_date=get_run_date()
             )
 
     def downLoadImage(self):
         job_id = "downLoadImage"
+
+        def get_run_date():
+            datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
+                                                         minutes=random.sample([11, 23, 37, 42, 57],
+                                                                               1)[0],
+                                                         seconds=random.randint(0, 59))
+
         users = get_users()
         for user in users:
             try:
@@ -101,23 +109,22 @@ class LiblibTasks:
                     self.downLoadImage,
                     id=job_id,
                     trigger='date',
-                    run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
-                                                                          minutes=random.sample([11, 23, 37, 42, 57],
-                                                                                                1)[0],
-                                                                          seconds=random.randint(0, 59)),
+                    run_date=get_run_date(),
                 )
         else:
             scheduler.reschedule_job(
                 job_id,
-                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
-                                                                      minutes=random.sample([11, 23, 37, 42, 57],
-                                                                                            1)[0],
-                                                                      seconds=random.randint(0, 59)),
+                run_date=get_run_date(),
             )
 
     def drawImage(self):
         q = queue.Queue()
         job_id = f"drawImage"
+
+        def get_run_date():
+            return datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
+                                                         minutes=random.randint(5, 20),
+                                                         seconds=random.randint(0, 59))
 
         def f_percent_wapper(generator, image, image_num):
             gen = generator(image, image_num)
@@ -151,16 +158,12 @@ class LiblibTasks:
                                 self.drawImage,
                                 id=job_id,
                                 trigger='date',
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 9),
-                                                                                      minutes=random.randint(5, 20),
-                                                                                      seconds=random.randint(0, 59)),
+                                run_date=get_run_date(),
                             )
                         else:
                             scheduler.reschedule_job(
                                 job_id,
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 9),
-                                                                                      minutes=random.randint(5, 20),
-                                                                                      seconds=random.randint(0, 59)),
+                                run_date=get_run_date(),
                             )
 
         def doDrawImage(user, model):
@@ -189,16 +192,12 @@ class LiblibTasks:
                                 self.drawImage,
                                 id=job_id,
                                 trigger='date',
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 9),
-                                                                                      minutes=random.randint(5, 20),
-                                                                                      seconds=random.randint(0, 59)),
+                                run_date=get_run_date(),
                             )
                         else:
                             scheduler.reschedule_job(
                                 job_id,
-                                run_date=datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 9),
-                                                                                      minutes=random.randint(5, 20),
-                                                                                      seconds=random.randint(0, 59)),
+                                run_date=get_run_date(),
                             )
             except Exception as e:
                 print(e)
