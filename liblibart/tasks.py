@@ -21,6 +21,29 @@ class LiblibTasks:
     def __init__(self):
         pass
 
+    def init_tasks(self):
+        scheduler.add_job(
+            self.downloadModel,
+            id='downloadModel',
+            trigger='date',
+            run_date=self.get_download_model_run_date(),
+        )
+
+        scheduler.add_job(
+            self.downLoadImage,
+            id='downLoadImage',
+            trigger='date',
+            run_date=self.get_downLoad_image_run_date(),
+        )
+
+        scheduler.add_job(
+            self.drawImage,
+            id='drawImage',
+            trigger='date',
+            run_date=self.get_draw_image_run_date(),
+        )
+        return self
+
     def init(self):
         self.drawImage()
         self.downloadModel()
@@ -29,6 +52,7 @@ class LiblibTasks:
 
     def start(self):
         scheduler.start()
+        return self
 
     def get_models(self):
         user_model_dict = {}
@@ -53,13 +77,24 @@ class LiblibTasks:
             final_user_model_dict[usertoken] = final_user_model_list
         return final_user_model_dict
 
+    def get_download_model_run_date(self):
+        datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 7), hours=4,
+                                                     minutes=random.randint(0, 59),
+                                                     seconds=random.randint(0, 59))
+
+    def get_downLoad_image_run_date(self):
+        datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
+                                                     minutes=random.sample([11, 23, 37, 42, 57],
+                                                                           1)[0],
+                                                     seconds=random.randint(0, 59))
+
+    def get_draw_image_run_date(self):
+        return datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
+                                                            minutes=random.randint(5, 20),
+                                                            seconds=random.randint(0, 59))
+
     def downloadModel(self):
         job_id = 'downloadModel'
-
-        def get_run_date():
-            datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 7), hours=4,
-                                                         minutes=random.randint(0, 59),
-                                                         seconds=random.randint(0, 59))
 
         my_loras = ql_env.search("my_lora")
         download_models = []
@@ -79,22 +114,16 @@ class LiblibTasks:
                 self.downloadModel,
                 id=job_id,
                 trigger='date',
-                run_date=get_run_date(),
+                run_date=self.get_download_model_run_date(),
             )
         else:
             scheduler.reschedule_job(
                 job_id,
-                run_date=get_run_date()
+                run_date=self.get_download_model_run_date()
             )
 
     def downLoadImage(self):
         job_id = "downLoadImage"
-
-        def get_run_date():
-            datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
-                                                         minutes=random.sample([11, 23, 37, 42, 57],
-                                                                               1)[0],
-                                                         seconds=random.randint(0, 59))
 
         users = get_users()
         for user in users:
@@ -109,22 +138,17 @@ class LiblibTasks:
                     self.downLoadImage,
                     id=job_id,
                     trigger='date',
-                    run_date=get_run_date(),
+                    run_date=self.get_downLoad_image_run_date(),
                 )
         else:
             scheduler.reschedule_job(
                 job_id,
-                run_date=get_run_date(),
+                run_date=self.get_downLoad_image_run_date(),
             )
 
     def drawImage(self):
         q = queue.Queue()
         job_id = f"drawImage"
-
-        def get_run_date():
-            return datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
-                                                         minutes=random.randint(5, 20),
-                                                         seconds=random.randint(0, 59))
 
         def f_percent_wapper(generator, image, image_num):
             gen = generator(image, image_num)
@@ -158,12 +182,12 @@ class LiblibTasks:
                                 self.drawImage,
                                 id=job_id,
                                 trigger='date',
-                                run_date=get_run_date(),
+                                run_date=self.get_draw_image_run_date(),
                             )
                         else:
                             scheduler.reschedule_job(
                                 job_id,
-                                run_date=get_run_date(),
+                                run_date=self.get_draw_image_run_date(),
                             )
 
         def doDrawImage(user, model):
@@ -192,12 +216,12 @@ class LiblibTasks:
                                 self.drawImage,
                                 id=job_id,
                                 trigger='date',
-                                run_date=get_run_date(),
+                                run_date=self.get_draw_image_run_date(),
                             )
                         else:
                             scheduler.reschedule_job(
                                 job_id,
-                                run_date=get_run_date(),
+                                run_date=self.get_draw_image_run_date(),
                             )
             except Exception as e:
                 print(e)
