@@ -29,25 +29,25 @@ class LiblibTasks:
             run_date=self.get_download_model_run_date(),
         )
 
-        scheduler.add_job(
-            self.downLoadImage,
-            id='downLoadImage',
-            trigger='date',
-            run_date=self.get_downLoad_image_run_date(),
-        )
+        # scheduler.add_job(
+        #     self.downLoadImage,
+        #     id='downLoadImage',
+        #     trigger='date',
+        #     run_date=self.get_downLoad_image_run_date(),
+        # )
 
-        scheduler.add_job(
-            self.drawImage,
-            id='drawImage',
-            trigger='date',
-            run_date=self.get_draw_image_run_date(),
-        )
+        # scheduler.add_job(
+        #     self.drawImage,
+        #     id='drawImage',
+        #     trigger='date',
+        #     run_date=self.get_draw_image_run_date(),
+        # )
         return self
 
     def init(self):
-        self.drawImage()
+        # self.drawImage()
         self.downloadModel()
-        self.downLoadImage()
+        # self.downLoadImage()
         return self
 
     def start(self):
