@@ -71,7 +71,8 @@ class DownLoadImage(UserInfo):
         self.logger.info(response.text)
         idList = []
         downloadImageCount = {}
-        for img in res['data']['list']:
+        if len(res['data']['list']) > 0:
+            img = res['data']['list'][0]
             idList.append(img['id'])
             for model in img['param']['mixModels']:
                 try:
@@ -86,33 +87,33 @@ class DownLoadImage(UserInfo):
                     self.logger.error(e)
 
 
-        url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
+            url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
 
-        payload = json.dumps({
-            "idList": idList
-        })
+            payload = json.dumps({
+                "idList": idList
+            })
 
-        response = requests.request("POST", url, headers=headers, data=payload)
+            response = requests.request("POST", url, headers=headers, data=payload)
 
-        self.logger.info(response.text)
-        for user_uuid, model_list in downloadImageCount.items():
-            for modelId, model in model_list.items():
-                query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId,
-                                                               DownLoadImageStatistics.day == self.day)
-                if query.exists():
-                    downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
-                    DownLoadImageStatistics.update(
-                        downloadImageCount=downloadImageCount + model['count'],
-                        timestamp=datetime.datetime.now()
-                    ).where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId, DownLoadImageStatistics.day == self.day).execute()
-                else:
-                    DownLoadImageStatistics.insert(
-                        user_uuid=user_uuid,
-                        modelId=modelId,
-                        modelName=model['modelName'],
-                        downloadImageCount=model['count'],
-                        day=self.day
-                    ).execute()
+            self.logger.info(response.text)
+            for user_uuid, model_list in downloadImageCount.items():
+                for modelId, model in model_list.items():
+                    query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId,
+                                                                   DownLoadImageStatistics.day == self.day)
+                    if query.exists():
+                        downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
+                        DownLoadImageStatistics.update(
+                            downloadImageCount=downloadImageCount + model['count'],
+                            timestamp=datetime.datetime.now()
+                        ).where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId, DownLoadImageStatistics.day == self.day).execute()
+                    else:
+                        DownLoadImageStatistics.insert(
+                            user_uuid=user_uuid,
+                            modelId=modelId,
+                            modelName=model['modelName'],
+                            downloadImageCount=model['count'],
+                            day=self.day
+                        ).execute()
 
 
 if __name__ == '__main__':
