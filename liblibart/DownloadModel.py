@@ -86,7 +86,7 @@ class DownloadModel(UserInfo):
                             })
                             headers['referer'] = f"https://{self.web_host}/modelinfo/{model['uuid']}"
 
-                            response = requests.request("POST", url, headers=headers, data=payload)
+                            requests.request("POST", url, headers=headers, data=payload)
 
                             query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
                                                                            DownloadModelStatistics.day == self.day)
