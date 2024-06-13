@@ -18,7 +18,7 @@ class DownLoadImage(UserInfo):
     def download(self):
         url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
 
-        day = datetime.datetime.now() - datetime.timedelta(days=90)
+        day = datetime.datetime.now() - datetime.timedelta(days=7)
         fromTime = datetime.datetime(day.year, day.month, day.day).strftime('%Y-%m-%d 00:00:00')
 
         payload = json.dumps({
