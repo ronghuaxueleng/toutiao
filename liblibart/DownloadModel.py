@@ -88,7 +88,6 @@ class DownloadModel(UserInfo):
 
                             response = requests.request("POST", url, headers=headers, data=payload)
 
-                            print(response.text)
                             query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
                                                                            DownloadModelStatistics.day == self.day)
                             if query.exists():
