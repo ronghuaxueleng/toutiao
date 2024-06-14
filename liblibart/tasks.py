@@ -29,25 +29,25 @@ class LiblibTasks:
             run_date=self.get_download_model_run_date(),
         )
 
-        # scheduler.add_job(
-        #     self.downLoadImage,
-        #     id='downLoadImage',
-        #     trigger='date',
-        #     run_date=self.get_downLoad_image_run_date(),
-        # )
+        scheduler.add_job(
+            self.downLoadImage,
+            id='downLoadImage',
+            trigger='date',
+            run_date=self.get_downLoad_image_run_date(),
+        )
 
-        # scheduler.add_job(
-        #     self.drawImage,
-        #     id='drawImage',
-        #     trigger='date',
-        #     run_date=self.get_draw_image_run_date(),
-        # )
+        scheduler.add_job(
+            self.drawImage,
+            id='drawImage',
+            trigger='date',
+            run_date=self.get_draw_image_run_date(),
+        )
         return self
 
     def init(self):
-        # self.drawImage()
+        self.drawImage()
         self.downloadModel()
-        # self.downLoadImage()
+        self.downLoadImage()
         return self
 
     def start(self):
@@ -228,9 +228,9 @@ class LiblibTasks:
 
         users = get_users()
         user_model_dict = self.get_models()
-        for user in users:
+        for user in random.sample(users, 4):
             to_run_models = user_model_dict[user['usertoken']]
-            for to_run_model in to_run_models:
+            for to_run_model in random.sample(to_run_models, 10) if len(to_run_models) > 10 else to_run_models:
                 q.put((user, to_run_model))
         r = q.get()
         doDrawImage(r[0], r[1])
