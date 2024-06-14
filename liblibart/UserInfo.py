@@ -34,7 +34,7 @@ def create_table(table):
 
 
 class UserInfo(LogInfo):
-    def __init__(self, token, webid, filename=None):
+    def __init__(self, token, webid, filename=f'logs/UserInfo.log'):
         super().__init__(filename)
         base64_web_host = 'd3d3LmxpYmxpYi5hcnQ='
         base64_api_host = 'bGlibGliLWFwaS52aWJyb3UuY29t'
