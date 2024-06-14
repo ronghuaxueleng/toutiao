@@ -34,77 +34,79 @@ class DownloadModel(UserInfo):
                 response = requests.request("POST", url, headers=headers, data=payload)
 
                 data = json.loads(response.text)
-                for model in data['data']['list']:
-                    url = f"https://{self.api_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
-                    payload = {}
-                    response = requests.request("POST", url, headers=headers, data=payload)
+                model_list = data['data']['list']
+                if len(model_list) > 0:
+                    for model in random.sample(model_list, 10) if len(model_list) > 10 else model_list:
+                        url = f"https://{self.api_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
+                        payload = {}
+                        response = requests.request("POST", url, headers=headers, data=payload)
 
-                    model_data = json.loads(response.text)
-                    for version in model_data['data']['versions']:
-                        if version['id'] in download_models:
-                            url = f"https://{self.api_host}/api/www/community/downloadCheck?timestamp={time.time()}"
-                            payload = json.dumps({
-                                "uuid": model["uuid"],
-                                "cid": self.webid,
-                                "modelName": model["name"],
-                                "modelVersionId": version['uuid'],
-                                "modelId": model["id"]
-                            })
+                        model_data = json.loads(response.text)
+                        for version in model_data['data']['versions']:
+                            if version['id'] in download_models:
+                                url = f"https://{self.api_host}/api/www/community/downloadCheck?timestamp={time.time()}"
+                                payload = json.dumps({
+                                    "uuid": model["uuid"],
+                                    "cid": self.webid,
+                                    "modelName": model["name"],
+                                    "modelVersionId": version['uuid'],
+                                    "modelId": model["id"]
+                                })
 
-                            response = requests.request("POST", url, headers=headers, data=payload)
+                                response = requests.request("POST", url, headers=headers, data=payload)
 
-                            self.logger.info(
-                                f"token:{self.token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
+                                self.logger.info(
+                                    f"token:{self.token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
 
-                            url = f"https://{self.api_host}/api/www/log/acceptor/f?timestamp={time.time()}"
+                                url = f"https://{self.api_host}/api/www/log/acceptor/f?timestamp={time.time()}"
 
-                            payload = json.dumps({
-                                "t": 2,
-                                "e": "model.view.download",
-                                "page": 2,
-                                "var": {
-                                    "download": "start",
-                                    "model_id": model['uuid'],
-                                    "version_id": version['id']
-                                },
-                                "cid": self.webid,
-                                "uuid": self.userInfo['uuid'],
-                                "ct": time.time(),
-                                "pageUrl": f"https://{self.web_host}/modelinfo/{model['uuid']}",
-                                "sys": "COMMUNITY",
-                                "abtest": [
-                                    {
-                                        "name": "image_recommend",
-                                        "group": "IMAGE_REC_SERVICE"
+                                payload = json.dumps({
+                                    "t": 2,
+                                    "e": "model.view.download",
+                                    "page": 2,
+                                    "var": {
+                                        "download": "start",
+                                        "model_id": model['uuid'],
+                                        "version_id": version['id']
                                     },
-                                    {
-                                        "name": "model_recommend",
-                                        "group": "PERSONALIZED_RECOMMEND"
-                                    }
-                                ],
-                                "ua": "mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/119.0.6045.160 safari/537.36"
-                            })
-                            headers['referer'] = f"https://{self.web_host}/modelinfo/{model['uuid']}"
+                                    "cid": self.webid,
+                                    "uuid": self.userInfo['uuid'],
+                                    "ct": time.time(),
+                                    "pageUrl": f"https://{self.web_host}/modelinfo/{model['uuid']}",
+                                    "sys": "COMMUNITY",
+                                    "abtest": [
+                                        {
+                                            "name": "image_recommend",
+                                            "group": "IMAGE_REC_SERVICE"
+                                        },
+                                        {
+                                            "name": "model_recommend",
+                                            "group": "PERSONALIZED_RECOMMEND"
+                                        }
+                                    ],
+                                    "ua": "mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/119.0.6045.160 safari/537.36"
+                                })
+                                headers['referer'] = f"https://{self.web_host}/modelinfo/{model['uuid']}"
 
-                            requests.request("POST", url, headers=headers, data=payload)
+                                requests.request("POST", url, headers=headers, data=payload)
 
-                            query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
-                                                                           DownloadModelStatistics.day == self.day)
-                            if query.exists():
-                                downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
-                                DownloadModelStatistics.update(
-                                    downloadModelCount=downloadModelCount + 1,
-                                    timestamp=datetime.datetime.now()
-                                ).where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'], DownloadModelStatistics.day == self.day).execute()
-                            else:
-                                DownloadModelStatistics.insert(
-                                    user_uuid=uuid,
-                                    modelId=version['id'],
-                                    modelName=model["name"],
-                                    downloadModelCount=1,
-                                    day=self.day
-                                ).execute()
-                            time.sleep(2)
+                                query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
+                                                                               DownloadModelStatistics.day == self.day)
+                                if query.exists():
+                                    downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
+                                    DownloadModelStatistics.update(
+                                        downloadModelCount=downloadModelCount + 1,
+                                        timestamp=datetime.datetime.now()
+                                    ).where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'], DownloadModelStatistics.day == self.day).execute()
+                                else:
+                                    DownloadModelStatistics.insert(
+                                        user_uuid=uuid,
+                                        modelId=version['id'],
+                                        modelName=model["name"],
+                                        downloadModelCount=1,
+                                        day=self.day
+                                    ).execute()
+                                time.sleep(2)
 
 
 if __name__ == '__main__':
@@ -115,7 +117,7 @@ if __name__ == '__main__':
             download_models.append(json.loads(my_lora['value'])['modelId'])
     for pageNo in range(1, 5):
         users = get_users()
-        for user in users:
+        for user in random.sample(users, 4):
             try:
                 DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
             except Exception as e:
