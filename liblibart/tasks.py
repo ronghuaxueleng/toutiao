@@ -89,8 +89,7 @@ class LiblibTasks:
                                                      seconds=random.randint(0, 59))
 
     def get_draw_image_run_date(self):
-        return datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
-                                                            minutes=random.randint(5, 20),
+        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(20, 40),
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):

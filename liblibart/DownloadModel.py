@@ -36,7 +36,7 @@ class DownloadModel(UserInfo):
                 data = json.loads(response.text)
                 model_list = data['data']['list']
                 if len(model_list) > 0:
-                    for model in random.sample(model_list, 10) if len(model_list) > 10 else model_list:
+                    for model in model_list:
                         url = f"https://{self.api_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
                         payload = {}
                         response = requests.request("POST", url, headers=headers, data=payload)
@@ -44,6 +44,11 @@ class DownloadModel(UserInfo):
                         model_data = json.loads(response.text)
                         for version in model_data['data']['versions']:
                             if version['id'] in download_models:
+                                query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
+                                                                               DownloadModelStatistics.day == self.day)
+                                downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
+                                if downloadModelCount >= 1000:
+                                    continue
                                 url = f"https://{self.api_host}/api/www/community/downloadCheck?timestamp={time.time()}"
                                 payload = json.dumps({
                                     "uuid": model["uuid"],
@@ -90,10 +95,7 @@ class DownloadModel(UserInfo):
 
                                 requests.request("POST", url, headers=headers, data=payload)
 
-                                query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
-                                                                               DownloadModelStatistics.day == self.day)
                                 if query.exists():
-                                    downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
                                     DownloadModelStatistics.update(
                                         downloadModelCount=downloadModelCount + 1,
                                         timestamp=datetime.datetime.now()
