@@ -83,9 +83,13 @@ class UserInfo(LogInfo):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
         payload = {}
         response = requests.request("POST", url, headers=self.headers, data=payload)
-        data = json.loads(response.text)['data']
-        print(data['nickname'], data['uuid'])
-        self.userInfo = data
+        res = json.loads(response.text)
+        if res['code'] == 0:
+            data = res['data']
+            print(data['nickname'], data['uuid'])
+            self.userInfo = data
+        else:
+            self.userInfo = None
 
 
 if __name__ == '__main__':
