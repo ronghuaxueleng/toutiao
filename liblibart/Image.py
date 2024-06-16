@@ -3,6 +3,7 @@ import copy
 import datetime
 import json
 import random
+import threading
 import time
 import uuid
 
@@ -15,11 +16,20 @@ from liblibart.Statistics import RunStatistics
 
 
 class Image(Base):
+    _instance_lock = threading.Lock()
+
     def __init__(self, token, webid, log_filename):
         super().__init__(token, webid, log_filename)
         self.frontId = str(uuid.uuid1())
         self.param = copy.deepcopy(self.gen_param)
         self.param['frontCustomerReq']['frontId'] = self.frontId
+
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(Image, "_instance"):
+            with Image._instance_lock:
+                if not hasattr(Image, "_instance"):
+                    Image._instance = object.__new__(cls)
+        return Image._instance
 
     def gen_image(self):
         runCount = {}

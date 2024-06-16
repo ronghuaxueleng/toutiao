@@ -104,7 +104,8 @@ class LiblibTasks:
             users = get_users()
             for user in random.sample(users, 4):
                 try:
-                    DownloadModel(user['usertoken'], user['webid'], '/mitmproxy/logs/DownloadModel.log').download_model(pageNo, download_models)
+                    DownloadModel(user['usertoken'], user['webid'], '/mitmproxy/logs/DownloadModel.log').download_model(
+                        pageNo, download_models)
                 except Exception as e:
                     print(e)
         s = scheduler.get_job(job_id)
@@ -146,48 +147,25 @@ class LiblibTasks:
             )
 
     def drawImage(self):
-        q = queue.Queue()
         job_id = f"drawImage"
 
-        def f_percent_wapper(generator, image, image_num):
-            gen = generator(image, image_num)
-            while isinstance(gen, types.GeneratorType):
-                gen = gen.__next__()
-
-            return gen
-
-        def get_percent(image, image_num):
+        def get_percent(user, image, image_num, depth):
             res = image.get_percent(image_num)
             if res['code'] == 0:
                 percentCompleted = res['data']['percentCompleted']
                 image.logger.info(f"mobile：{image.userInfo['mobile']}，{percentCompleted}%.....")
                 if percentCompleted != 100:
                     time.sleep(7)
-                    yield get_percent(image, image_num)
+                    get_percent(user, image, image_num, depth+1)
                 else:
-                    image.logger.info(f"mobile：{image.userInfo['mobile']}，100%.....")
+                    image.logger.info(f"finished mobile：{image.userInfo['mobile']}，100%.....")
                     image.nps()
                     try:
                         DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download()
                     except Exception as e:
                         print(e)
-                    if q.not_empty:
-                        r = q.get()
-                        doDrawImage(r[0], r[1])
-                    else:
-                        s = scheduler.get_job(job_id)
-                        if s is None:
-                            scheduler.add_job(
-                                self.drawImage,
-                                id=job_id,
-                                trigger='date',
-                                run_date=self.get_draw_image_run_date(),
-                            )
-                        else:
-                            scheduler.reschedule_job(
-                                job_id,
-                                run_date=self.get_draw_image_run_date(),
-                            )
+                    image.logger.info(f'递归层级{depth}')
+                    return depth
 
         def doDrawImage(user, model):
             try:
@@ -203,36 +181,40 @@ class LiblibTasks:
                 runCount[userUuid][model['modelId']]['count'] = run_count + 1
                 image_num = image.gen(runCount)
                 if image_num != 'suanlibuzu':
-                    f_percent_wapper(get_percent, image, image_num)
-                else:
-                    if q.not_empty:
-                        r = q.get()
-                        doDrawImage(r[0], r[1])
-                    else:
-                        s = scheduler.get_job(job_id)
-                        if s is None:
-                            scheduler.add_job(
-                                self.drawImage,
-                                id=job_id,
-                                trigger='date',
-                                run_date=self.get_draw_image_run_date(),
-                            )
-                        else:
-                            scheduler.reschedule_job(
-                                job_id,
-                                run_date=self.get_draw_image_run_date(),
-                            )
+                    get_percent(user, image, image_num, 1)
             except Exception as e:
                 print(e)
 
         users = get_users()
         user_model_dict = self.get_models()
-        for user in random.sample(users, 4):
-            to_run_models = user_model_dict[user['usertoken']]
-            for to_run_model in random.sample(to_run_models, 10) if len(to_run_models) > 10 else to_run_models:
-                q.put((user, to_run_model))
-        r = q.get()
-        doDrawImage(r[0], r[1])
+
+        def simple_generator():
+            for user in random.sample(users, 4):
+                to_run_models = user_model_dict[user['usertoken']]
+                for to_run_model in random.sample(to_run_models, 10) if len(to_run_models) > 10 else to_run_models:
+                    yield doDrawImage(user, to_run_model)
+
+        gen = simple_generator()
+        try:
+            while True:
+                next(gen)
+        except StopIteration as e:
+            print(e.value)
+        finally:
+            gen.close()
+            s = scheduler.get_job(job_id)
+            if s is None:
+                scheduler.add_job(
+                    self.drawImage,
+                    id=job_id,
+                    trigger='date',
+                    run_date=self.get_draw_image_run_date(),
+                )
+            else:
+                scheduler.reschedule_job(
+                    job_id,
+                    run_date=self.get_draw_image_run_date(),
+                )
 
 
 liblibTasks = LiblibTasks()
