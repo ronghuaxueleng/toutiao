@@ -32,46 +32,47 @@ class DownLoadImage(UserInfo):
         headers['referer'] = f'https://{self.web_host}/v4/editor'
 
         response = requests.request("POST", url, headers=headers, data=payload)
+        self.logger.info(f'查询图片生成历史结果: {response.text}')
         res = json.loads(response.text)
 
-        url = f"https://{self.api_host}/api/www/log/acceptor/f"
-
-        payload = json.dumps({
-            "abtest": [
-                {
-                    "name": "image_recommend",
-                    "group": "IMAGE_REC_SERVICE_DEFAULT"
-                },
-                {
-                    "name": "model_recommend",
-                    "group": "PERSONALIZED_RECOMMEND_V11"
-                }
-            ],
-            "sys": "SD",
-            "t": 2,
-            "uuid": self.userInfo['uuid'],
-            "cid": self.webid,
-            "page": "SD_GENERATE",
-            "pageUrl": f"https://{self.web_host}/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
-            "ct": time.time(),
-            "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-            "referer": f"https://{self.web_host}/sd",
-            "e": "sdp.generate.resp.download",
-            "var": {
-                "img-ids": [
-                    res['data']['list'][0]['outputId']
-                ],
-                "img-urls": [
-                    res['data']['list'][0]['imageId']
-                ],
-                "gen-img-type": "gallery"
-            }
-        })
-        response = requests.request("POST", url, headers=headers, data=payload)
-        self.logger.info(response.text)
-        idList = []
-        downloadImageCount = {}
         if len(res['data']['list']) > 0:
+            url = f"https://{self.api_host}/api/www/log/acceptor/f"
+
+            payload = json.dumps({
+                "abtest": [
+                    {
+                        "name": "image_recommend",
+                        "group": "IMAGE_REC_SERVICE_DEFAULT"
+                    },
+                    {
+                        "name": "model_recommend",
+                        "group": "PERSONALIZED_RECOMMEND_V11"
+                    }
+                ],
+                "sys": "SD",
+                "t": 2,
+                "uuid": self.userInfo['uuid'],
+                "cid": self.webid,
+                "page": "SD_GENERATE",
+                "pageUrl": f"https://{self.web_host}/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
+                "ct": time.time(),
+                "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
+                "referer": f"https://{self.web_host}/sd",
+                "e": "sdp.generate.resp.download",
+                "var": {
+                    "img-ids": [
+                        res['data']['list'][0]['outputId']
+                    ],
+                    "img-urls": [
+                        res['data']['list'][0]['imageId']
+                    ],
+                    "gen-img-type": "gallery"
+                }
+            })
+            response = requests.request("POST", url, headers=headers, data=payload)
+            self.logger.info(f'保存图片下载记录结果: {response.text}')
+            idList = []
+            downloadImageCount = {}
             img = res['data']['list'][0]
             idList.append(img['id'])
             for model in img['param']['mixModels']:
@@ -85,7 +86,6 @@ class DownLoadImage(UserInfo):
                     downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
                 except Exception as e:
                     self.logger.error(e)
-
 
             url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
 
