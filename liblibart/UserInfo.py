@@ -99,7 +99,7 @@ if __name__ == '__main__':
     enable_ids = []
     for user in users:
         try:
-            userInfo = UserInfo(user['usertoken'], user['webid'], 'logs/UserInfo.log')
+            userInfo = UserInfo(user['usertoken'], user['webid'], '/mitmproxy/logs/UserInfo.log')
             realUser = userInfo.userInfo
             if realUser is not None:
                 enable_ids.append(user['id'])

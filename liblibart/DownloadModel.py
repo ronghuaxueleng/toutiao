@@ -121,6 +121,6 @@ if __name__ == '__main__':
         users = get_users()
         for user in random.sample(users, 4):
             try:
-                DownloadModel(user['usertoken'], user['webid'], 'logs/DownloadModel.log').download_model(pageNo, download_models)
+                DownloadModel(user['usertoken'], user['webid'], '/mitmproxy/logs/DownloadModel.log').download_model(pageNo, download_models)
             except Exception as e:
                 print(e)

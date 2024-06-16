@@ -120,6 +120,6 @@ if __name__ == '__main__':
     users = get_users()
     for user in users:
         try:
-            DownLoadImage(user['usertoken'], user['webid'], 'logs/DownLoadImage.log').download()
+            DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download()
         except Exception as e:
             print(e)

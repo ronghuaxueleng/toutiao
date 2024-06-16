@@ -50,7 +50,7 @@ class Image(Base):
                 else:
                     self.nps()
                     try:
-                        DownLoadImage(self.token, self.webid, 'logs/DownLoadImage.log').download()
+                        DownLoadImage(self.token, self.webid, '/mitmproxy/logs/DownLoadImage.log').download()
                     except Exception as e:
                         print(e)
                     return True
@@ -172,6 +172,6 @@ if __name__ == '__main__':
     users = get_users()
     for user in random.sample(users, 4):
         try:
-            Image(user['usertoken'], user['webid'], 'logs/Image.log').gen_image()
+            Image(user['usertoken'], user['webid'], '/mitmproxy/logs/Image.log').gen_image()
         except Exception as e:
             print(e)
