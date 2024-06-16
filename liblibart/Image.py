@@ -15,8 +15,8 @@ from liblibart.Statistics import RunStatistics
 
 
 class Image(Base):
-    def __init__(self, token, webid):
-        super().__init__(token, webid, 'logs/Image.log')
+    def __init__(self, token, webid, log_filename):
+        super().__init__(token, webid, log_filename)
         self.frontId = str(uuid.uuid1())
         self.param = copy.deepcopy(self.gen_param)
         self.param['frontCustomerReq']['frontId'] = self.frontId
@@ -50,7 +50,7 @@ class Image(Base):
                 else:
                     self.nps()
                     try:
-                        DownLoadImage(self.token, self.webid).download()
+                        DownLoadImage(self.token, self.webid, 'logs/DownLoadImage.log').download()
                     except Exception as e:
                         print(e)
                     return True
@@ -172,6 +172,6 @@ if __name__ == '__main__':
     users = get_users()
     for user in random.sample(users, 4):
         try:
-            Image(user['usertoken'], user['webid']).gen_image()
+            Image(user['usertoken'], user['webid'], 'logs/Image.log').gen_image()
         except Exception as e:
             print(e)

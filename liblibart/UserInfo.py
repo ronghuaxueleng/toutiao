@@ -34,8 +34,8 @@ def create_table(table):
 
 
 class UserInfo(LogInfo):
-    def __init__(self, token, webid, filename=f'logs/UserInfo.log'):
-        super().__init__(filename)
+    def __init__(self, token, webid, log_filename):
+        super().__init__(log_filename)
         base64_web_host = 'd3d3LmxpYmxpYi5hcnQ='
         base64_api_host = 'bGlibGliLWFwaS52aWJyb3UuY29t'
         self.api_host = str(base64.b64decode(base64_api_host), 'utf-8')
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     enable_ids = []
     for user in users:
         try:
-            userInfo = UserInfo(user['usertoken'], user['webid'])
+            userInfo = UserInfo(user['usertoken'], user['webid'], 'logs/UserInfo.log')
             realUser = userInfo.userInfo
             if realUser is not None:
                 enable_ids.append(user['id'])

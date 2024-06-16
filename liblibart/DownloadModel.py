@@ -13,8 +13,8 @@ from liblibart.ql import ql_env
 
 
 class DownloadModel(UserInfo):
-    def __init__(self, token, webid):
-        super().__init__(token, webid, f'logs/DownloadModel.log')
+    def __init__(self, token, webid, log_filename):
+        super().__init__(token, webid, log_filename)
 
     def download_model(self, pageNo, download_models):
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
@@ -61,7 +61,7 @@ class DownloadModel(UserInfo):
                                 response = requests.request("POST", url, headers=headers, data=payload)
 
                                 self.logger.info(
-                                    f"token:{self.token}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
+                                    f"token:{uuid}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
 
                                 url = f"https://{self.api_host}/api/www/log/acceptor/f?timestamp={time.time()}"
 
@@ -121,6 +121,6 @@ if __name__ == '__main__':
         users = get_users()
         for user in random.sample(users, 4):
             try:
-                DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
+                DownloadModel(user['usertoken'], user['webid'], 'logs/DownloadModel.log').download_model(pageNo, download_models)
             except Exception as e:
                 print(e)

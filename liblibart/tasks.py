@@ -104,7 +104,7 @@ class LiblibTasks:
             users = get_users()
             for user in random.sample(users, 4):
                 try:
-                    DownloadModel(user['usertoken'], user['webid']).download_model(pageNo, download_models)
+                    DownloadModel(user['usertoken'], user['webid'], 'logs/DownloadModel.log').download_model(pageNo, download_models)
                 except Exception as e:
                     print(e)
         s = scheduler.get_job(job_id)
@@ -127,7 +127,7 @@ class LiblibTasks:
         users = get_users()
         for user in users:
             try:
-                DownLoadImage(user['usertoken'], user['webid']).download()
+                DownLoadImage(user['usertoken'], user['webid'], 'logs/DownLoadImage.log').download()
             except Exception as e:
                 print(e)
         s = scheduler.get_job(job_id)
@@ -168,7 +168,7 @@ class LiblibTasks:
                     image.logger.info(f"mobile：{image.userInfo['mobile']}，100%.....")
                     image.nps()
                     try:
-                        DownLoadImage(user['usertoken'], user['webid']).download()
+                        DownLoadImage(user['usertoken'], user['webid'], 'logs/DownLoadImage.log').download()
                     except Exception as e:
                         print(e)
                     if q.not_empty:
@@ -192,7 +192,7 @@ class LiblibTasks:
         def doDrawImage(user, model):
             try:
                 userUuid = model['userUuid']
-                image = Image(user['usertoken'], user['webid'])
+                image = Image(user['usertoken'], user['webid'], 'logs/Image.log')
                 del model['userUuid']
                 del model['modelType']
                 image.param['additionalNetwork'].append(model)

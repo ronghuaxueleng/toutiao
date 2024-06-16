@@ -12,8 +12,8 @@ from liblibart.UserInfo import UserInfo
 
 
 class DownLoadImage(UserInfo):
-    def __init__(self, token, webid):
-        super().__init__(token, webid, f'logs/DownLoadImage.log')
+    def __init__(self, token, webid, log_filename):
+        super().__init__(token, webid, log_filename)
 
     def download(self):
         url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
@@ -120,6 +120,6 @@ if __name__ == '__main__':
     users = get_users()
     for user in users:
         try:
-            DownLoadImage(user['usertoken'], user['webid']).download()
+            DownLoadImage(user['usertoken'], user['webid'], 'logs/DownLoadImage.log').download()
         except Exception as e:
             print(e)
