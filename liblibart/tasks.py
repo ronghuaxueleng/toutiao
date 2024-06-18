@@ -148,6 +148,7 @@ class LiblibTasks:
 
     def drawImage(self):
         job_id = f"drawImage"
+        suanlibuzu = []
 
         def get_percent(user, image, image_num, depth):
             res = image.get_percent(image_num)
@@ -169,21 +170,23 @@ class LiblibTasks:
 
         def doDrawImage(user, model):
             try:
-                userUuid = model['userUuid']
-                image = Image(user['usertoken'], user['webid'], '/mitmproxy/logs/Image.log')
-                del model['userUuid']
-                del model['modelType']
-                image.param['additionalNetwork'].append(model)
-                runCount = {}
-                run_model = runCount.setdefault(userUuid, {})
-                __model = run_model.setdefault(model['modelId'], model)
-                run_count = __model.setdefault('count', 0)
-                runCount[userUuid][model['modelId']]['count'] = run_count + 1
-                image_num = image.gen(runCount)
-                if image_num != 'suanlibuzu':
-                    get_percent(user, image, image_num, 1)
-                else:
-                    raise Exception('算力不足')
+                if user['usertoken'] not in suanlibuzu:
+                    userUuid = model['userUuid']
+                    image = Image(user['usertoken'], user['webid'], '/mitmproxy/logs/Image.log')
+                    del model['userUuid']
+                    del model['modelType']
+                    image.param['additionalNetwork'].append(model)
+                    runCount = {}
+                    run_model = runCount.setdefault(userUuid, {})
+                    __model = run_model.setdefault(model['modelId'], model)
+                    run_count = __model.setdefault('count', 0)
+                    runCount[userUuid][model['modelId']]['count'] = run_count + 1
+                    image_num = image.gen(runCount)
+                    if image_num != 'suanlibuzu':
+                        get_percent(user, image, image_num, 1)
+                    else:
+                        suanlibuzu.append(user['usertoken'])
+                        raise Exception('算力不足')
             except Exception as e:
                 print(e)
 
