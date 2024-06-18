@@ -32,7 +32,7 @@ class DownLoadImage(UserInfo):
         headers['referer'] = f'https://{self.web_host}/v4/editor'
 
         response = requests.request("POST", url, headers=headers, data=payload)
-        self.logger.info(f'查询图片生成历史结果: {response.text}')
+        self.getLogger().info(f'查询图片生成历史结果: {response.text}')
         res = json.loads(response.text)
 
         if len(res['data']['list']) > 0:
@@ -70,7 +70,7 @@ class DownLoadImage(UserInfo):
                 }
             })
             response = requests.request("POST", url, headers=headers, data=payload)
-            self.logger.info(f'保存图片下载记录结果: {response.text}')
+            self.getLogger().info(f'保存图片下载记录结果: {response.text}')
             idList = []
             downloadImageCount = {}
             img = res['data']['list'][0]
@@ -85,7 +85,7 @@ class DownLoadImage(UserInfo):
                     download_count = __model.setdefault('count', 0)
                     downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
                 except Exception as e:
-                    self.logger.error(e)
+                    self.getLogger().error(e)
 
             url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
 
@@ -95,7 +95,7 @@ class DownLoadImage(UserInfo):
 
             response = requests.request("POST", url, headers=headers, data=payload)
 
-            self.logger.info(response.text)
+            self.getLogger().info(response.text)
             for user_uuid, model_list in downloadImageCount.items():
                 for modelId, model in model_list.items():
                     query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId,

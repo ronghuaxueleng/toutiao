@@ -153,18 +153,18 @@ class LiblibTasks:
             res = image.get_percent(image_num)
             if res['code'] == 0:
                 percentCompleted = res['data']['percentCompleted']
-                image.logger.info(f"mobile：{image.userInfo['mobile']}，{percentCompleted}%.....")
+                image.getLogger().info(f"mobile：{image.userInfo['mobile']}，{percentCompleted}%.....")
                 if percentCompleted != 100:
                     time.sleep(7)
                     get_percent(user, image, image_num, depth+1)
                 else:
-                    image.logger.info(f"finished mobile：{image.userInfo['mobile']}，100%.....")
+                    image.getLogger().info(f"finished mobile：{image.userInfo['mobile']}，100%.....")
                     image.nps()
                     try:
                         DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download()
                     except Exception as e:
                         print(e)
-                    image.logger.info(f'递归层级{depth}')
+                    image.getLogger().info(f'递归层级{depth}')
                     return depth
 
         def doDrawImage(user, model):

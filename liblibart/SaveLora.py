@@ -10,8 +10,8 @@ from liblibart.ql import ql_env
 
 
 class SaveLora(UserInfo):
-    def __init__(self, token, webid):
-        super().__init__(token, webid)
+    def __init__(self, token, webid, log_filename):
+        super().__init__(token, webid, log_filename)
 
     def get_models(self, pageNo):
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         users = get_users()
         for user in users:
             try:
-                SaveLora(user['usertoken'], user['webid']).get_models(pageNo)
+                SaveLora(user['usertoken'], user['webid'], '/mitmproxy/logs/SaveLora.log').get_models(pageNo)
             except Exception as e:
                 print('error', e)
                 print(e)
