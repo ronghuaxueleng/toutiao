@@ -138,8 +138,10 @@ class Image(Base):
                                 day=self.day
                             ).execute()
                 return res['data']
-            else:
+            elif res['code'] == 1200000136:
                 return 'suanlibuzu'
+            else:
+                return 'qitacuowu'
 
     def get_percent(self, image_num):
         url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/v1/{image_num}"

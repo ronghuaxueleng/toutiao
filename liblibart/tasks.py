@@ -182,6 +182,8 @@ class LiblibTasks:
                 image_num = image.gen(runCount)
                 if image_num != 'suanlibuzu':
                     get_percent(user, image, image_num, 1)
+                else:
+                    raise Exception('算力不足')
             except Exception as e:
                 print(e)
 
