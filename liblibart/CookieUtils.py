@@ -4,7 +4,9 @@ import json
 from liblibart.ql import ql_env
 
 
-def get_users(get_all=False):
+def get_users(get_all=False, exclude_user=None):
+    if exclude_user is None:
+        exclude_user = []
     liblib_cookies = ql_env.search("liblib_cookie")
     users = []
     for liblib_cookie in liblib_cookies:
@@ -18,5 +20,6 @@ def get_users(get_all=False):
                     user['usertoken'] = value['value']
                 if value['name'] == 'webid':
                     user['webid'] = value['value']
-            users.append(user)
+            if user['usertoken'] not in exclude_user:
+                users.append(user)
     return users

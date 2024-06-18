@@ -1,10 +1,8 @@
 import copy
 import datetime
 import json
-import queue
 import random
 import time
-import types
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -19,7 +17,10 @@ scheduler = BlockingScheduler()
 
 class LiblibTasks:
     def __init__(self):
-        pass
+        dt = datetime.datetime.now()
+        self.yesterday = (dt - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        self.today = dt.strftime('%Y-%m-%d')
+        self.notAvailableToImageUsers = {}
 
     def init_tasks(self):
         scheduler.add_job(
@@ -149,6 +150,8 @@ class LiblibTasks:
     def drawImage(self):
         job_id = f"drawImage"
         suanlibuzu = []
+        if self.yesterday in self.notAvailableToImageUsers:
+            del self.notAvailableToImageUsers[self.yesterday]
 
         def get_percent(user, image, image_num, depth):
             res = image.get_percent(image_num)
@@ -182,15 +185,20 @@ class LiblibTasks:
                     run_count = __model.setdefault('count', 0)
                     runCount[userUuid][model['modelId']]['count'] = run_count + 1
                     image_num = image.gen(runCount)
-                    if image_num != 'suanlibuzu':
-                        get_percent(user, image, image_num, 1)
-                    else:
+                    if image_num == 'suanlibuzu':
                         suanlibuzu.append(user['usertoken'])
+                        notAvailableToImageUsers = self.notAvailableToImageUsers.setdefault(self.today, [])
+                        notAvailableToImageUsers.append(user['usertoken'])
+                        self.notAvailableToImageUsers[self.today] = notAvailableToImageUsers
                         raise Exception('算力不足')
+                    elif image_num == 'qitacuowu':
+                        raise Exception('报错了')
+                    else:
+                        get_percent(user, image, image_num, 1)
             except Exception as e:
                 print(e)
 
-        users = get_users()
+        users = get_users(exclude_user=self.notAvailableToImageUsers.setdefault(self.today, []))
         user_model_dict = self.get_models()
 
         def simple_generator():
