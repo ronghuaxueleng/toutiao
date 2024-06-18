@@ -189,7 +189,8 @@ class LiblibTasks:
         user_model_dict = self.get_models()
 
         def simple_generator():
-            for user in random.sample(users, 5):
+            # for user in random.sample(users, 5):
+            for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
                 # for to_run_model in random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models:
                 for to_run_model in to_run_models:
