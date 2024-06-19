@@ -79,7 +79,7 @@ class LiblibTasks:
         return final_user_model_dict
 
     def get_download_model_run_date(self):
-        datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 7), hours=4,
+        datetime.datetime.now() + datetime.timedelta(days=random.randint(3, 5), hours=random.randint(1, 23),
                                                      minutes=random.randint(0, 59),
                                                      seconds=random.randint(0, 59))
 
