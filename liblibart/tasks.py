@@ -171,19 +171,20 @@ class LiblibTasks:
                     image.getLogger().info(f'递归层级{depth}')
                     return depth
 
-        def doDrawImage(user, model):
+        def doDrawImage(user, my_loras):
             try:
                 if user['usertoken'] not in suanlibuzu:
-                    userUuid = model['userUuid']
                     image = Image(user['usertoken'], user['webid'], '/mitmproxy/logs/Image.log')
-                    del model['userUuid']
-                    del model['modelType']
-                    image.param['additionalNetwork'].append(model)
                     runCount = {}
-                    run_model = runCount.setdefault(userUuid, {})
-                    __model = run_model.setdefault(model['modelId'], model)
-                    run_count = __model.setdefault('count', 0)
-                    runCount[userUuid][model['modelId']]['count'] = run_count + 1
+                    for model in my_loras:
+                        userUuid = model['userUuid']
+                        del model['userUuid']
+                        del model['modelType']
+                        image.param['additionalNetwork'].append(model)
+                        run_model = runCount.setdefault(userUuid, {})
+                        __model = run_model.setdefault(model['modelId'], model)
+                        run_count = __model.setdefault('count', 0)
+                        runCount[userUuid][model['modelId']]['count'] = run_count + 1
                     image_num = image.gen(runCount)
                     if image_num == 'suanlibuzu':
                         suanlibuzu.append(user['usertoken'])
@@ -205,8 +206,9 @@ class LiblibTasks:
             # for user in random.sample(users, 5):
             for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
-                # for to_run_model in random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models:
-                for to_run_model in to_run_models:
+                # to_run_models = random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models
+                group_every_two = [to_run_models[i:i + 2] for i in range(0, len(to_run_models), 2)]
+                for to_run_model in group_every_two:
                     yield doDrawImage(user, to_run_model)
 
         gen = simple_generator()
