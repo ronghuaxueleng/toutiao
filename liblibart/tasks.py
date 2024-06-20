@@ -1,6 +1,7 @@
 import copy
 import datetime
 import json
+import os
 import random
 import time
 
@@ -21,6 +22,7 @@ class LiblibTasks:
         self.yesterday = (dt - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         self.today = dt.strftime('%Y-%m-%d')
         self.notAvailableToImageUsers = {}
+        self.notAvailableImageUsersFileName = 'notAvailableToImageUsers.json'
 
     def init_tasks(self):
         scheduler.add_job(
@@ -150,8 +152,13 @@ class LiblibTasks:
     def drawImage(self):
         job_id = f"drawImage"
         suanlibuzu = []
+        if os.path.exists(self.notAvailableImageUsersFileName):
+            with open(self.notAvailableImageUsersFileName, 'r') as f:
+                self.notAvailableToImageUsers = json.load(f)
         if self.yesterday in self.notAvailableToImageUsers:
             del self.notAvailableToImageUsers[self.yesterday]
+            with open(self.notAvailableImageUsersFileName, 'w') as f:
+                json.dump(self.notAvailableToImageUsers, f)
 
         def get_percent(user, image, image_num, depth):
             res = image.get_percent(image_num)
@@ -160,7 +167,7 @@ class LiblibTasks:
                 image.getLogger().info(f"mobile：{image.userInfo['mobile']}，{percentCompleted}%.....")
                 if percentCompleted != 100:
                     time.sleep(7)
-                    get_percent(user, image, image_num, depth+1)
+                    get_percent(user, image, image_num, depth + 1)
                 else:
                     image.getLogger().info(f"finished mobile：{image.userInfo['mobile']}，100%.....")
                     image.nps()
@@ -232,6 +239,8 @@ class LiblibTasks:
                     job_id,
                     run_date=self.get_draw_image_run_date(),
                 )
+            with open(self.notAvailableImageUsersFileName, 'w') as f:
+                json.dump(self.notAvailableToImageUsers, f)
 
 
 liblibTasks = LiblibTasks()
