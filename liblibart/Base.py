@@ -31,7 +31,7 @@ class Base(UserInfo):
                 "tiling": 0,
                 "clipSkip": 2
             },
-            "adetailerEnable": 1,
+            "adetailerEnable": 0,
             "adetailerList": [
                 {
                     "adetailerModelVerId": 0,
