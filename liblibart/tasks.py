@@ -152,13 +152,13 @@ class LiblibTasks:
     def drawImage(self):
         job_id = f"drawImage"
         suanlibuzu = []
-        if os.path.exists(self.notAvailableImageUsersFileName):
-            with open(self.notAvailableImageUsersFileName, 'r') as f:
+        if os.path.exists(f'/mitmproxy/{self.notAvailableToImageUsers}'):
+            with open(f'/mitmproxy/{self.notAvailableToImageUsers}', 'r') as f:
                 self.notAvailableToImageUsers = json.load(f)
         if self.yesterday in self.notAvailableToImageUsers:
             del self.notAvailableToImageUsers[self.yesterday]
             with open(self.notAvailableImageUsersFileName, 'w') as f:
-                json.dump(self.notAvailableToImageUsers, f)
+                json.dump(f'/mitmproxy/{self.notAvailableToImageUsers}', f)
 
         def get_percent(user, image, image_num, depth):
             res = image.get_percent(image_num)
@@ -240,7 +240,7 @@ class LiblibTasks:
                     run_date=self.get_draw_image_run_date(),
                 )
             with open(self.notAvailableImageUsersFileName, 'w') as f:
-                json.dump(self.notAvailableToImageUsers, f)
+                json.dump(f'/mitmproxy/{self.notAvailableToImageUsers}', f)
 
 
 liblibTasks = LiblibTasks()
