@@ -153,7 +153,7 @@ class LiblibTasks:
         job_id = f"drawImage"
         suanlibuzu = []
         if os.path.exists(f'/mitmproxy/{self.notAvailableImageUsersFileName}'):
-            with open(f'/mitmproxy/{self.notAvailableToImageUsers}', 'r') as f:
+            with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'r') as f:
                 self.notAvailableToImageUsers = json.load(f)
         if self.yesterday in self.notAvailableToImageUsers:
             del self.notAvailableToImageUsers[self.yesterday]
