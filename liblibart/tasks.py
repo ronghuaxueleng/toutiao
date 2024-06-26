@@ -46,6 +46,7 @@ class LiblibTasks:
             trigger='date',
             run_date=self.get_draw_image_run_date(),
         )
+        self.get_all_job()
         return self
 
     def init(self):
