@@ -59,10 +59,12 @@ class LiblibTasks:
         scheduler.start()
         return self
 
-    def get_all_job(self):
+    def get_all_job(self, message=None):
         all_jobs = scheduler.get_jobs()
         print(all_jobs)
         msg = []
+        if message is not None:
+            msg.append(message)
         for job in all_jobs:
             msg.append(f'任务ID：{job.id}，执行时间：{job.trigger}')
         send_message("\n".join(msg), title='哩布哩布')
@@ -106,6 +108,7 @@ class LiblibTasks:
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
+        send_message("开始执行模型下载", title='哩布哩布')
         job_id = 'downloadModel'
 
         my_loras = ql_env.search("my_lora")
@@ -134,9 +137,10 @@ class LiblibTasks:
                 job_id,
                 run_date=self.get_download_model_run_date()
             )
-        self.get_all_job()
+        self.get_all_job('模型下载结束')
 
     def downLoadImage(self):
+        send_message("开始执行图片下载", title='哩布哩布')
         job_id = "downLoadImage"
 
         users = get_users()
@@ -159,9 +163,10 @@ class LiblibTasks:
                 job_id,
                 run_date=self.get_downLoad_image_run_date(),
             )
-        self.get_all_job()
+        self.get_all_job('图片下载结束')
 
     def drawImage(self):
+        send_message("开始执行绘图", title='哩布哩布')
         job_id = f"drawImage"
         suanlibuzu = []
         if os.path.exists(f'/mitmproxy/{self.notAvailableImageUsersFileName}'):
@@ -251,7 +256,7 @@ class LiblibTasks:
                     job_id,
                     run_date=self.get_draw_image_run_date(),
                 )
-            self.get_all_job()
+            self.get_all_job('绘图结束')
             with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'w') as f:
                 json.dump(self.notAvailableToImageUsers, f)
 
