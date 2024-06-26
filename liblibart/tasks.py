@@ -90,12 +90,12 @@ class LiblibTasks:
         return final_user_model_dict
 
     def get_download_model_run_date(self):
-        datetime.datetime.now() + datetime.timedelta(days=random.randint(3, 5), hours=random.randint(1, 23),
+        return datetime.datetime.now() + datetime.timedelta(days=random.randint(3, 5), hours=random.randint(1, 23),
                                                      minutes=random.randint(0, 59),
                                                      seconds=random.randint(0, 59))
 
     def get_downLoad_image_run_date(self):
-        datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
+        return datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
                                                      minutes=random.sample([11, 23, 37, 42, 57],
                                                                            1)[0],
                                                      seconds=random.randint(0, 59))
