@@ -12,6 +12,7 @@ from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image
 from liblibart.ql import ql_env
+from utils.utils import send_message
 
 scheduler = BlockingScheduler()
 
@@ -56,6 +57,14 @@ class LiblibTasks:
     def start(self):
         scheduler.start()
         return self
+
+    def get_all_job(self):
+        all_jobs = scheduler.get_jobs()
+        print(all_jobs)
+        msg = []
+        for job in all_jobs:
+            msg.append(f'任务ID：{job.id}，执行时间：{job.trigger}')
+        send_message("\n".join(msg), title='哩布哩布')
 
     def get_models(self):
         user_model_dict = {}
@@ -124,6 +133,7 @@ class LiblibTasks:
                 job_id,
                 run_date=self.get_download_model_run_date()
             )
+        self.get_all_job()
 
     def downLoadImage(self):
         job_id = "downLoadImage"
@@ -148,6 +158,7 @@ class LiblibTasks:
                 job_id,
                 run_date=self.get_downLoad_image_run_date(),
             )
+        self.get_all_job()
 
     def drawImage(self):
         job_id = f"drawImage"
@@ -239,6 +250,7 @@ class LiblibTasks:
                     job_id,
                     run_date=self.get_draw_image_run_date(),
                 )
+            self.get_all_job()
             with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'w') as f:
                 json.dump(self.notAvailableToImageUsers, f)
 
@@ -247,5 +259,3 @@ liblibTasks = LiblibTasks()
 
 if __name__ == '__main__':
     liblibTasks.drawImage()
-    all_jobs = scheduler.get_jobs()
-    print(all_jobs)
