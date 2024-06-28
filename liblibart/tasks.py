@@ -166,6 +166,7 @@ class LiblibTasks:
         self.get_all_job('图片下载结束')
 
     def drawImage(self):
+        star_time = datetime.datetime.now()
         send_message("开始执行绘图", title='哩布哩布')
         job_id = f"drawImage"
         suanlibuzu = []
@@ -256,9 +257,11 @@ class LiblibTasks:
                     job_id,
                     run_date=self.get_draw_image_run_date(),
                 )
-            self.get_all_job('绘图结束')
             with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'w') as f:
                 json.dump(self.notAvailableToImageUsers, f)
+            end_time = datetime.datetime.now()
+            time_consuming = (end_time - star_time).seconds / 60
+            self.get_all_job(f'绘图结束\n耗时{time_consuming}分')
 
 
 liblibTasks = LiblibTasks()
