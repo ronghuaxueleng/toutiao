@@ -12,6 +12,7 @@ from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image
 from liblibart.ql import ql_env
+from utils.utils import send_message
 
 scheduler = BlockingScheduler()
 
@@ -50,6 +51,7 @@ class LiblibTasks:
             trigger='date',
             run_date=self.get_draw_image_run_date(),
         )
+        self.get_all_job()
         return self
 
     def init(self):
@@ -61,6 +63,16 @@ class LiblibTasks:
     def start(self):
         scheduler.start()
         return self
+
+    def get_all_job(self, message=None):
+        all_jobs = scheduler.get_jobs()
+        print(all_jobs)
+        msg = []
+        if message is not None:
+            msg.append(message)
+        for job in all_jobs:
+            msg.append(f'任务ID：{job.id}，执行时间：{job.trigger}')
+        send_message("\n".join(msg), title='哩布哩布')
 
     def get_models(self):
         user_model_dict = {}
@@ -86,12 +98,12 @@ class LiblibTasks:
         return final_user_model_dict
 
     def get_download_model_run_date(self):
-        datetime.datetime.now() + datetime.timedelta(days=random.randint(3, 5), hours=random.randint(1, 23),
+        return datetime.datetime.now() + datetime.timedelta(days=random.randint(3, 5), hours=random.randint(1, 23),
                                                      minutes=random.randint(0, 59),
                                                      seconds=random.randint(0, 59))
 
     def get_downLoad_image_run_date(self):
-        datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
+        return datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
                                                      minutes=random.sample([11, 23, 37, 42, 57],
                                                                            1)[0],
                                                      seconds=random.randint(0, 59))
@@ -101,6 +113,7 @@ class LiblibTasks:
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
+        send_message("开始执行模型下载", title='哩布哩布')
         job_id = 'downloadModel'
 
         my_loras = ql_env.search("my_lora")
@@ -129,8 +142,10 @@ class LiblibTasks:
                 job_id,
                 run_date=self.get_download_model_run_date()
             )
+        self.get_all_job('模型下载结束')
 
     def downLoadImage(self):
+        send_message("开始执行图片下载", title='哩布哩布')
         job_id = "downLoadImage"
 
         users = get_users()
@@ -153,17 +168,20 @@ class LiblibTasks:
                 job_id,
                 run_date=self.get_downLoad_image_run_date(),
             )
+        self.get_all_job('图片下载结束')
 
     def drawImage(self):
         self.init_day()
+        star_time = datetime.datetime.now()
+        send_message("开始执行绘图", title='哩布哩布')
         job_id = f"drawImage"
         suanlibuzu = []
-        if os.path.exists(self.notAvailableImageUsersFileName):
-            with open(self.notAvailableImageUsersFileName, 'r') as f:
+        if os.path.exists(f'/mitmproxy/{self.notAvailableImageUsersFileName}'):
+            with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'r') as f:
                 self.notAvailableToImageUsers = json.load(f)
         if self.yesterday in self.notAvailableToImageUsers:
             del self.notAvailableToImageUsers[self.yesterday]
-            with open(self.notAvailableImageUsersFileName, 'w') as f:
+            with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'w') as f:
                 json.dump(self.notAvailableToImageUsers, f)
 
         def get_percent(user, image, image_num, depth):
@@ -245,13 +263,14 @@ class LiblibTasks:
                     job_id,
                     run_date=self.get_draw_image_run_date(),
                 )
-            with open(self.notAvailableImageUsersFileName, 'w') as f:
+            with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'w') as f:
                 json.dump(self.notAvailableToImageUsers, f)
+            end_time = datetime.datetime.now()
+            time_consuming = (end_time - star_time).seconds / 60
+            self.get_all_job(f'绘图结束\n耗时{time_consuming}分')
 
 
 liblibTasks = LiblibTasks()
 
 if __name__ == '__main__':
     liblibTasks.drawImage()
-    all_jobs = scheduler.get_jobs()
-    print(all_jobs)
