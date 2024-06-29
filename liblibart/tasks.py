@@ -18,11 +18,16 @@ scheduler = BlockingScheduler()
 
 class LiblibTasks:
     def __init__(self):
+        self.yesterday = 0
+        self.today = 0
+        self.notAvailableToImageUsers = {}
+        self.notAvailableImageUsersFileName = 'notAvailableToImageUsers.json'
+
+    def init_day(self):
         dt = datetime.datetime.now()
         self.yesterday = (dt - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         self.today = dt.strftime('%Y-%m-%d')
-        self.notAvailableToImageUsers = {}
-        self.notAvailableImageUsersFileName = 'notAvailableToImageUsers.json'
+
 
     def init_tasks(self):
         scheduler.add_job(
@@ -150,6 +155,7 @@ class LiblibTasks:
             )
 
     def drawImage(self):
+        self.init_day()
         job_id = f"drawImage"
         suanlibuzu = []
         if os.path.exists(self.notAvailableImageUsersFileName):
