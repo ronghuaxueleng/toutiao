@@ -6,7 +6,7 @@ class Base(UserInfo):
     def __init__(self, token, webid, filename=None):
         super().__init__(token, webid, filename)
         self.gen_param = {
-            "checkpointId": 650910,
+            "checkpointId": 2016037,
             "generateType": 1,
             "frontCustomerReq": {
                 # "frontId": self.frontId,
