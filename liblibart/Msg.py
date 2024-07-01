@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+import json
+
 import requests
 
+from liblibart.CookieUtils import get_users
 from liblibart.UserInfo import UserInfo
 
 
@@ -34,5 +37,16 @@ class Msg(UserInfo):
         }
 
         response = requests.request("POST", url, headers=headers, data=payload)
+        res = json.loads(response.text)
+        if res['data'] is not None:
+            print(res['data'])
 
-        print(response.text)
+
+if __name__ == '__main__':
+    users = get_users()
+    for user in users:
+        try:
+            Msg(user['usertoken'], user['webid'], '/mitmproxy/logs/Msg.log').getMsg()
+        except Exception as e:
+            print('error', e)
+            print(e)
