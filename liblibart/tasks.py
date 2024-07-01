@@ -63,12 +63,12 @@ class LiblibTasks:
             run_date=self.get_download_model_run_date(),
         )
 
-        scheduler.add_job(
-            self.downLoadImage,
-            id='downLoadImage',
-            trigger='date',
-            run_date=self.get_downLoad_image_run_date(),
-        )
+        # scheduler.add_job(
+        #     self.downLoadImage,
+        #     id='downLoadImage',
+        #     trigger='date',
+        #     run_date=self.get_downLoad_image_run_date(),
+        # )
 
         scheduler.add_job(
             self.drawImage,
@@ -80,7 +80,7 @@ class LiblibTasks:
         return self
 
     def init(self):
-        self.drawImage()
+        # self.drawImage()
         self.downloadModel()
         self.downLoadImage()
         return self
