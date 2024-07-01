@@ -98,7 +98,7 @@ class LiblibTasks:
         return final_user_model_dict
 
     def get_download_model_run_date(self):
-        return datetime.datetime.now() + datetime.timedelta(days=random.randint(3, 5), hours=random.randint(1, 23),
+        return datetime.datetime.now() + datetime.timedelta(days=random.randint(1, 3), hours=random.randint(1, 23),
                                                      minutes=random.randint(0, 59),
                                                      seconds=random.randint(0, 59))
 
@@ -115,20 +115,12 @@ class LiblibTasks:
     def downloadModel(self):
         send_message("开始执行模型下载", title='哩布哩布')
         job_id = 'downloadModel'
-
-        my_loras = ql_env.search("my_lora")
-        download_models = []
-        for my_lora in my_loras:
-            if my_lora['status'] == 0:
-                download_models.append(json.loads(my_lora['value'])['modelId'])
-        for pageNo in range(1, 5):
-            users = get_users()
-            for user in random.sample(users, 4):
-                try:
-                    DownloadModel(user['usertoken'], user['webid'], '/mitmproxy/logs/DownloadModel.log').download_model(
-                        pageNo, download_models)
-                except Exception as e:
-                    print(e)
+        users = get_users()
+        for user in random.sample(users, 4):
+            try:
+                DownloadModel(user['usertoken'], user['webid'], '/mitmproxy/logs/DownloadModel.log').download_model()
+            except Exception as e:
+                print(e)
         s = scheduler.get_job(job_id)
         if s is None:
             scheduler.add_job(
