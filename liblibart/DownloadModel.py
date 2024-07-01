@@ -52,9 +52,10 @@ class DownloadModel(UserInfo):
                                 if version['id'] in download_models:
                                     query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
                                                                                    DownloadModelStatistics.day == self.day)
-                                    downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
-                                    if downloadModelCount >= 1000:
-                                        continue
+                                    if query.exists():
+                                        downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
+                                        if downloadModelCount >= 1000:
+                                            continue
                                     url = f"https://{self.api_host}/api/www/community/downloadCheck?timestamp={time.time()}"
                                     payload = json.dumps({
                                         "uuid": model["uuid"],
