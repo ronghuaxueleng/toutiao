@@ -4,8 +4,11 @@ import json
 import os
 import random
 import time
+from pathlib import Path
 
+from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 from liblibart.CookieUtils import get_users
 from liblibart.DownLoadImage import DownLoadImage
@@ -14,7 +17,29 @@ from liblibart.Image import Image
 from liblibart.ql import ql_env
 from utils.utils import send_message
 
-scheduler = BlockingScheduler()
+dbpath = Path(os.path.split(os.path.realpath(__file__))[0]).parent.joinpath('config', 'jobs.db').absolute()
+print(dbpath)
+
+interval_task = {
+    # 配置存储器
+    "jobstores": {
+        # 使用SQLAlchemy进行存储,会自动创建数据库，并创建apscheduler_jobs表
+        'default': SQLAlchemyJobStore(url=fr"sqlite:///{dbpath}")
+    },
+    # 配置执行器
+    "executors": {
+        # 使用线程池进行执行，最大线程数是20个
+        'default': ThreadPoolExecutor(20)
+    },
+    # 创建job时的默认参数
+    "job_defaults": {
+        'coalesce': False,  # 是否合并执行
+        'max_instances': 3  # 最大实例数
+    }
+
+}
+
+scheduler = BlockingScheduler(interval_task)
 
 
 class LiblibTasks:
@@ -265,4 +290,5 @@ class LiblibTasks:
 liblibTasks = LiblibTasks()
 
 if __name__ == '__main__':
-    liblibTasks.drawImage()
+    # liblibTasks.drawImage()
+    liblibTasks.init_tasks()
