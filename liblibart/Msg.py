@@ -38,8 +38,9 @@ class Msg(UserInfo):
 
         response = requests.request("POST", url, headers=headers, data=payload)
         res = json.loads(response.text)
-        if res['data'] is not None:
-            print(res['data'])
+        print(res['data'])
+        # if res['data'] is not None:
+        #     print(res['data'])
 
 
 if __name__ == '__main__':

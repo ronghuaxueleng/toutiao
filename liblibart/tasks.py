@@ -80,9 +80,9 @@ class LiblibTasks:
         return self
 
     def init(self):
-        # self.drawImage()
+        self.drawImage()
         self.downloadModel()
-        self.downLoadImage()
+        # self.downLoadImage()
         return self
 
     def start(self):
