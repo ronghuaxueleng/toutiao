@@ -255,8 +255,8 @@ class LiblibTasks:
             for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
                 # to_run_models = random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models
-                # group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
-                for to_run_model in to_run_models:
+                group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
+                for to_run_model in group_every_two:
                     yield doDrawImage(user, to_run_model)
 
         gen = simple_generator()
