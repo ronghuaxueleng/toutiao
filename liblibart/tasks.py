@@ -290,5 +290,5 @@ class LiblibTasks:
 liblibTasks = LiblibTasks()
 
 if __name__ == '__main__':
-    # liblibTasks.drawImage()
-    liblibTasks.init_tasks()
+    liblibTasks.drawImage()
+    # liblibTasks.init_tasks()
