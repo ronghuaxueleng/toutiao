@@ -134,8 +134,7 @@ class LiblibTasks:
                                                      seconds=random.randint(0, 59))
 
     def get_draw_image_run_date(self):
-        return datetime.datetime.now() + datetime.timedelta(hours=random.randint(1, 2),
-                                                            minutes=random.randint(5, 30),
+        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(5, 30),
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
@@ -256,8 +255,8 @@ class LiblibTasks:
             for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
                 # to_run_models = random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models
-                group_every_two = [to_run_models[i:i + 2] for i in range(0, len(to_run_models), 2)]
-                for to_run_model in group_every_two:
+                # group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
+                for to_run_model in to_run_models:
                     yield doDrawImage(user, to_run_model)
 
         gen = simple_generator()
