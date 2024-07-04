@@ -15,7 +15,7 @@ class DownLoadImage(UserInfo):
     def __init__(self, token, webid, log_filename):
         super().__init__(token, webid, log_filename)
 
-    def download(self):
+    def download(self, delete=True):
         url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
 
         day = datetime.datetime.now() - datetime.timedelta(days=7)
@@ -87,15 +87,16 @@ class DownLoadImage(UserInfo):
                 except Exception as e:
                     self.getLogger().error(e)
 
-            url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
+            if delete:
+                url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
 
-            payload = json.dumps({
-                "idList": idList
-            })
+                payload = json.dumps({
+                    "idList": idList
+                })
 
-            response = requests.request("POST", url, headers=headers, data=payload)
+                response = requests.request("POST", url, headers=headers, data=payload)
 
-            self.getLogger().info(response.text)
+                self.getLogger().info(f'删除图片结果：{response.text}')
             for user_uuid, model_list in downloadImageCount.items():
                 for modelId, model in model_list.items():
                     query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId,

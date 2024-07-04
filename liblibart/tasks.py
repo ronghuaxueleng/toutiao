@@ -63,12 +63,12 @@ class LiblibTasks:
             run_date=self.get_download_model_run_date(),
         )
 
-        # scheduler.add_job(
-        #     self.downLoadImage,
-        #     id='downLoadImage',
-        #     trigger='date',
-        #     run_date=self.get_downLoad_image_run_date(),
-        # )
+        scheduler.add_job(
+            self.downLoadImage,
+            id='downLoadImage',
+            trigger='date',
+            run_date=self.get_downLoad_image_run_date(),
+        )
 
         scheduler.add_job(
             self.drawImage,
@@ -82,7 +82,7 @@ class LiblibTasks:
     def init(self):
         self.drawImage()
         self.downloadModel()
-        # self.downLoadImage()
+        self.downLoadImage()
         return self
 
     def start(self):
@@ -205,15 +205,15 @@ class LiblibTasks:
             res = image.get_percent(image_num)
             if res['code'] == 0:
                 percentCompleted = res['data']['percentCompleted']
-                image.getLogger().info(f"mobile：{image.userInfo['mobile']}，{percentCompleted}%.....")
+                image.getLogger().info(f"nickname：{image.userInfo['nickname']}，{percentCompleted}%.....")
                 if percentCompleted != 100:
                     time.sleep(7)
                     get_percent(user, image, image_num, depth + 1)
                 else:
-                    image.getLogger().info(f"finished mobile：{image.userInfo['mobile']}，100%.....")
+                    image.getLogger().info(f"finished nickname：{image.userInfo['nickname']}，100%.....")
                     image.nps()
                     try:
-                        DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download()
+                        DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download(False)
                     except Exception as e:
                         print(e)
                     image.getLogger().info(f'递归层级{depth}')
