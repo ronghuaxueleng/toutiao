@@ -57,12 +57,14 @@ def getLiblib():
         runs = (RunStatistics.select(runCount)
                 .where(RunStatistics.user_uuid == user_uuid, RunStatistics.day >= this_period_start, RunStatistics.day <= this_period_end).get())
         runCounts = runs.runCount
-        datas.append({
+        data = {
             'nickname': nickname,
             'runCounts': 0 if runCounts is None else runCounts,
             'downloadModelCounts': 0 if downloadModelCounts is None else downloadModelCounts,
             'downloadImageCounts': 0 if downloadImageCounts is None else downloadImageCounts
-        })
+        }
+        if data.get('runCounts') != 0 and data.get('downloadModelCounts') != 0 and data.get('downloadImageCounts') != 0:
+            datas.append(data)
     result = {
         'datas': datas,
         'month_start': this_period_start,
@@ -94,12 +96,14 @@ def getLastLiblib():
         runs = (RunStatistics.select(runCount)
                 .where(RunStatistics.user_uuid == user_uuid, RunStatistics.day >= last_period_start, RunStatistics.day <= last_period_end).get())
         runCounts = runs.runCount
-        datas.append({
+        data = {
             'nickname': nickname,
             'runCounts': 0 if runCounts is None else runCounts,
             'downloadModelCounts': 0 if downloadModelCounts is None else downloadModelCounts,
             'downloadImageCounts': 0 if downloadImageCounts is None else downloadImageCounts
-        })
+        }
+        if data.get('runCounts') != 0 and data.get('downloadModelCounts') != 0 and data.get('downloadImageCounts') != 0:
+            datas.append(data)
     result = {
         'datas': datas,
         'month_start': last_period_start,
