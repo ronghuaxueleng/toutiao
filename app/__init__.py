@@ -63,7 +63,7 @@ def getLiblib():
             'downloadModelCounts': 0 if downloadModelCounts is None else downloadModelCounts,
             'downloadImageCounts': 0 if downloadImageCounts is None else downloadImageCounts
         }
-        if data.get('runCounts') != 0 and data.get('downloadModelCounts') != 0 and data.get('downloadImageCounts') != 0:
+        if (data.get('runCounts') != 0 and data.get('downloadImageCounts') != 0) or data.get('downloadModelCounts') != 0:
             datas.append(data)
     result = {
         'datas': datas,
@@ -102,7 +102,7 @@ def getLastLiblib():
             'downloadModelCounts': 0 if downloadModelCounts is None else downloadModelCounts,
             'downloadImageCounts': 0 if downloadImageCounts is None else downloadImageCounts
         }
-        if data.get('runCounts') != 0 and data.get('downloadModelCounts') != 0 and data.get('downloadImageCounts') != 0:
+        if (data.get('runCounts') != 0 and data.get('downloadImageCounts') != 0) or data.get('downloadModelCounts') != 0:
             datas.append(data)
     result = {
         'datas': datas,
