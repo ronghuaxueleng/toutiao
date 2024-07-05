@@ -5,6 +5,7 @@ import os
 import random
 import time
 from pathlib import Path
+import concurrent.futures
 
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -250,23 +251,37 @@ class LiblibTasks:
         users = get_users(exclude_user=self.notAvailableToImageUsers.setdefault(self.today, []))
         user_model_dict = self.get_models()
 
-        def simple_generator():
-            # for user in random.sample(users, 5):
-            for user in users:
+        def run_one_user(user):
+            def _run(user):
                 to_run_models = user_model_dict[user['usertoken']]
-                # to_run_models = random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models
+                to_run_models = random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models
                 group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
                 for to_run_model in group_every_two:
                     yield doDrawImage(user, to_run_model)
 
-        gen = simple_generator()
+            gen = _run(user)
+            try:
+                while True:
+                    next(gen)
+            except StopIteration as e:
+                print(e.value)
+            finally:
+                gen.close()
+
+        def simple_generator():
+            futures = []
+            executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
+            for user in random.sample(users, 5):
+            # for user in users:
+                futures.append(executor.submit(run_one_user, user))
+            concurrent.futures.wait(futures)
+            executor.shutdown()
+
         try:
-            while True:
-                next(gen)
+            simple_generator()
         except StopIteration as e:
             print(e.value)
         finally:
-            gen.close()
             s = scheduler.get_job(job_id)
             if s is None:
                 scheduler.add_job(
