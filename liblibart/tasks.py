@@ -55,7 +55,6 @@ class LiblibTasks:
         self.yesterday = (dt - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         self.today = dt.strftime('%Y-%m-%d')
 
-
     def init_tasks(self):
         scheduler.add_job(
             self.downloadModel,
@@ -125,14 +124,14 @@ class LiblibTasks:
 
     def get_download_model_run_date(self):
         return datetime.datetime.now() + datetime.timedelta(days=random.randint(1, 3), hours=random.randint(1, 23),
-                                                     minutes=random.randint(0, 59),
-                                                     seconds=random.randint(0, 59))
+                                                            minutes=random.randint(0, 59),
+                                                            seconds=random.randint(0, 59))
 
     def get_downLoad_image_run_date(self):
         return datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
-                                                     minutes=random.sample([11, 23, 37, 42, 57],
-                                                                           1)[0],
-                                                     seconds=random.randint(0, 59))
+                                                            minutes=random.sample([11, 23, 37, 42, 57],
+                                                                                  1)[0],
+                                                            seconds=random.randint(0, 59))
 
     def get_draw_image_run_date(self):
         return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(5, 30),
@@ -214,7 +213,8 @@ class LiblibTasks:
                     image.getLogger().info(f"finished nickname：{image.userInfo['nickname']}，100%.....")
                     image.nps()
                     try:
-                        DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download(False)
+                        DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download(
+                            False)
                     except Exception as e:
                         print(e)
                     image.getLogger().info(f'递归层级{depth}')
@@ -251,37 +251,23 @@ class LiblibTasks:
         users = get_users(exclude_user=self.notAvailableToImageUsers.setdefault(self.today, []))
         user_model_dict = self.get_models()
 
-        def run_one_user(user):
-            def _run(user):
+        def simple_generator():
+            for user in random.sample(users, 5):
+            # for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
                 to_run_models = random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models
                 group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
                 for to_run_model in group_every_two:
                     yield doDrawImage(user, to_run_model)
 
-            gen = _run(user)
-            try:
-                while True:
-                    next(gen)
-            except StopIteration as e:
-                print(e.value)
-            finally:
-                gen.close()
-
-        def simple_generator():
-            futures = []
-            executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
-            for user in random.sample(users, 5):
-            # for user in users:
-                futures.append(executor.submit(run_one_user, user))
-            concurrent.futures.wait(futures)
-            executor.shutdown()
-
+        gen = simple_generator()
         try:
-            simple_generator()
+            while True:
+                next(gen)
         except StopIteration as e:
             print(e.value)
         finally:
+            gen.close()
             s = scheduler.get_job(job_id)
             if s is None:
                 scheduler.add_job(
