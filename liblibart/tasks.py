@@ -252,10 +252,15 @@ class LiblibTasks:
         user_model_dict = self.get_models()
 
         def simple_generator():
-            for user in random.sample(users, 5):
+            # 当前时间
+            now_localtime = time.strftime("%H:%M:%S", time.localtime())
+            is_time = "00:00:00" < now_localtime < "08:00:00"
+            to_run_user_count = (10 if len(users) >= 10 else len(users)) if is_time else (5 if len(users) >= 5 else len(users))
+            for user in random.sample(users, to_run_user_count):
             # for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
-                to_run_models = random.sample(to_run_models, 20) if len(to_run_models) > 20 else to_run_models
+                to_run_model_count = (30 if len(to_run_models) >= 30 else len(to_run_models)) if is_time else (20 if len(to_run_models) >= 20 else len(to_run_models))
+                to_run_models = random.sample(to_run_models, to_run_model_count)
                 group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
                 for to_run_model in group_every_two:
                     yield doDrawImage(user, to_run_model)
