@@ -172,7 +172,7 @@ class LiblibTasks:
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
-        send_message("开始执行模型下载", title='哩布哩布')
+        send_message("开始执行模型下载", title='哩布哩布-系统')
         job_id = 'downloadModel'
         users = get_users()
         for user in random.sample(users, 4):
@@ -196,7 +196,7 @@ class LiblibTasks:
         self.get_all_job('模型下载结束')
 
     def downLoadImage(self):
-        send_message("开始执行图片下载", title='哩布哩布')
+        send_message("开始执行图片下载", title='哩布哩布-系统')
         job_id = "downLoadImage"
 
         users = get_users()
@@ -224,7 +224,7 @@ class LiblibTasks:
     def drawImage(self):
         self.init_day()
         star_time = datetime.datetime.now()
-        send_message("开始执行绘图", title='哩布哩布')
+        send_message("开始执行绘图", title='哩布哩布-系统')
         job_id = f"drawImage"
         suanlibuzu = []
         if os.path.exists(f'/mitmproxy/{self.notAvailableImageUsersFileName}'):
