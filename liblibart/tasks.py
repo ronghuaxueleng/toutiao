@@ -5,18 +5,18 @@ import os
 import random
 import time
 from pathlib import Path
-import concurrent.futures
 
 from apscheduler.executors.pool import ThreadPoolExecutor
-from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.schedulers.blocking import BlockingScheduler
 
-from liblibart.CookieUtils import get_users
-from liblibart.DownLoadImage import DownLoadImage
-from liblibart.DownloadModel import DownloadModel
-from liblibart.Image import Image
-from liblibart.ql import ql_env
-from utils.utils import send_message
+from CookieUtils import get_users
+from DownLoadImage import DownLoadImage
+from DownloadModel import DownloadModel
+from Image import Image
+from UserInfo import UserInfo, Account
+from ql import ql_env
+from utils import send_message
 
 dbpath = Path(os.path.split(os.path.realpath(__file__))[0]).parent.joinpath('config', 'jobs.db').absolute()
 print(dbpath)
@@ -97,7 +97,7 @@ class LiblibTasks:
             msg.append(message)
         for job in all_jobs:
             msg.append(f'任务ID：{job.id}，执行时间：{job.trigger}')
-        send_message("\n".join(msg), title='哩布哩布')
+        send_message("\n".join(msg), title='哩布哩布-系统')
 
     def get_models(self):
         user_model_dict = {}
@@ -122,6 +122,40 @@ class LiblibTasks:
             final_user_model_dict[usertoken] = final_user_model_list
         return final_user_model_dict
 
+    def update_userInfo(self):
+        users = get_users(True)
+        disable_ids = []
+        enable_ids = []
+        for user in users:
+            try:
+                userInfo = UserInfo(user['usertoken'], user['webid'], '/mitmproxy/logs/UserInfo.log')
+                realUser = userInfo.userInfo
+                if realUser is not None:
+                    enable_ids.append(user['id'])
+                    uuid = realUser['uuid']
+                    nickname = realUser['nickname']
+                    query = Account.select().where(Account.user_uuid == uuid)
+                    if query.exists():
+                        Account.update(
+                            user_uuid=uuid,
+                            nickname=nickname,
+                            userInfo=json.dumps(realUser)
+                        ).where(Account.user_uuid == uuid).execute()
+                    else:
+                        Account.insert(
+                            user_uuid=uuid,
+                            nickname=nickname,
+                            userInfo=json.dumps(realUser)
+                        ).execute()
+                else:
+                    disable_ids.append(user['id'])
+            except Exception as e:
+                print(e)
+        if len(disable_ids) > 0:
+            ql_env.disable(disable_ids)
+        if len(enable_ids) > 0:
+            ql_env.enable(enable_ids)
+
     def get_download_model_run_date(self):
         return datetime.datetime.now() + datetime.timedelta(days=random.randint(1, 3), hours=random.randint(1, 23),
                                                             minutes=random.randint(0, 59),
@@ -134,7 +168,7 @@ class LiblibTasks:
                                                             seconds=random.randint(0, 59))
 
     def get_draw_image_run_date(self):
-        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(5, 30),
+        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(2, 7),
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
@@ -243,23 +277,31 @@ class LiblibTasks:
                         raise Exception('算力不足')
                     elif image_num == 'qitacuowu':
                         raise Exception('报错了')
+                    elif image_num == 'tokenwuxiao':
+                        image.getLogger().error('token无效')
+                        self.update_userInfo()
+                        raise Exception('token无效')
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
                 print(e)
 
         users = get_users(exclude_user=self.notAvailableToImageUsers.setdefault(self.today, []))
+        if len(users) == 0:
+            self.notAvailableToImageUsers[self.today] = []
         user_model_dict = self.get_models()
 
         def simple_generator():
             # 当前时间
             now_localtime = time.strftime("%H:%M:%S", time.localtime())
             is_time = "00:00:00" < now_localtime < "08:00:00"
-            to_run_user_count = (10 if len(users) >= 10 else len(users)) if is_time else (5 if len(users) >= 5 else len(users))
+            to_run_user_count = (10 if len(users) >= 10 else len(users)) if is_time else (
+                5 if len(users) >= 5 else len(users))
             for user in random.sample(users, to_run_user_count):
-            # for user in users:
+                # for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
-                to_run_model_count = (30 if len(to_run_models) >= 30 else len(to_run_models)) if is_time else (20 if len(to_run_models) >= 20 else len(to_run_models))
+                to_run_model_count = (30 if len(to_run_models) >= 30 else len(to_run_models)) if is_time else (
+                    20 if len(to_run_models) >= 20 else len(to_run_models))
                 to_run_models = random.sample(to_run_models, to_run_model_count)
                 group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
                 for to_run_model in group_every_two:

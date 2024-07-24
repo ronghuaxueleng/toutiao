@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from liblibart.UserInfo import UserInfo
+from UserInfo import UserInfo
 
 
 class Base(UserInfo):

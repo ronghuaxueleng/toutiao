@@ -3,8 +3,8 @@ import json
 
 import requests
 
-from liblibart.CookieUtils import get_users
-from liblibart.UserInfo import UserInfo
+from CookieUtils import get_users
+from UserInfo import UserInfo
 
 
 class Msg(UserInfo):

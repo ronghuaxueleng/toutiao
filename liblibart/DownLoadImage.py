@@ -6,9 +6,9 @@ import time
 
 import requests
 
-from liblibart.CookieUtils import get_users
-from liblibart.Statistics import DownLoadImageStatistics
-from liblibart.UserInfo import UserInfo
+from CookieUtils import get_users
+from Statistics import DownLoadImageStatistics
+from UserInfo import UserInfo
 
 
 class DownLoadImage(UserInfo):

@@ -6,10 +6,10 @@ import time
 import requests
 import json
 
-from liblibart.CookieUtils import get_users
-from liblibart.Statistics import DownloadModelStatistics
-from liblibart.UserInfo import UserInfo
-from liblibart.ql import ql_env
+from CookieUtils import get_users
+from Statistics import DownloadModelStatistics
+from UserInfo import UserInfo
+from ql import ql_env
 
 
 class DownloadModel(UserInfo):

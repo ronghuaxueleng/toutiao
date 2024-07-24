@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from liblibart.ql import ql_env
+from ql import ql_env
 
 
 def get_users(get_all=False, exclude_user=None):

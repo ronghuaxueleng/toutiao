@@ -7,9 +7,9 @@ import time
 import requests
 from peewee import *
 
-from liblibart.CookieUtils import get_users
-from liblibart.LogInfo import LogInfo
-from liblibart.ql import ql_env
+from CookieUtils import get_users
+from LogInfo import LogInfo
+from ql import ql_env
 
 dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'statistics.db')
 db = SqliteDatabase(dbpath)

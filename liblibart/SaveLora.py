@@ -4,9 +4,9 @@ import time
 
 import requests
 
-from liblibart.CookieUtils import get_users
-from liblibart.UserInfo import UserInfo
-from liblibart.ql import ql_env
+from CookieUtils import get_users
+from UserInfo import UserInfo
+from ql import ql_env
 
 
 class SaveLora(UserInfo):
