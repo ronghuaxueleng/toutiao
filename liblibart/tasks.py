@@ -19,8 +19,6 @@ from liblibart.ql import ql_env
 from utils.utils import send_message
 
 dbpath = Path(os.path.split(os.path.realpath(__file__))[0]).parent.joinpath('config', 'jobs.db').absolute()
-print(dbpath)
-
 interval_task = {
     # 配置存储器
     "jobstores": {
@@ -41,6 +39,14 @@ interval_task = {
 }
 
 scheduler = BlockingScheduler(interval_task)
+
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
+
+# 指定env文件
+env_path = Path.cwd().joinpath('..').joinpath('env').joinpath('os.env')
+env_path.parent.mkdir(exist_ok=True)
+load_dotenv(find_dotenv(str(env_path)))
 
 
 class LiblibTasks:
@@ -97,7 +103,7 @@ class LiblibTasks:
             msg.append(message)
         for job in all_jobs:
             msg.append(f'任务ID：{job.id}，执行时间：{job.trigger}')
-        send_message("\n".join(msg), title='哩布哩布-系统')
+        send_message("\n".join(msg), title=f'哩布哩布-{os.getenv("RUN_OS_NAME")}')
 
     def get_models(self):
         user_model_dict = {}
@@ -128,7 +134,8 @@ class LiblibTasks:
         enable_ids = []
         for user in users:
             try:
-                userInfo = UserInfo(user['usertoken'], user['webid'], '/mitmproxy/logs/UserInfo.log')
+                userInfo = UserInfo(user['usertoken'], user['webid'],
+                                    f'/mitmproxy/logs/UserInfo_{os.getenv("RUN_OS_KEY")}.log')
                 realUser = userInfo.userInfo
                 if realUser is not None:
                     enable_ids.append(user['id'])
@@ -172,12 +179,13 @@ class LiblibTasks:
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
-        send_message("开始执行模型下载", title='哩布哩布-系统')
+        send_message("开始执行模型下载", title=f'哩布哩布-{os.getenv("RUN_OS_NAME")}')
         job_id = 'downloadModel'
         users = get_users()
         for user in random.sample(users, 4):
             try:
-                DownloadModel(user['usertoken'], user['webid'], '/mitmproxy/logs/DownloadModel.log').download_model()
+                DownloadModel(user['usertoken'], user['webid'],
+                              f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
             except Exception as e:
                 print(e)
         s = scheduler.get_job(job_id)
@@ -196,13 +204,14 @@ class LiblibTasks:
         self.get_all_job('模型下载结束')
 
     def downLoadImage(self):
-        send_message("开始执行图片下载", title='哩布哩布-系统')
+        send_message("开始执行图片下载", title=f'哩布哩布-{os.getenv("RUN_OS_NAME")}')
         job_id = "downLoadImage"
 
         users = get_users()
         for user in users:
             try:
-                DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download()
+                DownLoadImage(user['usertoken'], user['webid'],
+                              f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
             except Exception as e:
                 print(e)
         s = scheduler.get_job(job_id)
@@ -224,7 +233,7 @@ class LiblibTasks:
     def drawImage(self):
         self.init_day()
         star_time = datetime.datetime.now()
-        send_message("开始执行绘图", title='哩布哩布-系统')
+        send_message("开始执行绘图", title=f'哩布哩布-{os.getenv("RUN_OS_NAME")}')
         job_id = f"drawImage"
         suanlibuzu = []
         if os.path.exists(f'/mitmproxy/{self.notAvailableImageUsersFileName}'):
@@ -247,7 +256,8 @@ class LiblibTasks:
                     image.getLogger().info(f"finished nickname：{image.userInfo['nickname']}，100%.....")
                     image.nps()
                     try:
-                        DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download(
+                        DownLoadImage(user['usertoken'], user['webid'],
+                                      f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(
                             False)
                     except Exception as e:
                         print(e)
@@ -261,7 +271,8 @@ class LiblibTasks:
                     to_save_run_users.remove(user['usertoken'])
                     save_to_run_users(list(set(to_save_run_users)))
                 if user['usertoken'] not in suanlibuzu:
-                    image = Image(user['usertoken'], user['webid'], '/mitmproxy/logs/Image.log')
+                    image = Image(user['usertoken'], user['webid'],
+                                  f'/mitmproxy/logs/Image_{os.getenv("RUN_OS_KEY")}.log')
                     runCount = {}
                     for model in my_loras:
                         userUuid = model['userUuid']

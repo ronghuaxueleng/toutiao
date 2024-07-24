@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import os
 import random
 import time
 
@@ -10,6 +11,14 @@ from liblibart.CookieUtils import get_users
 from liblibart.Statistics import DownloadModelStatistics
 from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
+
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
+
+# 指定env文件
+env_path = Path.cwd().joinpath('..').joinpath('env').joinpath('os.env')
+env_path.parent.mkdir(exist_ok=True)
+load_dotenv(find_dotenv(str(env_path)))
 
 
 class DownloadModel(UserInfo):
@@ -50,8 +59,10 @@ class DownloadModel(UserInfo):
                             model_data = json.loads(response.text)
                             for version in model_data['data']['versions']:
                                 if version['id'] in download_models:
-                                    query = DownloadModelStatistics.select().where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'],
-                                                                                   DownloadModelStatistics.day == self.day)
+                                    query = DownloadModelStatistics.select().where(
+                                        DownloadModelStatistics.user_uuid == uuid,
+                                        DownloadModelStatistics.modelId == version['id'],
+                                        DownloadModelStatistics.day == self.day)
                                     if query.exists():
                                         downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
                                         if downloadModelCount >= 1000:
@@ -106,7 +117,9 @@ class DownloadModel(UserInfo):
                                         DownloadModelStatistics.update(
                                             downloadModelCount=downloadModelCount + 1,
                                             timestamp=datetime.datetime.now()
-                                        ).where(DownloadModelStatistics.user_uuid == uuid, DownloadModelStatistics.modelId == version['id'], DownloadModelStatistics.day == self.day).execute()
+                                        ).where(DownloadModelStatistics.user_uuid == uuid,
+                                                DownloadModelStatistics.modelId == version['id'],
+                                                DownloadModelStatistics.day == self.day).execute()
                                     else:
                                         DownloadModelStatistics.insert(
                                             user_uuid=uuid,
@@ -122,6 +135,7 @@ if __name__ == '__main__':
     users = get_users()
     for user in random.sample(users, 4):
         try:
-            DownloadModel(user['usertoken'], user['webid'], '/mitmproxy/logs/DownloadModel.log').download_model()
+            DownloadModel(user['usertoken'], user['webid'],
+                          f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
         except Exception as e:
             print(e)

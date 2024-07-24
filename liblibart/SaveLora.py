@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import os
 import time
 
 import requests
@@ -7,6 +8,14 @@ import requests
 from liblibart.CookieUtils import get_users
 from liblibart.UserInfo import UserInfo
 from liblibart.ql import ql_env
+
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
+
+# 指定env文件
+env_path = Path.cwd().joinpath('..').joinpath('env').joinpath('os.env')
+env_path.parent.mkdir(exist_ok=True)
+load_dotenv(find_dotenv(str(env_path)))
 
 
 class SaveLora(UserInfo):
@@ -76,14 +85,16 @@ class SaveLora(UserInfo):
                     if version['id'] not in saved_models:
                         ql_env.add("my_lora", json.dumps(to_save_data, ensure_ascii=False), model["name"])
                     else:
-                        ql_env.update(json.dumps(to_save_data, ensure_ascii=False), "my_lora", saved_model_id_map[version['id']], model["name"])
+                        ql_env.update(json.dumps(to_save_data, ensure_ascii=False), "my_lora",
+                                      saved_model_id_map[version['id']], model["name"])
 
 
 if __name__ == '__main__':
     users = get_users()
     for user in users:
         try:
-            SaveLora(user['usertoken'], user['webid'], '/mitmproxy/logs/SaveLora.log').get_models()
+            SaveLora(user['usertoken'], user['webid'],
+                     f'/mitmproxy/logs/SaveLora_{os.getenv("RUN_OS_KEY")}.log').get_models()
         except Exception as e:
             print('error', e)
             print(e)
