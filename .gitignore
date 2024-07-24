@@ -6,3 +6,4 @@ __pycache__
 /config/account.db
 /config/account_toutiao.db
 /config/statistics.db
+/liblibart/os.env
