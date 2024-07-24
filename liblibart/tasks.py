@@ -10,7 +10,7 @@ from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from CookieUtils import get_users
+from CookieUtils import get_users, load_from_run_users, save_to_run_users
 from DownLoadImage import DownLoadImage
 from DownloadModel import DownloadModel
 from Image import Image
@@ -256,6 +256,10 @@ class LiblibTasks:
 
         def doDrawImage(user, my_loras):
             try:
+                to_save_run_users = load_from_run_users()
+                if user['usertoken'] in to_save_run_users:
+                    to_save_run_users.remove(user['usertoken'])
+                    save_to_run_users(list(set(to_save_run_users)))
                 if user['usertoken'] not in suanlibuzu:
                     image = Image(user['usertoken'], user['webid'], '/mitmproxy/logs/Image.log')
                     runCount = {}
@@ -286,7 +290,10 @@ class LiblibTasks:
             except Exception as e:
                 print(e)
 
-        users = get_users(exclude_user=self.notAvailableToImageUsers.setdefault(self.today, []))
+        exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
+        to_run_users = load_from_run_users()
+        exclude_user.extend(to_run_users)
+        users = get_users(exclude_user=exclude_user)
         if len(users) == 0:
             self.notAvailableToImageUsers[self.today] = []
         user_model_dict = self.get_models()
@@ -297,7 +304,12 @@ class LiblibTasks:
             is_time = "00:00:00" < now_localtime < "08:00:00"
             to_run_user_count = (10 if len(users) >= 10 else len(users)) if is_time else (
                 5 if len(users) >= 5 else len(users))
-            for user in random.sample(users, to_run_user_count):
+            to_save_run_users = load_from_run_users()
+            to_run_users = random.sample(users, to_run_user_count)
+            for user in to_run_users:
+                to_save_run_users.append(user['usertoken'])
+            save_to_run_users(list(set(to_save_run_users)))
+            for user in to_run_users:
                 # for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
                 to_run_model_count = (30 if len(to_run_models) >= 30 else len(to_run_models)) if is_time else (
