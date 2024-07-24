@@ -2,6 +2,7 @@
 import copy
 import datetime
 import json
+import os
 import random
 import threading
 import time
@@ -13,6 +14,14 @@ from Base import Base
 from CookieUtils import get_users
 from DownLoadImage import DownLoadImage
 from Statistics import RunStatistics
+
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
+
+# 指定env文件
+env_path = Path.cwd().joinpath('..').joinpath('env').joinpath('os.env')
+env_path.parent.mkdir(exist_ok=True)
+load_dotenv(find_dotenv(str(env_path)))
 
 
 class Image(Base):
@@ -158,7 +167,6 @@ class Image(Base):
         response = requests.request("POST", url, headers=headers, data=payload)
         return json.loads(response.text)
 
-
     def nps(self):
         url = "https://liblib-api.vibrou.com/gateway/sd-api/common/getStatisticsCount"
 
@@ -174,7 +182,6 @@ class Image(Base):
         response = requests.request("POST", url, headers=headers, data=payload)
         self.getLogger().info(f"nickname：{self.userInfo['nickname']} getStatisticsCount，{response.text}")
 
-
     def progress_msg(self, headers, progress_code):
         url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/{progress_code}"
 
@@ -187,6 +194,6 @@ if __name__ == '__main__':
     users = get_users()
     for user in random.sample(users, 4):
         try:
-            Image(user['usertoken'], user['webid'], '/mitmproxy/logs/Image.log').gen_image()
+            Image(user['usertoken'], user['webid'], f'/mitmproxy/logs/Image_{os.getenv("RUN_OS_KEY")}.log').gen_image()
         except Exception as e:
             print(e)

@@ -14,6 +14,14 @@ from ql import ql_env
 dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'statistics.db')
 db = SqliteDatabase(dbpath)
 
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
+
+env_path = Path.cwd().joinpath('..').joinpath('env').joinpath('os.env')
+env_path.parent.mkdir(exist_ok=True)
+# 指定env文件
+load_dotenv(find_dotenv(str(env_path)))
+
 
 class Account(Model):
     _id = PrimaryKeyField
@@ -99,7 +107,8 @@ if __name__ == '__main__':
     enable_ids = []
     for user in users:
         try:
-            userInfo = UserInfo(user['usertoken'], user['webid'], '/mitmproxy/logs/UserInfo.log')
+            userInfo = UserInfo(user['usertoken'], user['webid'],
+                                f'/mitmproxy/logs/UserInfo_{os.getenv("RUN_OS_KEY")}.log')
             realUser = userInfo.userInfo
             if realUser is not None:
                 enable_ids.append(user['id'])

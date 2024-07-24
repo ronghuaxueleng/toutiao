@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+import os
 import random
 import time
 
@@ -9,6 +10,14 @@ import requests
 from CookieUtils import get_users
 from Statistics import DownLoadImageStatistics
 from UserInfo import UserInfo
+
+from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
+
+# 指定env文件
+env_path = Path.cwd().joinpath('..').joinpath('env').joinpath('os.env')
+env_path.parent.mkdir(exist_ok=True)
+load_dotenv(find_dotenv(str(env_path)))
 
 
 class DownLoadImage(UserInfo):
@@ -99,14 +108,17 @@ class DownLoadImage(UserInfo):
                 self.getLogger().info(f'删除图片结果：{response.text}')
             for user_uuid, model_list in downloadImageCount.items():
                 for modelId, model in model_list.items():
-                    query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId,
+                    query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid,
+                                                                   DownLoadImageStatistics.modelId == modelId,
                                                                    DownLoadImageStatistics.day == self.day)
                     if query.exists():
                         downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
                         DownLoadImageStatistics.update(
                             downloadImageCount=downloadImageCount + model['count'],
                             timestamp=datetime.datetime.now()
-                        ).where(DownLoadImageStatistics.user_uuid == user_uuid, DownLoadImageStatistics.modelId == modelId, DownLoadImageStatistics.day == self.day).execute()
+                        ).where(DownLoadImageStatistics.user_uuid == user_uuid,
+                                DownLoadImageStatistics.modelId == modelId,
+                                DownLoadImageStatistics.day == self.day).execute()
                     else:
                         DownLoadImageStatistics.insert(
                             user_uuid=user_uuid,
@@ -121,6 +133,7 @@ if __name__ == '__main__':
     users = get_users()
     for user in users:
         try:
-            DownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/DownLoadImage.log').download()
+            DownLoadImage(user['usertoken'], user['webid'],
+                          f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
         except Exception as e:
             print(e)
