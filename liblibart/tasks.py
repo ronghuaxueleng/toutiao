@@ -308,6 +308,7 @@ class LiblibTasks:
         users = get_users(exclude_user=exclude_user)
         if len(users) == 0:
             self.notAvailableToImageUsers[self.today] = []
+            save_to_run_users([])
         user_model_dict = self.get_models()
 
         def simple_generator():
