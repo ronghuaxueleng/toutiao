@@ -10,11 +10,11 @@ from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_users
+from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image
-from liblibart.UserInfo import Account, UserInfo
+from liblibart.UserInfo import UserInfo, Account
 from liblibart.ql import ql_env
 from utils.utils import send_message
 
@@ -305,6 +305,8 @@ class LiblibTasks:
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users()
         exclude_user.extend(to_run_users)
+        suanlibuzu_user = load_from_suanlibuzu_users()
+        exclude_user.extend(suanlibuzu_user)
         users = get_users(exclude_user=exclude_user)
         if len(users) == 0:
             self.notAvailableToImageUsers[self.today] = []

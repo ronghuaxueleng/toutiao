@@ -11,7 +11,7 @@ import uuid
 import requests
 
 from liblibart.Base import Base
-from liblibart.CookieUtils import get_users
+from liblibart.CookieUtils import get_users, load_from_suanlibuzu_users, save_to_suanlibuzu_users
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.Statistics import RunStatistics
 
@@ -82,10 +82,10 @@ class Image(Base):
             headers['referer'] = f'https://{self.web_host}/v4/editor'
             url = f"https://{self.api_host}/gateway/sd-api/generate/image"
             response = requests.request("POST", url, headers=headers, data=payload)
-            self.getLogger().info(f"nickname：{self.userInfo['nickname']} generate image，{response.text}")
             res = json.loads(response.text)
 
             if res['code'] == 0:
+                self.getLogger().info(f"nickname：{self.userInfo['nickname']} generate image，{response.text}")
                 res1 = self.progress_msg(headers, res['data'])
                 url = f"https://{self.api_host}/api/www/log/acceptor/f"
                 payload = json.dumps({
@@ -147,9 +147,16 @@ class Image(Base):
                                 day=self.day
                             ).execute()
                 return res['data']
-            elif res['code'] == 1200000136:
+            elif res['code'] == 1200000136 or res['code'] == 1200000170:
+                if res['code'] == 1200000136:
+                    suanlibuzu_user = load_from_suanlibuzu_users()
+                    suanlibuzu_user.append(self.userInfo['uuid'])
+                    save_to_suanlibuzu_users(list(set(suanlibuzu_user)))
                 return 'suanlibuzu'
+            elif res['code'] == 1100000102:
+                return 'tokenwuxiao'
             else:
+                self.getLogger().error(response.text)
                 return 'qitacuowu'
 
     def get_percent(self, image_num):

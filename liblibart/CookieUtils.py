@@ -4,7 +4,21 @@ import os
 
 from liblibart.ql import ql_env
 
+suanlibuzu_users_json_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config',
+                                          'suanlibuzu_users.json')
 to_run_users_json_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'to_run_users.json')
+
+
+def save_to_suanlibuzu_users(suanlibuzu_users):
+    with open(suanlibuzu_users_json_path, 'w') as to_run_users_json:
+        json.dump(suanlibuzu_users, to_run_users_json, indent=4)
+
+
+def load_from_suanlibuzu_users():
+    if os.path.exists(suanlibuzu_users_json_path):
+        with open(suanlibuzu_users_json_path, 'r') as to_run_users_json:
+            return json.load(to_run_users_json)
+    return []
 
 
 def save_to_run_users(to_run_users):
