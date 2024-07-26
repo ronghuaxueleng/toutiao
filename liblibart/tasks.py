@@ -176,7 +176,8 @@ class LiblibTasks:
                                                             seconds=random.randint(0, 59))
 
     def get_draw_image_run_date(self):
-        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(2, 7),
+        return datetime.datetime.now() + datetime.timedelta(hours=random.randint(1, 2),
+                                                            minutes=random.randint(11, 46),
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
@@ -316,7 +317,7 @@ class LiblibTasks:
         def simple_generator():
             # 当前时间
             now_localtime = time.strftime("%H:%M:%S", time.localtime())
-            is_time = "00:00:00" < now_localtime < "08:00:00"
+            is_time = False #"00:00:00" < now_localtime < "08:00:00"
             to_run_user_count = (10 if len(users) >= 10 else len(users)) if is_time else (
                 5 if len(users) >= 5 else len(users))
             to_save_run_users = load_from_run_users()
