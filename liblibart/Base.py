@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
+import datetime
+import json
+import os
+
 from UserInfo import UserInfo
+from CookieUtils import save_to_suanlibuzu_users
+
+current_day_json_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'current_day.json')
 
 
 class Base(UserInfo):
@@ -65,3 +72,25 @@ class Base(UserInfo):
             "additionalNetwork": [],
             "taskQueuePriority": 1
         }
+        dt = datetime.datetime.now()
+        self.today = dt.strftime("%Y%m%d")
+        self.current_day = {
+            'current_day': self.today
+        }
+        current_day = self.load_from_current_day()
+        if current_day is None:
+            self.save_to_current_day()
+        if current_day != self.today:
+            self.save_to_current_day()
+            save_to_suanlibuzu_users([])
+
+    def save_to_current_day(self):
+        with open(current_day_json_path, 'w') as to_run_users_json:
+            json.dump(self.current_day, to_run_users_json, indent=4)
+
+    def load_from_current_day(self):
+        if os.path.exists(current_day_json_path):
+            with open(current_day_json_path, 'r') as to_run_users_json:
+                current_day = json.load(to_run_users_json)
+                return current_day['current_day']
+        return None

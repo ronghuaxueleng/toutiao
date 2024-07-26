@@ -11,7 +11,7 @@ import uuid
 import requests
 
 from Base import Base
-from CookieUtils import get_users
+from CookieUtils import get_users, load_from_suanlibuzu_users, save_to_suanlibuzu_users
 from DownLoadImage import DownLoadImage
 from Statistics import RunStatistics
 
@@ -148,6 +148,10 @@ class Image(Base):
                             ).execute()
                 return res['data']
             elif res['code'] == 1200000136 or res['code'] == 1200000170:
+                if res['code'] == 1200000136:
+                    suanlibuzu_user = load_from_suanlibuzu_users()
+                    suanlibuzu_user.append(self.userInfo['uuid'])
+                    save_to_suanlibuzu_users(list(set(suanlibuzu_user)))
                 return 'suanlibuzu'
             elif res['code'] == 1100000102:
                 return 'tokenwuxiao'

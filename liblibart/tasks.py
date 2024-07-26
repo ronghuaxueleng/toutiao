@@ -10,7 +10,7 @@ from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from CookieUtils import get_users, load_from_run_users, save_to_run_users
+from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
 from DownLoadImage import DownLoadImage
 from DownloadModel import DownloadModel
 from Image import Image
@@ -305,6 +305,8 @@ class LiblibTasks:
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users()
         exclude_user.extend(to_run_users)
+        suanlibuzu_user = load_from_suanlibuzu_users()
+        exclude_user.extend(suanlibuzu_user)
         users = get_users(exclude_user=exclude_user)
         if len(users) == 0:
             self.notAvailableToImageUsers[self.today] = []
