@@ -49,6 +49,8 @@ print(env_path)
 env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
 
+misfire_grace_time = 60 * 10
+
 
 class LiblibTasks:
     def __init__(self):
@@ -67,6 +69,7 @@ class LiblibTasks:
             self.downloadModel,
             id='downloadModel',
             trigger='date',
+            misfire_grace_time=misfire_grace_time,
             run_date=self.get_download_model_run_date(),
         )
 
@@ -74,6 +77,7 @@ class LiblibTasks:
             self.downLoadImage,
             id='downLoadImage',
             trigger='date',
+            misfire_grace_time=misfire_grace_time,
             run_date=self.get_downLoad_image_run_date(),
         )
 
@@ -81,6 +85,7 @@ class LiblibTasks:
             self.drawImage,
             id='drawImage',
             trigger='date',
+            misfire_grace_time=misfire_grace_time,
             run_date=self.get_draw_image_run_date(),
         )
         self.get_all_job()
@@ -195,6 +200,7 @@ class LiblibTasks:
                 self.downloadModel,
                 id=job_id,
                 trigger='date',
+                misfire_grace_time=misfire_grace_time,
                 run_date=self.get_download_model_run_date(),
             )
         else:
@@ -222,6 +228,7 @@ class LiblibTasks:
                     self.downLoadImage,
                     id=job_id,
                     trigger='date',
+                    misfire_grace_time=misfire_grace_time,
                     run_date=self.get_downLoad_image_run_date(),
                 )
         else:
@@ -316,7 +323,7 @@ class LiblibTasks:
         def simple_generator():
             # 当前时间
             now_localtime = time.strftime("%H:%M:%S", time.localtime())
-            is_time = False #"00:00:00" < now_localtime < "08:00:00"
+            is_time = False  #"00:00:00" < now_localtime < "08:00:00"
             to_run_user_count = (10 if len(users) >= 10 else len(users)) if is_time else (
                 5 if len(users) >= 5 else len(users))
             to_save_run_users = load_from_run_users()
@@ -348,6 +355,7 @@ class LiblibTasks:
                     self.drawImage,
                     id=job_id,
                     trigger='date',
+                    misfire_grace_time=misfire_grace_time,
                     run_date=self.get_draw_image_run_date(),
                 )
             else:
