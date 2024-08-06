@@ -7,6 +7,7 @@ from liblibart.UserInfo import UserInfo
 from liblibart.CookieUtils import save_to_suanlibuzu_users
 
 current_day_json_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'current_day.json')
+checkpointIds_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'checkpointIds.json')
 
 
 class Base(UserInfo):
@@ -72,6 +73,13 @@ class Base(UserInfo):
             "additionalNetwork": [],
             "taskQueuePriority": 1
         }
+        self.checkpointIds = [2016037, 2321317]
+        if not os.path.exists(checkpointIds_path):
+            with open(checkpointIds_path, 'w') as fp:
+                json.dump(self.checkpointIds, fp)
+        else:
+            with open(checkpointIds_path, 'r') as fp:
+                self.checkpointIds = json.load(fp)
         dt = datetime.datetime.now()
         self.today = dt.strftime("%Y%m%d")
         self.current_day = {

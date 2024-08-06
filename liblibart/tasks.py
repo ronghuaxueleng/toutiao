@@ -49,7 +49,7 @@ print(env_path)
 env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
 
-misfire_grace_time = 60 * 10
+misfire_grace_time = 60
 
 
 class LiblibTasks:

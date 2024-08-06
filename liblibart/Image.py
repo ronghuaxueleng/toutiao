@@ -32,6 +32,7 @@ class Image(Base):
         self.frontId = str(uuid.uuid1())
         self.param = copy.deepcopy(self.gen_param)
         self.param['frontCustomerReq']['frontId'] = self.frontId
+        self.running_checkpointIdsFileName = 'running_checkpointIds.json'
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(Image, "_instance"):
@@ -69,13 +70,27 @@ class Image(Base):
                 else:
                     self.nps()
                     try:
-                        DownLoadImage(self.token, self.webid, '/mitmproxy/logs/DownLoadImage.log').download()
+                        DownLoadImage(self.token, self.webid, f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
                     except Exception as e:
                         print(e)
                     return True
 
     def gen(self, runCount):
         if len(self.param['additionalNetwork']) > 0:
+            running_checkpointIds = []
+            if os.path.exists(self.running_checkpointIdsFileName):
+                with open(self.running_checkpointIdsFileName, 'r') as f:
+                    running_checkpointIds = json.load(f)
+
+            to_run_checkpointIds = list(set(self.checkpointIds).difference(set(running_checkpointIds)))
+            checkpointId = 2016037
+            if len(to_run_checkpointIds) > 0:
+                checkpointId = to_run_checkpointIds[0]
+            if len(to_run_checkpointIds) == 0:
+                running_checkpointIds = [checkpointId]
+                with open(self.running_checkpointIdsFileName, 'w') as f:
+                    json.dump(running_checkpointIds, f)
+            self.param["checkpointId"] = checkpointId
             payload = json.dumps(self.param)
             headers = self.headers
             headers['content-type'] = 'application/json'
