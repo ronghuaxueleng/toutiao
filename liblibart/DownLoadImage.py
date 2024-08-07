@@ -94,7 +94,7 @@ class DownLoadImage(UserInfo):
                     download_count = __model.setdefault('count', 0)
                     downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
                 except Exception as e:
-                    self.getLogger().error(e)
+                    self.getLogger().error(f'更新下载次数失败: {e}')
 
             if delete:
                 url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
