@@ -42,15 +42,18 @@ class SaveLora(UserInfo):
             'webid': self.webid
         }
 
-        my_loras = ql_env.search("my_lora")
         saved_models = []
         saved_model_id_map = {}
-        for my_lora in my_loras:
-            if my_lora['status'] == 0:
-                value = json.loads(my_lora['value'])
-                modelId = value['modelId']
-                saved_models.append(modelId)
-                saved_model_id_map[modelId] = my_lora['id']
+        try:
+            my_loras = ql_env.search("my_lora")
+            for my_lora in my_loras:
+                if my_lora['status'] == 0:
+                    value = json.loads(my_lora['value'])
+                    modelId = value['modelId']
+                    saved_models.append(modelId)
+                    saved_model_id_map[modelId] = my_lora['id']
+        except Exception as e:
+            print(e)
 
         for pageNo in range(1, 5):
             url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"

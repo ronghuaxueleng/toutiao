@@ -113,13 +113,16 @@ class LiblibTasks:
 
     def get_models(self):
         user_model_dict = {}
-        my_loras = ql_env.search("my_lora")
-        for my_lora in my_loras:
-            if my_lora['status'] == 0:
-                value = json.loads(my_lora['value'])
-                user_models = user_model_dict.setdefault(value['userUuid'], [])
-                user_models.append(value)
-                user_model_dict[value['userUuid']] = user_models
+        try:
+            my_loras = ql_env.search("my_lora")
+            for my_lora in my_loras:
+                if my_lora['status'] == 0:
+                    value = json.loads(my_lora['value'])
+                    user_models = user_model_dict.setdefault(value['userUuid'], [])
+                    user_models.append(value)
+                    user_model_dict[value['userUuid']] = user_models
+        except Exception as e:
+            print(e)
 
         final_user_model_dict = {}
         users = get_users()
