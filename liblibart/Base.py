@@ -93,12 +93,12 @@ class Base(UserInfo):
             save_to_suanlibuzu_users([])
 
     def save_to_current_day(self):
-        with open(current_day_json_path, 'w') as to_run_users_json:
-            json.dump(self.current_day, to_run_users_json, indent=4)
+        with open(current_day_json_path, 'w') as current_day:
+            json.dump(self.current_day, current_day, indent=4)
 
     def load_from_current_day(self):
         if os.path.exists(current_day_json_path):
-            with open(current_day_json_path, 'r') as to_run_users_json:
-                current_day = json.load(to_run_users_json)
+            with open(current_day_json_path, 'r') as a:
+                current_day = json.load(a)
                 return current_day['current_day']
         return None
