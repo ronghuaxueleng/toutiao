@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ql import ql_env
+from liblibart.ql import ql_env
 
 id = 511
 
