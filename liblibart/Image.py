@@ -72,7 +72,7 @@ class Image(Base):
                     try:
                         DownLoadImage(self.token, self.webid, f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
                     except Exception as e:
-                        print(e)
+                        self.getLogger().error(f"nickname：{self.userInfo['nickname']} DownLoadImage，{e}")
                     return True
 
     def gen(self, runCount):
