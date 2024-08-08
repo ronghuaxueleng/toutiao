@@ -8,6 +8,7 @@ from liblibart.CookieUtils import save_to_suanlibuzu_users
 
 current_day_json_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'current_day.json')
 checkpointIds_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'checkpointIds.json')
+gen_params_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'gen_params.json')
 
 
 class Base(UserInfo):
@@ -17,7 +18,6 @@ class Base(UserInfo):
             "checkpointId": 2016037,
             "generateType": 1,
             "frontCustomerReq": {
-                # "frontId": self.frontId,
                 "windowId": "",
                 "tabType": "txt2img",
                 "conAndSegAndGen": "gen"
@@ -73,6 +73,14 @@ class Base(UserInfo):
             "additionalNetwork": [],
             "taskQueuePriority": 1
         }
+
+        if not os.path.exists(gen_params_path):
+            with open(gen_params_path, 'w') as fp:
+                json.dump(self.gen_param, fp)
+        else:
+            with open(gen_params_path, 'r') as fp:
+                self.gen_param = json.load(fp)
+
         self.checkpointIds = [2016037, 2321317]
         if not os.path.exists(checkpointIds_path):
             with open(checkpointIds_path, 'w') as fp:
