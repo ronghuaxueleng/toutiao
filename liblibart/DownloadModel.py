@@ -26,11 +26,14 @@ class DownloadModel(UserInfo):
         super().__init__(token, webid, log_filename)
 
     def download_model(self):
-        my_loras = ql_env.search("my_lora")
         download_models = []
-        for my_lora in my_loras:
-            if my_lora['status'] == 0:
-                download_models.append(json.loads(my_lora['value'])['modelId'])
+        try:
+            my_loras = ql_env.search("my_lora")
+            for my_lora in my_loras:
+                if my_lora['status'] == 0:
+                    download_models.append(json.loads(my_lora['value'])['modelId'])
+        except Exception as e:
+            print(e)
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
         for uuid in self.uuids:
             if uuid != self.uuid:
