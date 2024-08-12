@@ -23,8 +23,8 @@ class Base(UserInfo):
                 "conAndSegAndGen": "gen"
             },
             "text2img": {
-                "prompt": ",1girl,chinese new year,photorealistic,photography,jewelry,indoors,red sweater,simple background,tassel,lantern,make up,Chinese fan,hair ornament,dress ",
-                "negativePrompt": "text,chinese red packet,leg,(worst quality, low quality:2), monochrome, zombie,overexposure, watermark,text,bad anatomy,bad hand,extra hands,extra fingers,too many fingers,fused fingers,bad arm,distorted arm,extra arms,fused arms,extra legs,missing leg,disembodied leg,extra nipples, detached arm, liquid hand,inverted hand,disembodied limb, small breasts, loli, oversized head,extra body,completely nude,",
+                "prompt": ",1girl,solo,realistic,jewelry,necklace,brown eyes,earrings,lips,looking at viewer,long hair BREAK\nwhite shirt,short sleeves,bracelet,black hair,smile,closed mouth,facing viewer,\nmakeup,fashion model,picture-perfect face,flowing hair,(full body:1.5),shiny skin,(masterpiece, top quality),master piece,professional artwork,famous artwork,(realistic,photorealistic:1.37),HDR,UHD,8K,ultra realistic 8k cg,8K,32k,HD,",
+                "negativePrompt": "EasyNegativeV2,(badhandv4:1.2),(worst quality, low quality, cgi, bad eye, worst eye, illustration, cartoon),deformed,distorted,disfigured,poorly drawn,bad anatomy,wrong anatomy,(normal quality:2),lowres,bad anatomy,bad hands,normal quality,((monochrome)),((grayscale)),easynegative,paintings,sketches,",
                 "extraNetwork": "",
                 "samplingMethod": 24,
                 "samplingStep": 30,
