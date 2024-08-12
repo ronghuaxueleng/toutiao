@@ -175,7 +175,7 @@ class Image(Base):
                 return 'qitacuowu'
 
     def get_percent(self, image_num):
-        url = f"https://liblib-api.vibrou.com/gateway/sd-api/generate/progress/msg/v1/{image_num}"
+        url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/v1/{image_num}"
         payload = json.dumps({
             "flag": 0
         })
@@ -187,7 +187,7 @@ class Image(Base):
         return json.loads(response.text)
 
     def nps(self):
-        url = "https://liblib-api.vibrou.com/gateway/sd-api/common/getStatisticsCount"
+        url = f"https://{self.api_host}/gateway/sd-api/common/getStatisticsCount"
 
         payload = json.dumps({
             "businessType": "nps",
