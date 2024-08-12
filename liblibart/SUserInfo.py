@@ -79,7 +79,7 @@ class SUserInfo(LogInfo):
         self.model_dict = {}
         self.user_model_dict = {}
         try:
-            my_loras = ql_env.search("my_lora")
+            my_loras = ql_env.search("my_slora")
             for my_lora in my_loras:
                 if my_lora['status'] == 0:
                     value = json.loads(my_lora['value'])
