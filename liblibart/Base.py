@@ -81,7 +81,7 @@ class Base(UserInfo):
             with open(gen_params_path, 'r') as fp:
                 self.gen_param = json.load(fp)
 
-        self.checkpointIds = [2016037, 2321317]
+        self.checkpointIds = [2016037]
         if not os.path.exists(checkpointIds_path):
             with open(checkpointIds_path, 'w') as fp:
                 json.dump(self.checkpointIds, fp, indent=4)
