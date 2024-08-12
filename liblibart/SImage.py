@@ -12,7 +12,7 @@ import requests
 
 from liblibart.SBase import SBase
 from liblibart.CookieUtils import get_users, load_from_suanlibuzu_users, save_to_suanlibuzu_users
-from liblibart.Statistics import RunStatistics
+from liblibart.SStatistics import RunStatistics
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
