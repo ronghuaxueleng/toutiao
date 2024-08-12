@@ -12,7 +12,6 @@ import requests
 
 from liblibart.SBase import SBase
 from liblibart.CookieUtils import get_users, load_from_suanlibuzu_users, save_to_suanlibuzu_users
-from liblibart.DownLoadImage import DownLoadImage
 from liblibart.Statistics import RunStatistics
 
 from dotenv import load_dotenv, find_dotenv
@@ -24,7 +23,7 @@ env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
 
 
-class Image(SBase):
+class SImage(SBase):
     _instance_lock = threading.Lock()
 
     def __init__(self, token, webid, log_filename):
@@ -35,11 +34,11 @@ class Image(SBase):
         self.running_checkpointIdsFileName = 's_running_checkpointIds.json'
 
     def __new__(cls, *args, **kwargs):
-        if not hasattr(Image, "_instance"):
-            with Image._instance_lock:
-                if not hasattr(Image, "_instance"):
-                    Image._instance = object.__new__(cls)
-        return Image._instance
+        if not hasattr(SImage, "_instance"):
+            with SImage._instance_lock:
+                if not hasattr(SImage, "_instance"):
+                    SImage._instance = object.__new__(cls)
+        return SImage._instance
 
     def gen_image(self):
         runCount = {}
@@ -69,11 +68,6 @@ class Image(SBase):
                     self.get_percent(image_num)
                 else:
                     self.nps()
-                    try:
-                        DownLoadImage(self.token, self.webid, f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
-                    except Exception as e:
-                        self.getLogger().error(f"nickname：{self.userInfo['nickname']} DownLoadImage，{e}")
-                    return True
 
     def gen(self, runCount):
         running_checkpointIds = []
@@ -103,45 +97,31 @@ class Image(SBase):
 
         if res['code'] == 0:
             self.getLogger().info(f"nickname：{self.userInfo['nickname']} generate image，{response.text}")
-            # res1 = self.progress_msg(headers, res['data'])
-            # url = f"https://{self.api_host}/api/www/log/acceptor/f"
-            # payload = json.dumps({
-            #     "abtest": [
-            #         {
-            #             "name": "image_recommend",
-            #             "group": "IMAGE_REC_SERVICE_DEFAULT"
-            #         },
-            #         {
-            #             "name": "model_recommend",
-            #             "group": "PERSONALIZED_RECOMMEND_V13"
-            #         }
-            #     ],
-            #     "sys": "SD",
-            #     "t": 2,
-            #     "uuid": self.userInfo['uuid'],
-            #     "cid": self.webid,
-            #     "page": "SD_GENERATE",
-            #     "pageUrl": f"https://{self.web_host}/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
-            #     "ct": time.time(),
-            #     "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-            #     "referer": f"https://{self.web_host}/sd",
-            #     "e": "sdp.generate.req",
-            #     "generateId": self.frontId,
-            #     "var": {
-            #         "gen-img-req-param": {
-            #             "checkpointId": 159549,
-            #             "generateType": 1,
-            #             "frontCustomerReq": res1['data']['frontCustomerReq'],
-            #             "text2img": self.param['text2img'],
-            #             "adetailerEnable": 0,
-            #             "additionalNetwork": self.param['additionalNetwork'],
-            #             "taskQueuePriority": 1
-            #         },
-            #         "gen-img-type": "txt2img"
-            #     }
-            # })
-            # response = requests.request("POST", url, headers=headers, data=payload)
-            # self.getLogger().info(f"nickname：{self.userInfo['nickname']} log acceptor，{response.text}")
+            url = f"https://{self.api_host}/api/www/log/acceptor/f"
+            payload = json.dumps({
+                "uuid": self.uuid,
+                "cid": self.frontId,
+                "ct": time.time(),
+                "pageUrl": f"https://{self.api_host}/aigenerator",
+                "ua": headers['user-agent'],
+                "e": "tool.shake",
+                "var": {
+                    "original_prompt": self.prompt,
+                    "mode": "pro",
+                    "sd-generate-req": {
+                        "adetailerEnable": 1,
+                        "mode": 1,
+                        "vae": 22541,
+                        "checkpointId": checkpointId,
+                        "additionalNetwork": self.param['additionalNetwork'],
+                        "adetailerList": self.param['adetailerList'],
+                        "generateType": 1,
+                        "text2img": self.param['text2img'],
+                    }
+                }
+            })
+            response = requests.request("POST", url, headers=headers, data=payload)
+            self.getLogger().info(f"nickname：{self.userInfo['nickname']} log acceptor，{response.text}")
 
             for user_uuid, model_list in runCount.items():
                 for modelId, model in model_list.items():
@@ -183,9 +163,8 @@ class Image(SBase):
             "cid": self.frontId
         })
         headers = copy.deepcopy(self.headers)
-        del headers['authority']
         headers['content-type'] = 'application/json'
-        headers['referer'] = f'https://{self.web_host}'
+        headers['referer'] = f'https://{self.web_host}/aigenerator'
         response = requests.request("POST", url, headers=headers, data=payload)
         return json.loads(response.text)
 
@@ -194,12 +173,12 @@ class Image(SBase):
 
         payload = json.dumps({
             "businessType": "nps",
-            "source": 0
+            "source": 3,
+            "cid": self.frontId
         })
         headers = copy.deepcopy(self.headers)
-        del headers['authority']
         headers['content-type'] = 'application/json'
-        headers['referer'] = f'https://{self.web_host}'
+        headers['referer'] = f'https://{self.web_host}/aigenerator'
 
         response = requests.request("POST", url, headers=headers, data=payload)
         self.getLogger().info(f"nickname：{self.userInfo['nickname']} getStatisticsCount，{response.text}")
@@ -213,9 +192,9 @@ class Image(SBase):
 
 
 if __name__ == '__main__':
-    users = get_users()
+    users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
     for user in random.sample(users, 4):
         try:
-            Image(user['usertoken'], user['webid'], f'/mitmproxy/logs/Image_{os.getenv("RUN_OS_KEY")}.log').gen_image()
+            SImage(user['usertoken'], user['webid'], f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
         except Exception as e:
             print(e)
