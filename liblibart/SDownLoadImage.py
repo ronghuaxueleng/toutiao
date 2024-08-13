@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
+import base64
 import datetime
 import json
 import os
-import random
 import time
 
 import requests
 
 from liblibart.CookieUtils import get_users
-from liblibart.Statistics import DownLoadImageStatistics
+from liblibart.SStatistics import DownLoadImageStatistics
 from liblibart.SUserInfo import SUserInfo
 
 from dotenv import load_dotenv, find_dotenv
@@ -21,91 +21,97 @@ load_dotenv(find_dotenv(str(env_path)))
 
 
 class SDownLoadImage(SUserInfo):
-    def __init__(self, token, webid, log_filename):
-        super().__init__(token, webid, log_filename)
+    def __init__(self, token, webid, bl_uid, log_filename):
+        super().__init__(token, webid, bl_uid, log_filename)
 
     def download(self, delete=True):
-        url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
-
-        day = datetime.datetime.now() - datetime.timedelta(days=7)
-        fromTime = datetime.datetime(day.year, day.month, day.day).strftime('%Y-%m-%d 00:00:00')
+        url = f"https://{self.api_host}/gateway/sd-api/gen/tool/images"
 
         payload = json.dumps({
-            "pageSize": 1,
             "pageNo": 1,
-            "fromTime": fromTime,
-            "toTime": datetime.datetime.now().strftime("%Y-%m-%d 24:00:00")
+            "pageSize": 1,
+            "sort": -1,
+            "dataReload": "event_historyList",
+            "cid": self.webid
         })
         headers = self.headers
         headers['content-type'] = 'application/json'
-        headers['referer'] = f'https://{self.web_host}/v4/editor'
+        headers['referer'] = f'https://{self.web_host}/aigenerator'
 
         response = requests.request("POST", url, headers=headers, data=payload)
         self.getLogger().info(f'查询图片生成历史结果: {response.text}')
         res = json.loads(response.text)
 
         if len(res['data']['list']) > 0:
+            image_id = res['data']['list'][0]['images'][0]['outputId']
+            image_url = res['data']['list'][0]['images'][0]['imageId']
+            generate_Id = res['data']['list'][0]['images'][0]['generateId']
+            i = f'g={generate_Id}&i={image_id}'
+            i_en = base64.b64encode(i.encode("utf-8"))
+            self.getLogger().info(f'下载图片')
             url = f"https://{self.api_host}/api/www/log/acceptor/f"
-
             payload = json.dumps({
-                "abtest": [
-                    {
-                        "name": "image_recommend",
-                        "group": "IMAGE_REC_SERVICE_DEFAULT"
-                    },
-                    {
-                        "name": "model_recommend",
-                        "group": "PERSONALIZED_RECOMMEND_V11"
-                    }
-                ],
-                "sys": "SD",
-                "t": 2,
-                "uuid": self.userInfo['uuid'],
+                "uuid": self.uuid,
                 "cid": self.webid,
-                "page": "SD_GENERATE",
-                "pageUrl": f"https://{self.web_host}/v4/editor#/?id=undefined&defaultCheck=undefined&type=undefined",
                 "ct": time.time(),
-                "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36",
-                "referer": f"https://{self.web_host}/sd",
-                "e": "sdp.generate.resp.download",
+                "pageUrl": f"https://{self.api_host}/aigenerator",
+                "ua": headers['user-agent'],
+                "e": "tool.canvas.download",
                 "var": {
-                    "img-ids": [
-                        res['data']['list'][0]['outputId']
-                    ],
-                    "img-urls": [
-                        res['data']['list'][0]['imageId']
-                    ],
-                    "gen-img-type": "gallery"
+                    "image_id": image_id,
+                    "type": "original"
                 }
             })
             response = requests.request("POST", url, headers=headers, data=payload)
-            self.getLogger().info(f'保存图片下载记录结果: {response.text}')
-            idList = []
+            self.getLogger().info(f'下载图片结果: {response.text}')
+            self.getLogger().info(f'点赞图片')
+            url = f"https://{self.api_host}/gateway/sd-api/gen/tool/imageFeedback/save"
+            payload = json.dumps({
+                "outputId": image_id,
+                "imageId": image_url,
+                "imageComment": 1,
+                "cid": self.webid
+            })
+            response = requests.request("POST", url, headers=headers, data=payload)
+            self.getLogger().info(f'点赞图片结果: {response.text}')
+            self.getLogger().info(f'分享图片')
+            url = f"https://{self.api_host}/api/www/log/acceptor/f"
+            payload = json.dumps({
+                "uuid": self.uuid,
+                "cid": self.webid,
+                "ct": time.time(),
+                "pageUrl": f"https://{self.api_host}/aigenerator",
+                "ua": headers['user-agent'],
+                "e": "tool.canvas.share",
+                "var": {
+                    "share_id": f"https://{self.api_host}/aigenerator/share?p={str(i_en, 'utf-8')}"
+                }
+            })
+            response = requests.request("POST", url, headers=headers, data=payload)
+            self.getLogger().info(f'分享图片结果: {response.text}')
             downloadImageCount = {}
-            img = res['data']['list'][0]
-            idList.append(img['id'])
-            for model in img['param']['mixModels']:
-                try:
-                    modelVersionId = model['modelVersionId']
-                    _model = self.model_dict[modelVersionId]
-                    userUuid = _model['userUuid']
-                    download_model = downloadImageCount.setdefault(userUuid, {})
-                    __model = download_model.setdefault(modelVersionId, _model)
-                    download_count = __model.setdefault('count', 0)
-                    downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
-                except Exception as e:
-                    self.getLogger().error(f'更新下载次数失败: {e}')
+            # for model in img['param']['mixModels']:
+            #     try:
+            #         modelVersionId = model['modelVersionId']
+            #         _model = self.model_dict[modelVersionId]
+            #         userUuid = _model['userUuid']
+            #         download_model = downloadImageCount.setdefault(userUuid, {})
+            #         __model = download_model.setdefault(modelVersionId, _model)
+            #         download_count = __model.setdefault('count', 0)
+            #         downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
+            #     except Exception as e:
+            #         self.getLogger().error(f'更新下载次数失败: {e}')
 
-            if delete:
-                url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
-
-                payload = json.dumps({
-                    "idList": idList
-                })
-
-                response = requests.request("POST", url, headers=headers, data=payload)
-
-                self.getLogger().info(f'删除图片结果：{response.text}')
+            # if delete:
+            #     url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
+            #
+            #     payload = json.dumps({
+            #         "idList": idList
+            #     })
+            #
+            #     response = requests.request("POST", url, headers=headers, data=payload)
+            #
+            #     self.getLogger().info(f'删除图片结果：{response.text}')
             for user_uuid, model_list in downloadImageCount.items():
                 for modelId, model in model_list.items():
                     query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid,
@@ -133,7 +139,7 @@ if __name__ == '__main__':
     users = get_users()
     for user in users:
         try:
-            DownLoadImage(user['usertoken'], user['webid'],
-                          f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
+            SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
+                          f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
         except Exception as e:
             print(e)

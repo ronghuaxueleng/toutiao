@@ -26,11 +26,10 @@ load_dotenv(find_dotenv(str(env_path)))
 class SImage(SBase):
     _instance_lock = threading.Lock()
 
-    def __init__(self, token, webid, log_filename):
-        super().__init__(token, webid, log_filename)
-        self.frontId = str(uuid.uuid1())
+    def __init__(self, token, webid, bl_uid, log_filename):
+        super().__init__(token, webid, bl_uid, log_filename)
         self.param = copy.deepcopy(self.gen_param)
-        self.param['cid'] = self.frontId
+        self.param['cid'] = self.webid
         self.running_checkpointIdsFileName = 's_running_checkpointIds.json'
 
     def __new__(cls, *args, **kwargs):
@@ -100,7 +99,7 @@ class SImage(SBase):
             url = f"https://{self.api_host}/api/www/log/acceptor/f"
             payload = json.dumps({
                 "uuid": self.uuid,
-                "cid": self.frontId,
+                "cid": self.webid,
                 "ct": time.time(),
                 "pageUrl": f"https://{self.api_host}/aigenerator",
                 "ua": headers['user-agent'],
@@ -160,7 +159,7 @@ class SImage(SBase):
         url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/v1/{image_num}"
         payload = json.dumps({
             "flag": 3,
-            "cid": self.frontId
+            "cid": self.webid
         })
         headers = copy.deepcopy(self.headers)
         headers['content-type'] = 'application/json'
@@ -174,7 +173,7 @@ class SImage(SBase):
         payload = json.dumps({
             "businessType": "nps",
             "source": 3,
-            "cid": self.frontId
+            "cid": self.webid
         })
         headers = copy.deepcopy(self.headers)
         headers['content-type'] = 'application/json'
@@ -195,6 +194,6 @@ if __name__ == '__main__':
     users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
     for user in random.sample(users, 4):
         try:
-            SImage(user['usertoken'], user['webid'], f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
+            SImage(user['usertoken'], user['webid'], user['_bl_uid'], f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
         except Exception as e:
             print(e)
