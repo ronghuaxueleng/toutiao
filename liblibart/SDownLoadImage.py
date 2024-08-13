@@ -24,7 +24,7 @@ class SDownLoadImage(SUserInfo):
     def __init__(self, token, webid, bl_uid, log_filename):
         super().__init__(token, webid, bl_uid, log_filename)
 
-    def download(self, delete=True):
+    def download(self):
         url = f"https://{self.api_host}/gateway/sd-api/gen/tool/images"
 
         payload = json.dumps({
