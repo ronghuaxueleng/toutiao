@@ -136,7 +136,7 @@ class SDownLoadImage(SUserInfo):
 
 
 if __name__ == '__main__':
-    users = get_users()
+    users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
     for user in users:
         try:
             SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
