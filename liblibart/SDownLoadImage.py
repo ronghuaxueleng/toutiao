@@ -23,6 +23,38 @@ load_dotenv(find_dotenv(str(env_path)))
 class SDownLoadImage(SUserInfo):
     def __init__(self, token, webid, bl_uid, log_filename):
         super().__init__(token, webid, bl_uid, log_filename)
+        self.my_headers = self.headers
+        self.my_headers['content-type'] = 'application/json'
+        self.my_headers['referer'] = f'https://{self.web_host}/aigenerator'
+
+    def feed_image(self, image_id, image_url):
+        self.getLogger().info(f'点赞图片')
+        url = f"https://{self.api_host}/gateway/sd-api/gen/tool/imageFeedback/save"
+        payload = json.dumps({
+            "outputId": image_id,
+            "imageId": image_url,
+            "imageComment": 1,
+            "cid": self.webid
+        })
+        response = requests.request("POST", url, headers=self.my_headers, data=payload)
+        self.getLogger().info(f'点赞图片结果: {response.text}')
+
+    def share_image(self, i_en):
+        self.getLogger().info(f'分享图片')
+        url = f"https://{self.api_host}/api/www/log/acceptor/f"
+        payload = json.dumps({
+            "uuid": self.uuid,
+            "cid": self.webid,
+            "ct": time.time(),
+            "pageUrl": f"https://{self.api_host}/aigenerator",
+            "ua": self.my_headers['user-agent'],
+            "e": "tool.canvas.share",
+            "var": {
+                "share_id": f"https://{self.api_host}/aigenerator/share?p={str(i_en, 'utf-8')}"
+            }
+        })
+        response = requests.request("POST", url, headers=self.my_headers, data=payload)
+        self.getLogger().info(f'分享图片结果: {response.text}')
 
     def download(self):
         data = self.getImageList()
@@ -36,48 +68,20 @@ class SDownLoadImage(SUserInfo):
             i_en = base64.b64encode(i.encode("utf-8"))
             self.getLogger().info(f'下载图片')
             url = f"https://{self.api_host}/api/www/log/acceptor/f"
-            headers = self.headers
-            headers['content-type'] = 'application/json'
-            headers['referer'] = f'https://{self.web_host}/aigenerator'
             payload = json.dumps({
                 "uuid": self.uuid,
                 "cid": self.webid,
                 "ct": time.time(),
                 "pageUrl": f"https://{self.api_host}/aigenerator",
-                "ua": headers['user-agent'],
+                "ua": self.my_headers['user-agent'],
                 "e": "tool.canvas.download",
                 "var": {
                     "image_id": image_id,
                     "type": "original"
                 }
             })
-            response = requests.request("POST", url, headers=headers, data=payload)
+            response = requests.request("POST", url, headers=self.my_headers, data=payload)
             self.getLogger().info(f'下载图片结果: {response.text}')
-            self.getLogger().info(f'点赞图片')
-            url = f"https://{self.api_host}/gateway/sd-api/gen/tool/imageFeedback/save"
-            payload = json.dumps({
-                "outputId": image_id,
-                "imageId": image_url,
-                "imageComment": 1,
-                "cid": self.webid
-            })
-            response = requests.request("POST", url, headers=headers, data=payload)
-            self.getLogger().info(f'点赞图片结果: {response.text}')
-            self.getLogger().info(f'分享图片')
-            url = f"https://{self.api_host}/api/www/log/acceptor/f"
-            payload = json.dumps({
-                "uuid": self.uuid,
-                "cid": self.webid,
-                "ct": time.time(),
-                "pageUrl": f"https://{self.api_host}/aigenerator",
-                "ua": headers['user-agent'],
-                "e": "tool.canvas.share",
-                "var": {
-                    "share_id": f"https://{self.api_host}/aigenerator/share?p={str(i_en, 'utf-8')}"
-                }
-            })
-            response = requests.request("POST", url, headers=headers, data=payload)
-            self.getLogger().info(f'分享图片结果: {response.text}')
             downloadImageCount = {}
             # for model in img['param']['mixModels']:
             #     try:
