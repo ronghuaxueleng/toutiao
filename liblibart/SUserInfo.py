@@ -105,6 +105,26 @@ class SUserInfo(LogInfo):
         else:
             self.userInfo = None
 
+    def getImageList(self, pageNo=1, pageSize=500):
+        url = f"https://{self.api_host}/gateway/sd-api/gen/tool/images"
+
+        payload = json.dumps({
+            "pageNo": pageNo,
+            "pageSize": pageSize,
+            "sort": -1,
+            "dataReload": "event_historyList",
+            "cid": self.webid
+        })
+        headers = self.headers
+        headers['content-type'] = 'application/json'
+        headers['referer'] = f'https://{self.web_host}/aigenerator'
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        res = json.loads(response.text)
+        if res['code'] == 0:
+            return res['data']['list']
+        else:
+            return []
 
 if __name__ == '__main__':
     create_table(Account)
@@ -114,7 +134,7 @@ if __name__ == '__main__':
     for user in users:
         try:
             userInfo = SUserInfo(user['usertoken'], user['webid'], user['_bl_uid'],
-                                f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
+                                 f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
             realUser = userInfo.userInfo
             if realUser is not None:
                 enable_ids.append(user['id'])

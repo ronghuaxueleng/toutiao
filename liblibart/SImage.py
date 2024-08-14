@@ -192,7 +192,8 @@ class SImage(SBase):
 
 if __name__ == '__main__':
     users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
-    for user in random.sample(users, 4):
+    for user in random.sample(users, 1):
+    # for user in users:
         try:
             SImage(user['usertoken'], user['webid'], user['_bl_uid'], f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
         except Exception as e:

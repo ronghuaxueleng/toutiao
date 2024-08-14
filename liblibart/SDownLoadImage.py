@@ -25,31 +25,20 @@ class SDownLoadImage(SUserInfo):
         super().__init__(token, webid, bl_uid, log_filename)
 
     def download(self):
-        url = f"https://{self.api_host}/gateway/sd-api/gen/tool/images"
+        data = self.getImageList()
+        self.getLogger().info(f'查询图片生成历史结果: {data}')
 
-        payload = json.dumps({
-            "pageNo": 1,
-            "pageSize": 1,
-            "sort": -1,
-            "dataReload": "event_historyList",
-            "cid": self.webid
-        })
-        headers = self.headers
-        headers['content-type'] = 'application/json'
-        headers['referer'] = f'https://{self.web_host}/aigenerator'
-
-        response = requests.request("POST", url, headers=headers, data=payload)
-        self.getLogger().info(f'查询图片生成历史结果: {response.text}')
-        res = json.loads(response.text)
-
-        if len(res['data']['list']) > 0:
-            image_id = res['data']['list'][0]['images'][0]['outputId']
-            image_url = res['data']['list'][0]['images'][0]['imageId']
-            generate_Id = res['data']['list'][0]['images'][0]['generateId']
+        if len(data) > 0:
+            image_id = data[0]['images'][0]['outputId']
+            image_url = data[0]['images'][0]['imageId']
+            generate_Id = data[0]['images'][0]['generateId']
             i = f'g={generate_Id}&i={image_id}'
             i_en = base64.b64encode(i.encode("utf-8"))
             self.getLogger().info(f'下载图片')
             url = f"https://{self.api_host}/api/www/log/acceptor/f"
+            headers = self.headers
+            headers['content-type'] = 'application/json'
+            headers['referer'] = f'https://{self.web_host}/aigenerator'
             payload = json.dumps({
                 "uuid": self.uuid,
                 "cid": self.webid,
