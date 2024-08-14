@@ -33,6 +33,20 @@ class Account(Model):
         database = db
 
 
+class SharedImgUrl(Model):
+    _id = PrimaryKeyField
+    user_uuid = CharField(null=False)
+    image_id = TextField(null=True)
+    output_id = TextField(null=True)
+    generate_id = TextField(null=True)
+    show_users = TextField(null=True)
+    download_users = TextField(null=True)
+    own_download = IntegerField(null=False, default=0)
+
+    class Meta:
+        database = db
+
+
 def create_table(table):
     u"""
     如果table不存在，新建table
@@ -106,6 +120,7 @@ class SUserInfo(LogInfo):
             self.userInfo = None
 
     def getImageList(self, pageNo=1, pageSize=500):
+        create_table(SharedImgUrl)
         url = f"https://{self.api_host}/gateway/sd-api/gen/tool/images"
 
         payload = json.dumps({
@@ -122,9 +137,27 @@ class SUserInfo(LogInfo):
         response = requests.request("POST", url, headers=headers, data=payload)
         res = json.loads(response.text)
         if res['code'] == 0:
+            img_list = res['data']['list']
+            for img in img_list:
+                for image in img['images']:
+                    outputId = image['outputId']
+                    imageId = image['imageId']
+                    generateId = image['generateId']
+                    query = SharedImgUrl.select().where(SharedImgUrl.image_id == imageId,
+                                                SharedImgUrl.output_id == outputId,
+                                                SharedImgUrl.generate_id == generateId,
+                                                )
+                    if not query.exists():
+                        SharedImgUrl.insert(
+                            user_uuid=self.uuid,
+                            image_id=imageId,
+                            output_id=outputId,
+                            generate_id=generateId
+                        ).execute()
             return res['data']['list']
         else:
             return []
+
 
 if __name__ == '__main__':
     create_table(Account)
