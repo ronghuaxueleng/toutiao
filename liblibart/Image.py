@@ -170,6 +170,8 @@ class Image(Base):
                 return 'suanlibuzu'
             elif res['code'] == 1100000102:
                 return 'tokenwuxiao'
+            elif res['code'] == 1200000138:
+                return 'kongjianbuzu'
             else:
                 self.getLogger().error(response.text)
                 return 'qitacuowu'

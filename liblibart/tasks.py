@@ -301,6 +301,9 @@ class LiblibTasks:
                         notAvailableToImageUsers.append(user['usertoken'])
                         self.notAvailableToImageUsers[self.today] = notAvailableToImageUsers
                         raise Exception('算力不足')
+                    elif image_num == 'kongjianbuzu':
+                        image.getLogger().error('图库空间不足')
+                        raise Exception('图库空间不足')
                     elif image_num == 'qitacuowu':
                         raise Exception('报错了')
                     elif image_num == 'tokenwuxiao':
