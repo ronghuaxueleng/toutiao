@@ -171,6 +171,10 @@ class Image(Base):
             elif res['code'] == 1100000102:
                 return 'tokenwuxiao'
             elif res['code'] == 1200000138:
+                try:
+                    DownLoadImage(self.token, self.webid, f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(fromTime="2000-01-01 00:00:00", pageSize=500)
+                except Exception as e:
+                    self.getLogger().error(f"nickname：{self.userInfo['nickname']} DownLoadImage，{e}")
                 return 'kongjianbuzu'
             elif res['code'] == 1200000146:
                 self.getLogger().error(payload)
