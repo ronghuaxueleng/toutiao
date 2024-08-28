@@ -24,14 +24,15 @@ class DownLoadImage(UserInfo):
     def __init__(self, token, webid, log_filename):
         super().__init__(token, webid, log_filename)
 
-    def download(self, delete=True):
+    def download(self, delete=True, fromTime=None, pageSize=1):
         url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
 
-        day = datetime.datetime.now() - datetime.timedelta(days=7)
-        fromTime = datetime.datetime(day.year, day.month, day.day).strftime('%Y-%m-%d 00:00:00')
+        if fromTime is not None:
+            day = datetime.datetime.now() - datetime.timedelta(days=7)
+            fromTime = datetime.datetime(day.year, day.month, day.day).strftime('%Y-%m-%d 00:00:00')
 
         payload = json.dumps({
-            "pageSize": 1,
+            "pageSize": pageSize,
             "pageNo": 1,
             "fromTime": fromTime,
             "toTime": datetime.datetime.now().strftime("%Y-%m-%d 24:00:00")
@@ -82,19 +83,19 @@ class DownLoadImage(UserInfo):
             self.getLogger().info(f'保存图片下载记录结果: {response.text}')
             idList = []
             downloadImageCount = {}
-            img = res['data']['list'][0]
-            idList.append(img['id'])
-            for model in img['param']['mixModels']:
-                try:
-                    modelVersionId = model['modelVersionId']
-                    _model = self.model_dict[modelVersionId]
-                    userUuid = _model['userUuid']
-                    download_model = downloadImageCount.setdefault(userUuid, {})
-                    __model = download_model.setdefault(modelVersionId, _model)
-                    download_count = __model.setdefault('count', 0)
-                    downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
-                except Exception as e:
-                    self.getLogger().error(f'更新下载次数失败: {e}')
+            for img in res['data']['list']:
+                idList.append(img['id'])
+                for model in img['param']['mixModels']:
+                    try:
+                        modelVersionId = model['modelVersionId']
+                        _model = self.model_dict[modelVersionId]
+                        userUuid = _model['userUuid']
+                        download_model = downloadImageCount.setdefault(userUuid, {})
+                        __model = download_model.setdefault(modelVersionId, _model)
+                        download_count = __model.setdefault('count', 0)
+                        downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
+                    except Exception as e:
+                        self.getLogger().error(f'更新下载次数失败: {e}')
 
             if delete:
                 url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
