@@ -4,8 +4,9 @@ import os
 
 from peewee import *
 
-dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'statistics.db')
-db = SqliteDatabase(dbpath)
+from liblibart.DbUtils import get_conn
+
+db = get_conn()
 
 
 # 账户信息
