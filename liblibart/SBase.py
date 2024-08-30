@@ -6,9 +6,9 @@ import os
 from liblibart.SUserInfo import SUserInfo
 from liblibart.CookieUtils import save_to_suanlibuzu_users
 
-current_day_json_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 's_current_day.json')
-checkpointIds_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 's_checkpointIds.json')
-gen_params_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 's_gen_params.json')
+current_day_json_path = '/mitmproxy/config/s_current_day.json'
+checkpointIds_path = '/mitmproxy/config/s_checkpointIds.json'
+gen_params_path = '/mitmproxy/config/s_gen_params.json'
 
 
 class SBase(SUserInfo):
