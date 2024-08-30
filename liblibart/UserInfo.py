@@ -9,10 +9,10 @@ from peewee import *
 
 from liblibart.CookieUtils import get_users
 from liblibart.LogInfo import LogInfo
+from liblibart.DbUtils import get_conn
 from liblibart.ql import ql_env
 
-dbpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'statistics.db')
-db = SqliteDatabase(dbpath)
+db = get_conn()
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
