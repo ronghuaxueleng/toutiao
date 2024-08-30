@@ -38,7 +38,7 @@ interval_task = {
 
 }
 
-scheduler = BlockingScheduler(interval_task)
+scheduler = BlockingScheduler(interval_task, timezone='Asia/Shanghai')
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
