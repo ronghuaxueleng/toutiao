@@ -2,35 +2,52 @@
 import json
 import os
 
+from liblibart.RunningInfo import RunningInfo
 from liblibart.ql import ql_env
-
-suanlibuzu_users_json_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config',
-                                          'suanlibuzu_users.json')
-to_run_users_json_path = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'config', 'to_run_users.json')
 
 
 def save_to_suanlibuzu_users(suanlibuzu_users):
-    with open(suanlibuzu_users_json_path, 'w') as to_run_users_json:
-        json.dump(suanlibuzu_users, to_run_users_json, indent=4)
+    query = RunningInfo.select().where(RunningInfo.id == 1)
+    if query.exists():
+        RunningInfo.update(
+            suanlibuzu_users=json.dumps(suanlibuzu_users)
+        ).where(RunningInfo.id == 1).execute()
+    else:
+        RunningInfo.insert(
+            id=1,
+            suanlibuzu_users=json.dumps(suanlibuzu_users)
+        ).execute()
 
 
 def load_from_suanlibuzu_users():
-    if os.path.exists(suanlibuzu_users_json_path):
-        with open(suanlibuzu_users_json_path, 'r') as to_run_users_json:
-            return json.load(to_run_users_json)
-    return []
+    query = RunningInfo.select().where(RunningInfo.id == 1)
+    if query.exists():
+        info = RunningInfo.get(RunningInfo.id == 1)
+        return json.loads(info.suanlibuzu_users)
+    else:
+        return []
 
 
 def save_to_run_users(to_run_users):
-    with open(to_run_users_json_path, 'w') as to_run_users_json:
-        json.dump(to_run_users, to_run_users_json, indent=4)
+    query = RunningInfo.select().where(RunningInfo.id == 1)
+    if query.exists():
+        RunningInfo.update(
+            to_run_users=json.dumps(to_run_users)
+        ).where(RunningInfo.id == 1).execute()
+    else:
+        RunningInfo.insert(
+            id=1,
+            to_run_users=json.dumps(to_run_users)
+        ).execute()
 
 
 def load_from_run_users():
-    if os.path.exists(to_run_users_json_path):
-        with open(to_run_users_json_path, 'r') as to_run_users_json:
-            return json.load(to_run_users_json)
-    return []
+    query = RunningInfo.select().where(RunningInfo.id == 1)
+    if query.exists():
+        info = RunningInfo.get(RunningInfo.id == 1)
+        return json.loads(info.to_run_users)
+    else:
+        return []
 
 
 def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", usertoken_name="usertoken"):
