@@ -7,9 +7,9 @@ import time
 
 import requests
 
-from liblibart.CookieUtils import get_users
-from liblibart.SStatistics import DownLoadImageStatistics
-from liblibart.SUserInfo import SUserInfo
+from CookieUtils import get_users
+from SStatistics import DownLoadImageStatistics
+from SUserInfo import SUserInfo
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path

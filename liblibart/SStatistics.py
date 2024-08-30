@@ -4,7 +4,7 @@ import os
 
 from peewee import *
 
-from liblibart.DbUtils import get_conn
+from DbUtils import get_conn
 
 db = get_conn(database='c2hha2tlcg==')
 
