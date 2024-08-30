@@ -247,12 +247,12 @@ class LiblibTasks:
         send_message("开始执行绘图", title=f'哩布哩布-{os.getenv("RUN_OS_NAME")}')
         job_id = f"drawImage"
         suanlibuzu = []
-        if os.path.exists(f'/mitmproxy/{self.notAvailableImageUsersFileName}'):
-            with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'r') as f:
+        if os.path.exists(Path.cwd().joinpath(self.notAvailableImageUsersFileName)):
+            with open(Path.cwd().joinpath(self.notAvailableImageUsersFileName), 'r') as f:
                 self.notAvailableToImageUsers = json.load(f)
         if self.yesterday in self.notAvailableToImageUsers:
             del self.notAvailableToImageUsers[self.yesterday]
-            with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'w') as f:
+            with open(Path.cwd().joinpath(self.notAvailableImageUsersFileName), 'w') as f:
                 json.dump(self.notAvailableToImageUsers, f)
 
         def get_percent(user, image, image_num, depth):
@@ -370,7 +370,7 @@ class LiblibTasks:
                     job_id,
                     run_date=self.get_draw_image_run_date(),
                 )
-            with open(f'/mitmproxy/{self.notAvailableImageUsersFileName}', 'w') as f:
+            with open(Path.cwd().joinpath(self.notAvailableImageUsersFileName), 'w') as f:
                 json.dump(self.notAvailableToImageUsers, f)
             end_time = datetime.datetime.now()
             time_consuming = (end_time - star_time).seconds / 60
