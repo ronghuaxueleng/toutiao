@@ -19,6 +19,7 @@ class Model(Model):
     showType = IntegerField(null=False)
     createTime = DateTimeField(null=True)
     updateTime = DateTimeField(null=True)
+    isEnable = IntegerField(null=False, default=1)
     timestamp = DateTimeField(null=True, default=datetime.datetime.now)
 
     class Meta:
