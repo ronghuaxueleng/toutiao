@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import json
 import os
 
@@ -10,12 +11,14 @@ def save_to_suanlibuzu_users(suanlibuzu_users):
     query = RunningInfo.select().where(RunningInfo.id == 1)
     if query.exists():
         RunningInfo.update(
-            suanlibuzu_users=json.dumps(suanlibuzu_users)
+            suanlibuzu_users=json.dumps(suanlibuzu_users),
+            timestamp=datetime.datetime.now()
         ).where(RunningInfo.id == 1).execute()
     else:
         RunningInfo.insert(
             id=1,
-            suanlibuzu_users=json.dumps(suanlibuzu_users)
+            suanlibuzu_users=json.dumps(suanlibuzu_users),
+            timestamp=datetime.datetime.now()
         ).execute()
 
 
@@ -32,12 +35,14 @@ def save_to_run_users(to_run_users):
     query = RunningInfo.select().where(RunningInfo.id == 1)
     if query.exists():
         RunningInfo.update(
-            to_run_users=json.dumps(to_run_users)
+            to_run_users=json.dumps(to_run_users),
+            timestamp=datetime.datetime.now()
         ).where(RunningInfo.id == 1).execute()
     else:
         RunningInfo.insert(
             id=1,
-            to_run_users=json.dumps(to_run_users)
+            to_run_users=json.dumps(to_run_users),
+            timestamp=datetime.datetime.now()
         ).execute()
 
 
