@@ -44,7 +44,6 @@ class SaveLora(UserInfo):
             'webid': self.webid
         }
 
-        all_models = {}
         saved_models = []
         saved_model_id_map = {}
         try:
