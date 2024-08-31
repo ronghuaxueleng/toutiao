@@ -3,7 +3,7 @@ import datetime
 
 from peewee import *
 
-from DbUtils import get_conn
+from liblibart.DbUtils import get_conn
 
 db = get_conn(database='c2hha2tlcg==')
 
