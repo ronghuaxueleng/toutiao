@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import json
 import os
 import time
@@ -7,6 +8,7 @@ import requests
 
 from CookieUtils import get_users
 from UserInfo import UserInfo
+from Model import Model
 from ql import ql_env
 
 from dotenv import load_dotenv, find_dotenv
@@ -42,6 +44,7 @@ class SaveLora(UserInfo):
             'webid': self.webid
         }
 
+        all_models = {}
         saved_models = []
         saved_model_id_map = {}
         try:
@@ -55,20 +58,21 @@ class SaveLora(UserInfo):
         except Exception as e:
             print(e)
 
-        for pageNo in range(1, 5):
+        pageNo = 1
+        total_models = None
+        while total_models is None or total_models > 0:
             url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
             payload = json.dumps({
                 "pageNo": pageNo,
-                "pageSize": 20,
-                "uuid": self.userInfo['uuid'],
+                "pageSize": 10,
                 "status": -2,
                 "type": 0
             })
 
             response = requests.request("POST", url, headers=headers, data=payload)
             data = json.loads(response.text)
-            if len(data['data']['list']) == 0:
-                break
+            pageNo = pageNo + 1
+            total_models = len(data['data']['list'])
             for model in data['data']['list']:
                 version_url = f"https://{self.api_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
                 payload = {}
@@ -90,6 +94,30 @@ class SaveLora(UserInfo):
                     else:
                         ql_env.update(json.dumps(to_save_data, ensure_ascii=False), "my_lora",
                                       saved_model_id_map[version['id']], model["name"])
+
+                    query = Model.select().where(Model.user_uuid == self.userInfo['uuid'],
+                                                 Model.modelId == version["id"])
+                    if query.exists():
+                        Model.update(
+                            user_name=self.userInfo['nickname'],
+                            modelName=model["name"],
+                            modelVersionName=version['name'],
+                            showType=version['showType'],
+                            updateTime=version['updateTime'],
+                            timestamp=datetime.datetime.now()
+                        ).where(Model.user_uuid == self.userInfo['uuid'], Model.modelId == version["id"]).execute()
+                    else:
+                        Model.insert(
+                            user_uuid=self.userInfo['uuid'],
+                            user_name=self.userInfo['nickname'],
+                            modelId=version["id"],
+                            modelName=model["name"],
+                            modelVersionName=version['name'],
+                            modelType=model['modelType'],
+                            showType=version['showType'],
+                            createTime=version['createTime'],
+                            updateTime=version['updateTime'],
+                        ).execute()
 
 
 if __name__ == '__main__':
