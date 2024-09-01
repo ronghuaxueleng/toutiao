@@ -2,15 +2,17 @@ requests==2.25.0
 furl==2.1.0
 peewee==3.14.0
 hyper==0.7.0
-httpx
+httpx==0.23.1
 lxml==4.6.3
 beautifulsoup4==4.7.1
 supervisor==4.2.2
-chinesecalendar
-apscheduler
-tzdata
-sqlalchemy
-pymysql
-python-dotenv
+chinesecalendar==1.7.2
+APScheduler==3.10.4
+tzdata==2024.1
+tzlocal==5.2
+APScheduler==3.10.4
+PyMySQL==1.1.1
+python-dotenv==1.0.1
+Flask==3.0.3
 passlib==1.7.1; sys_platform != 'win32' and python_version < '3.8'
 passlib==1.7.2; sys_platform == 'win32' or python_version >= '3.8'
