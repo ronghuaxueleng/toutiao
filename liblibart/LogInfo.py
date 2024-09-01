@@ -12,6 +12,7 @@ load_dotenv(find_dotenv(str(env_path)))
 
 class LogInfo(object):
     def __init__(self, filename=None):
+        Path(filename).parent.mkdir(exist_ok=True)
         self.filename = filename
 
     def getLogger(self):
