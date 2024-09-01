@@ -166,9 +166,12 @@ if __name__ == '__main__':
     enable_ids = []
     for user in users:
         try:
-            userInfo = SUserInfo(user['usertoken'], user['webid'], user['_bl_uid'],
+            if user['expirationDate'] > time.time():
+                userInfo = SUserInfo(user['usertoken'], user['webid'], user['_bl_uid'],
                                  f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
-            realUser = userInfo.userInfo
+                realUser = userInfo.userInfo
+            else:
+                realUser = None
             if realUser is not None:
                 enable_ids.append(user['id'])
                 uuid = realUser['uuid']
