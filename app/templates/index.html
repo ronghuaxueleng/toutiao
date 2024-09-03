@@ -42,6 +42,32 @@
                             </el-table>
                         </el-row>
                     </el-tab-pane>
+                    <el-tab-pane label="Shakker" name="shakker">
+                        <el-row :span="24" class="content-row" style="font-size: 14px;">
+                            <span v-text="shakkerPeriod"></span>
+                        </el-row>
+                        <el-row :span="24" class="content-row">
+                            <el-table v-loading="loading" :data="shakker.datas" stripe style="margin-top: 10px">
+                                <el-table-column prop="nickname" label="账号" align="center"></el-table-column>
+                                <el-table-column prop="runCounts" label="运行数量" align="center"></el-table-column>
+                                <el-table-column prop="downloadModelCounts" label="模型下载数量" align="center"></el-table-column>
+                                <el-table-column prop="downloadImageCounts" label="图片下载数量" align="center"></el-table-column>
+                            </el-table>
+                        </el-row>
+                    </el-tab-pane>
+                    <el-tab-pane label="Shakker上一周期" name="lastShakker">
+                        <el-row :span="24" class="content-row" style="font-size: 14px;">
+                            <span v-text="shakkerPeriod"></span>
+                        </el-row>
+                        <el-row :span="24" class="content-row">
+                            <el-table v-loading="loading" :data="shakker.datas" stripe style="margin-top: 10px">
+                                <el-table-column prop="nickname" label="账号" align="center"></el-table-column>
+                                <el-table-column prop="runCounts" label="运行数量" align="center"></el-table-column>
+                                <el-table-column prop="downloadModelCounts" label="模型下载数量" align="center"></el-table-column>
+                                <el-table-column prop="downloadImageCounts" label="图片下载数量" align="center"></el-table-column>
+                            </el-table>
+                        </el-row>
+                    </el-tab-pane>
                     <el-tab-pane label="今日头条极速版" name="toutiao">
                         <el-table v-loading="loading" :data="toutiao" stripe style="margin-top: 10px">
                             <el-table-column prop="name" label="账号" align="center"></el-table-column>
@@ -63,9 +89,11 @@
             return {
                 activeName: 'liblib',
                 liblib: {},
+                shakker: {},
                 toutiao: [],
                 loading: false,
-                liblibPeriod: ''
+                liblibPeriod: '',
+                shakkerPeriod: ''
             };
         },
         mounted() {
@@ -80,6 +108,12 @@
                 } else if (this.activeName === 'lastliblib') {
                     this.getLastLiblib();
                     document.title = "哩布哩布上一期";
+                } else if (this.activeName === 'shakker') {
+                    this.getShakker();
+                    document.title = "Shakker";
+                } else if (this.activeName === 'lastShakker') {
+                    this.getLastShakker();
+                    document.title = "Shakker上一期";
                 } else if (this.activeName === 'toutiao') {
                     this.getToutiao();
                     document.title = "账号详情 - 今日头条";
@@ -103,6 +137,20 @@
                 $.get('/getLastLiblib?t=' + new Date().getTime()).then(res => {
                     that.liblib = res
                     that.liblibPeriod = '期间：' + res.month_start + '-' + res.month_end
+                })
+            },
+            getShakker() {
+                const that = this
+                $.get('/getShakker?t=' + new Date().getTime()).then(res => {
+                    that.shakker = res
+                    that.shakkerPeriod = '期间：' + res.month_start + '-' + res.month_end
+                })
+            },
+            getLastShakker() {
+                const that = this
+                $.get('/getLastShakker?t=' + new Date().getTime()).then(res => {
+                    that.shakker = res
+                    that.shakkerPeriod = '期间：' + res.month_start + '-' + res.month_end
                 })
             }
         }
