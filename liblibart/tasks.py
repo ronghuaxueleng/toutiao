@@ -4,10 +4,7 @@ import json
 import os
 import random
 import time
-from pathlib import Path
 
-from apscheduler.executors.pool import ThreadPoolExecutor
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
@@ -18,27 +15,7 @@ from liblibart.UserInfo import UserInfo, Account
 from liblibart.ql import ql_env
 from utils.utils import send_message
 
-dbpath = Path(os.path.split(os.path.realpath(__file__))[0]).parent.joinpath('config', 'jobs.db').absolute()
-interval_task = {
-    # 配置存储器
-    "jobstores": {
-        # 使用SQLAlchemy进行存储,会自动创建数据库，并创建apscheduler_jobs表
-        'default': SQLAlchemyJobStore(url=fr"sqlite:///{dbpath}")
-    },
-    # 配置执行器
-    "executors": {
-        # 使用线程池进行执行，最大线程数是20个
-        'default': ThreadPoolExecutor(20)
-    },
-    # 创建job时的默认参数
-    "job_defaults": {
-        'coalesce': False,  # 是否合并执行
-        'max_instances': 3  # 最大实例数
-    }
-
-}
-
-scheduler = BlockingScheduler(interval_task, timezone='Asia/Shanghai')
+scheduler = BlockingScheduler(timezone='Asia/Shanghai')
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path

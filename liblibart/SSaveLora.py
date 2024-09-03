@@ -6,10 +6,10 @@ import time
 
 import requests
 
-from CookieUtils import get_users
-from SModel import Model
-from SUserInfo import SUserInfo
-from ql import ql_env
+from liblibart.CookieUtils import get_users
+from liblibart.SModel import Model
+from liblibart.SUserInfo import SUserInfo
+from liblibart.ql import ql_env
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path

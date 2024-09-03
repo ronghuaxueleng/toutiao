@@ -10,7 +10,7 @@ from peewee import *
 from liblibart.CookieUtils import get_users
 from liblibart.DbUtils import get_conn
 from liblibart.LogInfo import LogInfo
-from ql import ql_env
+from liblibart.ql import ql_env
 
 db = get_conn(database='c2hha2tlcg==')
 
