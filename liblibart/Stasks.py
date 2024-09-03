@@ -4,15 +4,14 @@ import json
 import os
 import random
 import time
-from pathlib import Path
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
-from DownLoadImage import DownLoadImage
+from SDownLoadImage import SDownLoadImage
 from DownloadModel import DownloadModel
-from Image import Image
-from UserInfo import UserInfo, Account
+from SImage import SImage
+from SUserInfo import SUserInfo, Account
 from ql import ql_env
 from utils import send_message
 
@@ -92,7 +91,7 @@ class SLiblibTasks:
     def get_models(self):
         user_model_dict = {}
         try:
-            my_loras = ql_env.search("my_lora")
+            my_loras = ql_env.search("my_shakker_lora")
             for my_lora in my_loras:
                 if my_lora['status'] == 0:
                     value = json.loads(my_lora['value'])
@@ -103,7 +102,7 @@ class SLiblibTasks:
             print(e)
 
         final_user_model_dict = {}
-        users = get_users()
+        users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
         for user in users:
             _user_model_dict = copy.deepcopy(user_model_dict)
             usertoken = user['usertoken']
@@ -116,13 +115,13 @@ class SLiblibTasks:
         return final_user_model_dict
 
     def update_userInfo(self):
-        users = get_users(True)
+        users = get_users(True, cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
         disable_ids = []
         enable_ids = []
         for user in users:
             try:
-                userInfo = UserInfo(user['usertoken'], user['webid'],
-                                    f'/mitmproxy/logs/UserInfo_{os.getenv("RUN_OS_KEY")}.log')
+                userInfo = SUserInfo(user['usertoken'], user['webid'], user['_bl_uid'],
+                                    f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
                 realUser = userInfo.userInfo
                 if realUser is not None:
                     enable_ids.append(user['id'])
@@ -172,7 +171,7 @@ class SLiblibTasks:
         for user in random.sample(users, 4):
             try:
                 DownloadModel(user['usertoken'], user['webid'],
-                              f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
+                              f'/mitmproxy/logs/SDownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
             except Exception as e:
                 print(e)
         s = scheduler.get_job(job_id)
@@ -198,8 +197,8 @@ class SLiblibTasks:
         users = get_users()
         for user in users:
             try:
-                DownLoadImage(user['usertoken'], user['webid'],
-                              f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
+                SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
+                              f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
             except Exception as e:
                 print(e)
         s = scheduler.get_job(job_id)
@@ -245,7 +244,7 @@ class SLiblibTasks:
                     image.getLogger().info(f"finished nickname：{image.userInfo['nickname']}，100%.....")
                     image.nps()
                     try:
-                        DownLoadImage(user['usertoken'], user['webid'],
+                        SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
                                       f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(
                             False)
                     except Exception as e:
@@ -260,7 +259,7 @@ class SLiblibTasks:
                     to_save_run_users.remove(user['usertoken'])
                     save_to_run_users(list(set(to_save_run_users)))
                 if user['usertoken'] not in suanlibuzu:
-                    image = Image(user['usertoken'], user['webid'],
+                    image = SImage(user['usertoken'], user['webid'], user['_bl_uid'],
                                   f'/mitmproxy/logs/Image_{os.getenv("RUN_OS_KEY")}.log')
                     runCount = {}
                     for model in my_loras:
