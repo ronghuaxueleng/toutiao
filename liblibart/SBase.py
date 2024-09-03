@@ -174,7 +174,7 @@ class SBase(SUserInfo):
             self.save_to_current_day()
         if current_day != self.today:
             self.save_to_current_day()
-            save_to_suanlibuzu_users([])
+            save_to_suanlibuzu_users([], True)
 
     def save_to_current_day(self):
         with open(current_day_json_path, 'w') as current_day:

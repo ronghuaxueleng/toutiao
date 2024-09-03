@@ -1,58 +1,102 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
-import os
 
 from liblibart.RunningInfo import RunningInfo
+from liblibart.SRunningInfo import RunningInfo as SRunningInfo
 from liblibart.ql import ql_env
 
 
-def save_to_suanlibuzu_users(suanlibuzu_users):
-    query = RunningInfo.select().where(RunningInfo.id == 1)
-    if query.exists():
-        RunningInfo.update(
-            suanlibuzu_users=json.dumps(suanlibuzu_users),
-            timestamp=datetime.datetime.now()
-        ).where(RunningInfo.id == 1).execute()
+def save_to_suanlibuzu_users(suanlibuzu_users, is_shakker=False):
+    if is_shakker:
+        query = SRunningInfo.select().where(SRunningInfo.id == 1)
+        if query.exists():
+            SRunningInfo.update(
+                suanlibuzu_users=json.dumps(suanlibuzu_users),
+                timestamp=datetime.datetime.now()
+            ).where(SRunningInfo.id == 1).execute()
+        else:
+            SRunningInfo.insert(
+                id=1,
+                suanlibuzu_users=json.dumps(suanlibuzu_users),
+                timestamp=datetime.datetime.now()
+            ).execute()
     else:
-        RunningInfo.insert(
-            id=1,
-            suanlibuzu_users=json.dumps(suanlibuzu_users),
-            timestamp=datetime.datetime.now()
-        ).execute()
+        query = RunningInfo.select().where(RunningInfo.id == 1)
+        if query.exists():
+            RunningInfo.update(
+                suanlibuzu_users=json.dumps(suanlibuzu_users),
+                timestamp=datetime.datetime.now()
+            ).where(RunningInfo.id == 1).execute()
+        else:
+            RunningInfo.insert(
+                id=1,
+                suanlibuzu_users=json.dumps(suanlibuzu_users),
+                timestamp=datetime.datetime.now()
+            ).execute()
 
 
-def load_from_suanlibuzu_users():
-    query = RunningInfo.select().where(RunningInfo.id == 1)
-    if query.exists():
-        info = RunningInfo.get(RunningInfo.id == 1)
-        return json.loads(info.suanlibuzu_users)
+def load_from_suanlibuzu_users(is_shakker=False):
+    if is_shakker:
+        query = SRunningInfo.select().where(SRunningInfo.id == 1)
+        if query.exists():
+            info = SRunningInfo.get(SRunningInfo.id == 1)
+            return json.loads(info.suanlibuzu_users)
+        else:
+            return []
     else:
-        return []
+        query = RunningInfo.select().where(RunningInfo.id == 1)
+        if query.exists():
+            info = RunningInfo.get(RunningInfo.id == 1)
+            return json.loads(info.suanlibuzu_users)
+        else:
+            return []
 
 
-def save_to_run_users(to_run_users):
-    query = RunningInfo.select().where(RunningInfo.id == 1)
-    if query.exists():
-        RunningInfo.update(
-            to_run_users=json.dumps(to_run_users),
-            timestamp=datetime.datetime.now()
-        ).where(RunningInfo.id == 1).execute()
+def save_to_run_users(to_run_users, is_shakker=False):
+    if is_shakker:
+        query = SRunningInfo.select().where(SRunningInfo.id == 1)
+        if query.exists():
+            SRunningInfo.update(
+                to_run_users=json.dumps(to_run_users),
+                timestamp=datetime.datetime.now()
+            ).where(SRunningInfo.id == 1).execute()
+        else:
+            SRunningInfo.insert(
+                id=1,
+                to_run_users=json.dumps(to_run_users),
+                timestamp=datetime.datetime.now()
+            ).execute()
     else:
-        RunningInfo.insert(
-            id=1,
-            to_run_users=json.dumps(to_run_users),
-            timestamp=datetime.datetime.now()
-        ).execute()
+        query = RunningInfo.select().where(RunningInfo.id == 1)
+        if query.exists():
+            RunningInfo.update(
+                to_run_users=json.dumps(to_run_users),
+                timestamp=datetime.datetime.now()
+            ).where(RunningInfo.id == 1).execute()
+        else:
+            RunningInfo.insert(
+                id=1,
+                to_run_users=json.dumps(to_run_users),
+                timestamp=datetime.datetime.now()
+            ).execute()
 
 
-def load_from_run_users():
-    query = RunningInfo.select().where(RunningInfo.id == 1)
-    if query.exists():
-        info = RunningInfo.get(RunningInfo.id == 1)
-        return json.loads(info.to_run_users)
+def load_from_run_users(is_shakker=False):
+    if is_shakker:
+        query = SRunningInfo.select().where(SRunningInfo.id == 1)
+        if query.exists():
+            info = SRunningInfo.get(SRunningInfo.id == 1)
+            return json.loads(info.to_run_users)
+        else:
+            return []
     else:
-        return []
+        query = RunningInfo.select().where(RunningInfo.id == 1)
+        if query.exists():
+            info = RunningInfo.get(RunningInfo.id == 1)
+            return json.loads(info.to_run_users)
+        else:
+            return []
 
 
 def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", usertoken_name="usertoken"):

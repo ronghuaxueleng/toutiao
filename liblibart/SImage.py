@@ -18,7 +18,7 @@ from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
 # 指定env文件
-env_path = Path.cwd().joinpath('env').joinpath('os.env')
+env_path = Path.cwd().joinpath('env').joinpath('sos.env')
 env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
 
@@ -145,9 +145,9 @@ class SImage(SBase):
             return res['data']
         elif res['code'] == 1200000136 or res['code'] == 1200000170:
             if res['code'] == 1200000136:
-                suanlibuzu_user = load_from_suanlibuzu_users()
+                suanlibuzu_user = load_from_suanlibuzu_users(True)
                 suanlibuzu_user.append(self.userInfo['uuid'])
-                save_to_suanlibuzu_users(list(set(suanlibuzu_user)))
+                save_to_suanlibuzu_users(list(set(suanlibuzu_user)), True)
             return 'suanlibuzu'
         elif res['code'] == 1100000102:
             return 'tokenwuxiao'
