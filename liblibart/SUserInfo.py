@@ -86,6 +86,7 @@ class SUserInfo(LogInfo):
         }
         self.token = token
         self.webid = webid
+        self.bl_uid = bl_uid
         self.userInfo = {}
         self.getUserInfo()
         if self.userInfo is not None:

@@ -7,7 +7,7 @@ import time
 import requests
 
 from CookieUtils import get_users
-from Model import Model
+from SModel import Model
 from SUserInfo import SUserInfo
 from ql import ql_env
 
@@ -30,24 +30,26 @@ class SSaveLora(SUserInfo):
             'accept': 'application/json, text/plain, */*',
             'accept-language': 'zh-CN,zh;q=0.9',
             'content-type': 'application/json',
+            'cookie': f'webid={self.webid}; liblibai_usertoken={self.token}; _bl_uid={self.bl_uid}',
             'dnt': '1',
             'origin': f'https://{self.web_host}',
             'referer': f"https://{self.web_host}/userpage/{self.userInfo['uuid']}/publish",
-            'sec-ch-ua': '"Chromium";v="119", "Not?A_Brand";v="24"',
+            'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"Windows"',
             'sec-fetch-dest': 'empty',
             'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'cross-site',
+            'sec-fetch-site': 'same-origin',
             'token': self.token,
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.160 Safari/537.36',
-            'webid': self.webid
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.95 Safari/537.36',
+            'webid': self.webid,
+            'x-language': 'zh-TW'
         }
 
         saved_models = []
         saved_model_id_map = {}
         try:
-            my_loras = ql_env.search("my_lora")
+            my_loras = ql_env.search("my_shakker_lora")
             for my_lora in my_loras:
                 if my_lora['status'] == 0:
                     value = json.loads(my_lora['value'])
@@ -89,9 +91,9 @@ class SSaveLora(SUserInfo):
                         "modelType": model['modelType']
                     }
                     if version['id'] not in saved_models:
-                        ql_env.add("my_lora", json.dumps(to_save_data, ensure_ascii=False), model["name"])
+                        ql_env.add("my_shakker_lora", json.dumps(to_save_data, ensure_ascii=False), model["name"])
                     else:
-                        ql_env.update(json.dumps(to_save_data, ensure_ascii=False), "my_lora",
+                        ql_env.update(json.dumps(to_save_data, ensure_ascii=False), "my_shakker_lora",
                                       saved_model_id_map[version['id']], model["name"])
 
                     query = Model.select().where(Model.user_uuid == self.userInfo['uuid'],
@@ -120,11 +122,11 @@ class SSaveLora(SUserInfo):
 
 
 if __name__ == '__main__':
-    users = get_users()
+    users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
     for user in users:
         try:
-            SaveLora(user['usertoken'], user['webid'],
-                     f'/mitmproxy/logs/SaveLora_{os.getenv("RUN_OS_KEY")}.log').get_models()
+            SSaveLora(user['usertoken'], user['webid'], user['_bl_uid'],
+                     f'/mitmproxy/logs/SSaveLora_{os.getenv("RUN_OS_KEY")}.log').get_models()
         except Exception as e:
             print('error', e)
             print(e)
