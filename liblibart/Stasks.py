@@ -153,11 +153,11 @@ class SLiblibTasks:
         send_message("开始执行图片下载", title=f'shakker-{os.getenv("RUN_OS_NAME")}')
         job_id = "downLoadImage"
 
-        users = get_users()
+        users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
         for user in users:
             try:
                 SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                              f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
+                              f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
             except Exception as e:
                 print(e)
         s = scheduler.get_job(job_id)
@@ -204,8 +204,7 @@ class SLiblibTasks:
                     image.nps()
                     try:
                         SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                                      f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(
-                            False)
+                                      f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
                     except Exception as e:
                         print(e)
                     image.getLogger().info(f'递归层级{depth}')
@@ -213,13 +212,13 @@ class SLiblibTasks:
 
         def doDrawImage(user, my_loras):
             try:
-                to_save_run_users = load_from_run_users()
+                to_save_run_users = load_from_run_users(True)
                 if user['usertoken'] in to_save_run_users:
                     to_save_run_users.remove(user['usertoken'])
-                    save_to_run_users(list(set(to_save_run_users)))
+                    save_to_run_users(list(set(to_save_run_users)), True)
                 if user['usertoken'] not in suanlibuzu:
                     image = SImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                                  f'/mitmproxy/logs/Image_{os.getenv("RUN_OS_KEY")}.log')
+                                  f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log')
                     runCount = {}
                     for model in my_loras:
                         userUuid = model['userUuid']
@@ -252,14 +251,14 @@ class SLiblibTasks:
                 print(e)
 
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
-        to_run_users = load_from_run_users()
+        to_run_users = load_from_run_users(True)
         exclude_user.extend(to_run_users)
-        suanlibuzu_user = load_from_suanlibuzu_users()
+        suanlibuzu_user = load_from_suanlibuzu_users(True)
         exclude_user.extend(suanlibuzu_user)
-        users = get_users(exclude_user=exclude_user)
+        users = get_users(exclude_user=exclude_user, cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
         if len(users) == 0:
             self.notAvailableToImageUsers[self.today] = []
-            save_to_run_users([])
+            save_to_run_users([], True)
         user_model_dict = self.get_models()
 
         def simple_generator():
@@ -269,11 +268,11 @@ class SLiblibTasks:
             # to_run_user_count = (10 if len(users) >= 10 else len(users)) if is_time else (
             #     5 if len(users) >= 5 else len(users))
             to_run_user_count = 5 if len(users) >= 5 else len(users)
-            to_save_run_users = load_from_run_users()
+            to_save_run_users = load_from_run_users(True)
             to_run_users = random.sample(users, to_run_user_count)
             for user in to_run_users:
                 to_save_run_users.append(user['usertoken'])
-            save_to_run_users(list(set(to_save_run_users)))
+            save_to_run_users(list(set(to_save_run_users)), True)
             for user in to_run_users:
                 # for user in users:
                 to_run_models = user_model_dict[user['usertoken']]

@@ -56,76 +56,76 @@ class SDownLoadImage(SUserInfo):
         response = requests.request("POST", url, headers=self.my_headers, data=payload)
         self.getLogger().info(f'分享图片结果: {response.text}')
 
-    def download(self):
-        data = self.getImageList()
+    def download(self, share_image=False, feed_image=False):
+        data = self.getImageList(pageSize=1)
         self.getLogger().info(f'查询图片生成历史结果: {data}')
 
         if len(data) > 0:
-            image_id = data[0]['images'][0]['outputId']
-            image_url = data[0]['images'][0]['imageId']
-            generate_Id = data[0]['images'][0]['generateId']
-            i = f'g={generate_Id}&i={image_id}'
-            i_en = base64.b64encode(i.encode("utf-8"))
-            self.getLogger().info(f'下载图片')
-            url = f"https://{self.api_host}/api/www/log/acceptor/f"
-            payload = json.dumps({
-                "uuid": self.uuid,
-                "cid": self.webid,
-                "ct": time.time(),
-                "pageUrl": f"https://{self.api_host}/aigenerator",
-                "ua": self.my_headers['user-agent'],
-                "e": "tool.canvas.download",
-                "var": {
-                    "image_id": image_id,
-                    "type": "original"
-                }
-            })
-            response = requests.request("POST", url, headers=self.my_headers, data=payload)
-            self.getLogger().info(f'下载图片结果: {response.text}')
-            downloadImageCount = {}
-            # for model in img['param']['mixModels']:
-            #     try:
-            #         modelVersionId = model['modelVersionId']
-            #         _model = self.model_dict[modelVersionId]
-            #         userUuid = _model['userUuid']
-            #         download_model = downloadImageCount.setdefault(userUuid, {})
-            #         __model = download_model.setdefault(modelVersionId, _model)
-            #         download_count = __model.setdefault('count', 0)
-            #         downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
-            #     except Exception as e:
-            #         self.getLogger().error(f'更新下载次数失败: {e}')
+            for img in data:
+                if img['images'] is not None:
+                    for oneImg in img['images']:
+                        image_id = oneImg['outputId']
+                        image_url = oneImg['imageId']
+                        generate_Id = oneImg['generateId']
+                        i = f'g={generate_Id}&i={image_id}'
+                        i_en = base64.b64encode(i.encode("utf-8"))
+                        self.getLogger().info(f'下载图片')
+                        url = f"https://{self.api_host}/api/www/log/acceptor/f"
+                        payload = json.dumps({
+                            "uuid": self.uuid,
+                            "cid": self.webid,
+                            "ct": time.time(),
+                            "pageUrl": f"https://{self.api_host}/aigenerator",
+                            "ua": self.my_headers['user-agent'],
+                            "e": "tool.canvas.download",
+                            "var": {
+                                "image_id": image_id,
+                                "type": "original"
+                            }
+                        })
+                        response = requests.request("POST", url, headers=self.my_headers, data=payload)
+                        self.getLogger().info(f'下载图片结果: {response.text}')
+                        downloadImageCount = {}
+                        if img['param']['mixModels'] is not None:
+                            for model in img['param']['mixModels']:
+                                try:
+                                    modelVersionId = model['modelVersionId']
+                                    _model = self.model_dict[modelVersionId]
+                                    userUuid = _model['userUuid']
+                                    download_model = downloadImageCount.setdefault(userUuid, {})
+                                    __model = download_model.setdefault(modelVersionId, _model)
+                                    download_count = __model.setdefault('count', 0)
+                                    downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
+                                except Exception as e:
+                                    self.getLogger().error(f'更新下载次数失败: {e}')
 
-            # if delete:
-            #     url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
-            #
-            #     payload = json.dumps({
-            #         "idList": idList
-            #     })
-            #
-            #     response = requests.request("POST", url, headers=headers, data=payload)
-            #
-            #     self.getLogger().info(f'删除图片结果：{response.text}')
-            for user_uuid, model_list in downloadImageCount.items():
-                for modelId, model in model_list.items():
-                    query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid,
-                                                                   DownLoadImageStatistics.modelId == modelId,
-                                                                   DownLoadImageStatistics.day == self.day)
-                    if query.exists():
-                        downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
-                        DownLoadImageStatistics.update(
-                            downloadImageCount=downloadImageCount + model['count'],
-                            timestamp=datetime.datetime.now()
-                        ).where(DownLoadImageStatistics.user_uuid == user_uuid,
-                                DownLoadImageStatistics.modelId == modelId,
-                                DownLoadImageStatistics.day == self.day).execute()
-                    else:
-                        DownLoadImageStatistics.insert(
-                            user_uuid=user_uuid,
-                            modelId=modelId,
-                            modelName=model['modelName'],
-                            downloadImageCount=model['count'],
-                            day=self.day
-                        ).execute()
+                                for user_uuid, model_list in downloadImageCount.items():
+                                    for modelId, model in model_list.items():
+                                        query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid,
+                                                                                       DownLoadImageStatistics.modelId == modelId,
+                                                                                       DownLoadImageStatistics.day == self.day)
+                                        if query.exists():
+                                            downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
+                                            DownLoadImageStatistics.update(
+                                                downloadImageCount=downloadImageCount + model['count'],
+                                                timestamp=datetime.datetime.now()
+                                            ).where(DownLoadImageStatistics.user_uuid == user_uuid,
+                                                    DownLoadImageStatistics.modelId == modelId,
+                                                    DownLoadImageStatistics.day == self.day).execute()
+                                        else:
+                                            DownLoadImageStatistics.insert(
+                                                user_uuid=user_uuid,
+                                                modelId=modelId,
+                                                modelName=model['modelName'],
+                                                downloadImageCount=model['count'],
+                                                day=self.day
+                                            ).execute()
+
+                        if share_image:
+                            self.share_image(i_en)
+
+                        if feed_image:
+                            self.feed_image(image_id, image_url)
 
 
 if __name__ == '__main__':
@@ -133,6 +133,6 @@ if __name__ == '__main__':
     for user in users:
         try:
             SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                          f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
+                          f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
         except Exception as e:
             print(e)

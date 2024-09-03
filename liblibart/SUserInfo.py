@@ -17,7 +17,7 @@ db = get_conn(database='c2hha2tlcg==')
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
-env_path = Path.cwd().joinpath('env').joinpath('os.env')
+env_path = Path.cwd().joinpath('env').joinpath('sos.env')
 env_path.parent.mkdir(exist_ok=True)
 # 指定env文件
 load_dotenv(find_dotenv(str(env_path)))
