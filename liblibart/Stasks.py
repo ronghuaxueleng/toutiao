@@ -9,7 +9,6 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
 from SDownLoadImage import SDownLoadImage
-from DownloadModel import DownloadModel
 from SImage import SImage
 from SUserInfo import SUserInfo, Account
 from ql import ql_env
@@ -43,14 +42,6 @@ class SLiblibTasks:
 
     def init_tasks(self):
         scheduler.add_job(
-            self.downloadModel,
-            id='downloadModel',
-            trigger='date',
-            misfire_grace_time=misfire_grace_time,
-            run_date=self.get_download_model_run_date(),
-        )
-
-        scheduler.add_job(
             self.downLoadImage,
             id='downLoadImage',
             trigger='date',
@@ -70,7 +61,6 @@ class SLiblibTasks:
 
     def init(self):
         self.drawImage()
-        self.downloadModel()
         self.downLoadImage()
         return self
 
@@ -149,11 +139,6 @@ class SLiblibTasks:
         if len(enable_ids) > 0:
             ql_env.enable(enable_ids)
 
-    def get_download_model_run_date(self):
-        return datetime.datetime.now() + datetime.timedelta(days=random.randint(1, 3), hours=random.randint(1, 23),
-                                                            minutes=random.randint(0, 59),
-                                                            seconds=random.randint(0, 59))
-
     def get_downLoad_image_run_date(self):
         return datetime.datetime.now() + datetime.timedelta(hours=random.randint(3, 5),
                                                             minutes=random.sample([11, 23, 37, 42, 57],
@@ -163,32 +148,6 @@ class SLiblibTasks:
     def get_draw_image_run_date(self):
         return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(7, 15),
                                                             seconds=random.randint(0, 59))
-
-    def downloadModel(self):
-        send_message("开始执行模型下载", title=f'shakker-{os.getenv("RUN_OS_NAME")}')
-        job_id = 'downloadModel'
-        users = get_users()
-        for user in random.sample(users, 4):
-            try:
-                DownloadModel(user['usertoken'], user['webid'],
-                              f'/mitmproxy/logs/SDownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
-            except Exception as e:
-                print(e)
-        s = scheduler.get_job(job_id)
-        if s is None:
-            scheduler.add_job(
-                self.downloadModel,
-                id=job_id,
-                trigger='date',
-                misfire_grace_time=misfire_grace_time,
-                run_date=self.get_download_model_run_date(),
-            )
-        else:
-            scheduler.reschedule_job(
-                job_id,
-                run_date=self.get_download_model_run_date()
-            )
-        self.get_all_job('模型下载结束')
 
     def downLoadImage(self):
         send_message("开始执行图片下载", title=f'shakker-{os.getenv("RUN_OS_NAME")}')
