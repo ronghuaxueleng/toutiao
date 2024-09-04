@@ -83,7 +83,7 @@ class Image(Base):
                     running_checkpointIds = json.load(f)
 
             to_run_checkpointIds = list(set(self.checkpointIds).difference(set(running_checkpointIds)))
-            checkpointId = 2016037
+            checkpointId = 2531860
             if len(to_run_checkpointIds) > 0:
                 checkpointId = to_run_checkpointIds[0]
             if len(to_run_checkpointIds) == 0:
