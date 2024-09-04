@@ -84,8 +84,8 @@ class Image(Base):
 
             to_run_checkpointIds = list(set(self.checkpointIds).difference(set(running_checkpointIds)))
             checkpointId = 2016037
-            # if len(to_run_checkpointIds) > 0:
-            #     checkpointId = to_run_checkpointIds[0]
+            if len(to_run_checkpointIds) > 0:
+                checkpointId = to_run_checkpointIds[0]
             if len(to_run_checkpointIds) == 0:
                 running_checkpointIds = [checkpointId]
                 with open(self.running_checkpointIdsFileName, 'w') as f:
