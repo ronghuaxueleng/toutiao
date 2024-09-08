@@ -89,7 +89,7 @@ class DownLoadImage(UserInfo):
                     try:
                         modelVersionId = model['modelVersionId']
                         _model = self.model_dict[modelVersionId]
-                        userUuid = _model['userUuid']
+                        userUuid = _model['user_uuid']
                         download_model = downloadImageCount.setdefault(userUuid, {})
                         __model = download_model.setdefault(modelVersionId, _model)
                         download_count = __model.setdefault('count', 0)
