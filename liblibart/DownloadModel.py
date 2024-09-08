@@ -10,6 +10,7 @@ import json
 from CookieUtils import get_users
 from Statistics import DownloadModelStatistics
 from UserInfo import UserInfo
+from Model import Model as MyModel
 from ql import ql_env
 
 from dotenv import load_dotenv, find_dotenv
@@ -27,13 +28,13 @@ class DownloadModel(UserInfo):
 
     def download_model(self):
         download_models = []
-        try:
-            my_loras = ql_env.search("my_lora")
-            for my_lora in my_loras:
-                if my_lora['status'] == 0:
-                    download_models.append(json.loads(my_lora['value'])['modelId'])
-        except Exception as e:
-            print(e)
+        models = MyModel.select(
+            MyModel.user_uuid,
+            MyModel.modelId
+        ).where(MyModel.isEnable == True,
+                MyModel.user_uuid != self.uuid).execute()
+        for model in models:
+            download_models.append(model.modelId)
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
         for uuid in self.uuids:
             if uuid != self.uuid:

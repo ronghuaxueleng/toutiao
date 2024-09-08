@@ -6,10 +6,12 @@ import time
 
 import requests
 from peewee import *
+from playhouse.shortcuts import model_to_dict
 
 from CookieUtils import get_users
 from LogInfo import LogInfo
 from DbUtils import get_conn
+from Model import Model as MyModel
 from ql import ql_env
 
 db = get_conn()
@@ -76,19 +78,16 @@ class UserInfo(LogInfo):
         self.uuids = set()
         self.model_dict = {}
         self.user_model_dict = {}
-        try:
-            my_loras = ql_env.search("my_lora")
-            for my_lora in my_loras:
-                if my_lora['status'] == 0:
-                    value = json.loads(my_lora['value'])
-                    self.model_dict[value['modelId']] = value
-                    self.uuids.add(value['userUuid'])
-                    if value['modelType'] == 5:
-                        user_models = self.user_model_dict.setdefault(value['userUuid'], [])
-                        user_models.append(value)
-                        self.user_model_dict[value['userUuid']] = user_models
-        except Exception as e:
-            print(e)
+        models = MyModel.select(
+            MyModel.user_uuid,
+            MyModel.modelId
+        ).where(MyModel.isEnable == True,
+                MyModel.modelType == 5,
+                MyModel.user_uuid != self.uuid).execute()
+        for model in models:
+            user_models = self.user_model_dict.setdefault(model.user_uuid, [])
+            user_models.append(model_to_dict(model))
+            self.user_model_dict[model.user_uuid] = user_models
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
