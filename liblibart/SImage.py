@@ -30,7 +30,6 @@ class SImage(SBase):
         super().__init__(token, webid, bl_uid, log_filename)
         self.param = copy.deepcopy(self.gen_param)
         self.param['cid'] = self.webid
-        self.running_checkpointIdsFileName = 's_running_checkpointIds.json'
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(SImage, "_instance"):
@@ -49,13 +48,13 @@ class SImage(SBase):
             for value in my_loras:
                 if userUuid != self.uuid:
                     modelId = value['modelId']
-                    userUuid = value['userUuid']
+                    userUuid = value['user_uuid']
                     run_model = runCount.setdefault(userUuid, {})
                     __model = run_model.setdefault(modelId, value)
                     run_count = __model.setdefault('count', 0)
                     runCount[userUuid][modelId]['count'] = run_count + 1
                     if value['modelType'] == 5:
-                        del value['userUuid']
+                        del value['user_uuid']
                         del value['modelType']
                         self.param['additionalNetwork'].append(value)
 
@@ -69,21 +68,7 @@ class SImage(SBase):
                     self.nps()
 
     def gen(self, runCount):
-        running_checkpointIds = []
-        if os.path.exists(self.running_checkpointIdsFileName):
-            with open(self.running_checkpointIdsFileName, 'r') as f:
-                running_checkpointIds = json.load(f)
-
-        to_run_checkpointIds = list(set(self.checkpointIds).difference(set(running_checkpointIds)))
-        checkpointId = 1511727
-        if len(to_run_checkpointIds) > 0:
-            checkpointId = to_run_checkpointIds[0]
-        if len(to_run_checkpointIds) == 0:
-            running_checkpointIds = [checkpointId]
-            with open(self.running_checkpointIdsFileName, 'w') as f:
-                json.dump(running_checkpointIds, f)
-        self.param["checkpointId"] = checkpointId
-
+        self.param["checkpointId"] = self.to_run_checkpointId
         payload = json.dumps(self.param)
 
         headers = self.headers

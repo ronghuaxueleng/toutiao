@@ -9,7 +9,6 @@ import requests
 from CookieUtils import get_users
 from SModel import Model
 from SUserInfo import SUserInfo
-from ql import ql_env
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
@@ -46,19 +45,6 @@ class SSaveLora(SUserInfo):
             'x-language': 'zh-TW'
         }
 
-        saved_models = []
-        saved_model_id_map = {}
-        try:
-            my_loras = ql_env.search("my_shakker_lora")
-            for my_lora in my_loras:
-                if my_lora['status'] == 0:
-                    value = json.loads(my_lora['value'])
-                    modelId = value['modelId']
-                    saved_models.append(modelId)
-                    saved_model_id_map[modelId] = my_lora['id']
-        except Exception as e:
-            print(e)
-
         pageNo = 1
         total_models = None
         while total_models is None or total_models > 0:
@@ -81,23 +67,9 @@ class SSaveLora(SUserInfo):
 
                 model_data = json.loads(response.text)
                 for version in model_data['data']['versions']:
-                    to_save_data = {
-                        "modelId": version["id"],
-                        "type": 0,
-                        "modelName": model["name"],
-                        "modelVersionName": version['name'],
-                        "weight": 0.8,
-                        "userUuid": self.userInfo['uuid'],
-                        "modelType": model['modelType']
-                    }
-                    if version['id'] not in saved_models:
-                        ql_env.add("my_shakker_lora", json.dumps(to_save_data, ensure_ascii=False), model["name"])
-                    else:
-                        ql_env.update(json.dumps(to_save_data, ensure_ascii=False), "my_shakker_lora",
-                                      saved_model_id_map[version['id']], model["name"])
-
-                    query = Model.select().where(Model.user_uuid == self.userInfo['uuid'],
-                                                 Model.modelId == version["id"])
+                    query = Model.select().where(
+                        Model.user_uuid == self.userInfo['uuid'],
+                        Model.modelId == version["id"])
                     if query.exists():
                         Model.update(
                             user_name=self.userInfo['nickname'],
@@ -126,7 +98,7 @@ if __name__ == '__main__':
     for user in users:
         try:
             SSaveLora(user['usertoken'], user['webid'], user['_bl_uid'],
-                     f'/mitmproxy/logs/SSaveLora_{os.getenv("RUN_OS_KEY")}.log').get_models()
+                      f'/mitmproxy/logs/SSaveLora_{os.getenv("RUN_OS_KEY")}.log').get_models()
         except Exception as e:
             print('error', e)
             print(e)
