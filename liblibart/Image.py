@@ -77,20 +77,7 @@ class Image(Base):
 
     def gen(self, runCount):
         if len(self.param['additionalNetwork']) > 0:
-            running_checkpointIds = []
-            if os.path.exists(self.running_checkpointIdsFileName):
-                with open(self.running_checkpointIdsFileName, 'r') as f:
-                    running_checkpointIds = json.load(f)
-
-            to_run_checkpointIds = list(set(self.checkpointIds).difference(set(running_checkpointIds)))
-            checkpointId = 2531860
-            if len(to_run_checkpointIds) > 0:
-                checkpointId = to_run_checkpointIds[0]
-            if len(to_run_checkpointIds) == 0:
-                running_checkpointIds = [checkpointId]
-                with open(self.running_checkpointIdsFileName, 'w') as f:
-                    json.dump(running_checkpointIds, f)
-            self.param["checkpointId"] = checkpointId
+            self.param["checkpointId"] = self.to_run_checkpointId
             payload = json.dumps(self.param)
             headers = self.headers
             headers['content-type'] = 'application/json'

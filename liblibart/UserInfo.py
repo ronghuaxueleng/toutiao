@@ -88,6 +88,9 @@ class UserInfo(LogInfo):
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
             user_models.append(model_to_dict(model))
             self.user_model_dict[model.user_uuid] = user_models
+        self.to_run_checkpointId = 2531860
+        if self.uuid == 'b8b05c9cf1c1487b802fba02dbfb128d':
+            self.to_run_checkpointId = 2367748
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
