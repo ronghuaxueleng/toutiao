@@ -11,7 +11,6 @@ from liblibart.CookieUtils import get_users
 from liblibart.Statistics import DownloadModelStatistics
 from liblibart.UserInfo import UserInfo
 from liblibart.Model import Model as MyModel
-from liblibart.ql import ql_env
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
