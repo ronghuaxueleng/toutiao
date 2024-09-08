@@ -6,10 +6,12 @@ import random
 import time
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from playhouse.shortcuts import model_to_dict
 
 from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
 from liblibart.SDownLoadImage import SDownLoadImage
 from liblibart.SImage import SImage
+from liblibart.SModel import Model
 from liblibart.SUserInfo import SUserInfo, Account
 from liblibart.ql import ql_env
 from utils.utils import send_message
@@ -80,16 +82,14 @@ class SLiblibTasks:
 
     def get_models(self):
         user_model_dict = {}
-        try:
-            my_loras = ql_env.search("my_shakker_lora")
-            for my_lora in my_loras:
-                if my_lora['status'] == 0:
-                    value = json.loads(my_lora['value'])
-                    user_models = user_model_dict.setdefault(value['userUuid'], [])
-                    user_models.append(value)
-                    user_model_dict[value['userUuid']] = user_models
-        except Exception as e:
-            print(e)
+        models = Model.select(
+            Model.user_uuid,
+            Model.modelId
+        ).where(Model.isEnable == True, Model.modelType == 5).execute()
+        for model in models:
+            user_models = user_model_dict.setdefault(model.user_uuid, [])
+            user_models.append(model_to_dict(model))
+            user_model_dict[model.user_uuid] = user_models
 
         final_user_model_dict = {}
         users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
@@ -221,8 +221,8 @@ class SLiblibTasks:
                                   f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log')
                     runCount = {}
                     for model in my_loras:
-                        userUuid = model['userUuid']
-                        del model['userUuid']
+                        userUuid = model['user_uuid']
+                        del model['user_uuid']
                         del model['modelType']
                         image.param['additionalNetwork'].append(model)
                         run_model = runCount.setdefault(userUuid, {})

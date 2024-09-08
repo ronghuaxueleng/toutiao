@@ -32,7 +32,6 @@ class Image(Base):
         self.frontId = str(uuid.uuid1())
         self.param = copy.deepcopy(self.gen_param)
         self.param['frontCustomerReq']['frontId'] = self.frontId
-        self.running_checkpointIdsFileName = 'running_checkpointIds.json'
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(Image, "_instance"):
