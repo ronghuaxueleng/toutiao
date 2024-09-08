@@ -11,7 +11,6 @@ from CookieUtils import get_users
 from Statistics import DownloadModelStatistics
 from UserInfo import UserInfo
 from Model import Model as MyModel
-from ql import ql_env
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
