@@ -137,7 +137,8 @@ class SImage(SBase):
         elif res['code'] == 1100000102:
             return 'tokenwuxiao'
         elif res['code'] == 1200000146:
-            self.getLogger().error(payload)
+            self.getLogger().error(f'使用了vip模型')
+            self.getLogger().error(self.param['additionalNetwork'])
             return 'vipmoxing'
         elif res['code'] == 1200000171:
             return 'initiated'
