@@ -136,6 +136,9 @@ class SImage(SBase):
             return 'suanlibuzu'
         elif res['code'] == 1100000102:
             return 'tokenwuxiao'
+        elif res['code'] == 1200000146:
+            self.getLogger().error(payload)
+            return 'vipmoxing'
         else:
             self.getLogger().error(response.text)
             return 'qitacuowu'
