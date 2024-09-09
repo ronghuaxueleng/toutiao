@@ -55,10 +55,10 @@ class Image(Base):
                     __model = run_model.setdefault(modelId, value)
                     run_count = __model.setdefault('count', 0)
                     runCount[userUuid][modelId]['count'] = run_count + 1
-                    if value['modelType'] == 5:
-                        del value['user_uuid']
-                        del value['modelType']
-                        self.param['additionalNetwork'].append(value)
+                    del value['user_uuid']
+                    del value['modelType']
+                    self.param['additionalNetwork'].append(value)
+
 
         image_num = self.gen(runCount)
         if image_num != 'suanlibuzu':
