@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import datetime
 import json
 import os
 import time
@@ -105,9 +106,11 @@ class SUserInfo(LogInfo):
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
             user_models.append(model_to_dict(model))
             self.user_model_dict[model.user_uuid] = user_models
+        checkpointids = [1496861, 1511727]
         self.to_run_checkpointId = 1511727
         if self.uuid == '7d3786acb7364cee97eb754bf5a3d180':
-            self.to_run_checkpointId = 1496861
+            checkpointIdIndex = int(datetime.datetime.now().strftime('%S')) % len(checkpointids)
+            self.to_run_checkpointId = checkpointids[checkpointIdIndex]
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
@@ -146,9 +149,9 @@ class SUserInfo(LogInfo):
                     imageId = image['imageId']
                     generateId = image['generateId']
                     query = SharedImgUrl.select().where(SharedImgUrl.image_id == imageId,
-                                                SharedImgUrl.output_id == outputId,
-                                                SharedImgUrl.generate_id == generateId,
-                                                )
+                                                        SharedImgUrl.output_id == outputId,
+                                                        SharedImgUrl.generate_id == generateId,
+                                                        )
                     if not query.exists():
                         SharedImgUrl.insert(
                             user_uuid=self.uuid,
@@ -170,7 +173,7 @@ if __name__ == '__main__':
         try:
             if user['expirationDate'] > time.time():
                 userInfo = SUserInfo(user['usertoken'], user['webid'], user['_bl_uid'],
-                                 f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
+                                     f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
                 realUser = userInfo.userInfo
             else:
                 realUser = None
