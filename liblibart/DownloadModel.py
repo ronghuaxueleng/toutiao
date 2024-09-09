@@ -29,7 +29,8 @@ class DownloadModel(UserInfo):
         download_models = []
         models = MyModel.select(
             MyModel.user_uuid,
-            MyModel.modelId
+            MyModel.modelId,
+            MyModel.modelName
         ).where(MyModel.isEnable == True,
                 MyModel.user_uuid != self.uuid).execute()
         for model in models:

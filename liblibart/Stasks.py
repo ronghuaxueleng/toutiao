@@ -84,7 +84,8 @@ class SLiblibTasks:
         user_model_dict = {}
         models = Model.select(
             Model.user_uuid,
-            Model.modelId
+            Model.modelId,
+            Model.modelName
         ).where(Model.isEnable == True, Model.modelType == 5).execute()
         for model in models:
             user_models = user_model_dict.setdefault(model.user_uuid, [])
