@@ -80,7 +80,8 @@ class UserInfo(LogInfo):
         self.user_model_dict = {}
         models = MyModel.select(
             MyModel.user_uuid,
-            MyModel.modelId
+            MyModel.modelId,
+            MyModel.modelName
         ).where(MyModel.isEnable == True,
                 MyModel.modelType == 5,
                 MyModel.user_uuid != self.uuid).execute()
