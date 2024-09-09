@@ -84,7 +84,7 @@ class UserInfo(LogInfo):
             MyModel.modelName
         ).where(MyModel.isEnable == True,
                 MyModel.modelType == 5,
-                MyModel.user_uuid != self.uuid).execute()
+                MyModel.user_uuid != self.uuid, MyModel.vipUsed != 1).execute()
         for model in models:
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
             user_models.append(model_to_dict(model))

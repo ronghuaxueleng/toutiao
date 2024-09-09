@@ -32,7 +32,7 @@ class DownloadModel(UserInfo):
             MyModel.modelId,
             MyModel.modelName
         ).where(MyModel.isEnable == True,
-                MyModel.user_uuid != self.uuid).execute()
+                MyModel.user_uuid != self.uuid, MyModel.vipUsed != 1).execute()
         for model in models:
             download_models.append(model.modelId)
         url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
