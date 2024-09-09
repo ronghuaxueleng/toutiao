@@ -96,7 +96,7 @@ class SImage(SBase):
                         "adetailerEnable": 1,
                         "mode": 1,
                         "vae": 22541,
-                        "checkpointId": checkpointId,
+                        "checkpointId": self.to_run_checkpointId,
                         "additionalNetwork": self.param['additionalNetwork'],
                         "adetailerList": self.param['adetailerList'],
                         "generateType": 1,
