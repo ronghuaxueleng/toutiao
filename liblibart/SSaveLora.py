@@ -71,6 +71,26 @@ class SSaveLora(SUserInfo):
                     tagCodesV2.append(tag['id'])
 
                 for version in model_data['data']['versions']:
+                    otherInfo = {
+                        "name": model['name'],
+                        "versionId": version['id'],
+                        "modelId": model['id'],
+                        "versionName": version['name'],
+                        "uuid": self.uuid,
+                        "tagV2Ids": tagCodesV2,
+                        "baseType": "SD 1.5",
+                        "modelType": model['modelTypeName'],
+                        "runCount": 0,
+                        "userAvatar": model['avatar'],
+                        "userName": model['nickname'],
+                        "imageUrl": model['imageUrl'],
+                        "vipUsed": 0,
+                        "weight": 1,
+                        "modelUuid": model['uuid'],
+                        "triggerWord": version['triggerWord'],
+                        "remark": "",
+                        "ngPrompt": "nsfw,EasyNegative, EasyNegativeV2, ng_deepnegative_v1_75t, worst quality, low quality,bad-hands-5,BadHandsV5"
+                    }
                     query = Model.select().where(
                         Model.user_uuid == self.userInfo['uuid'],
                         Model.modelId == version["id"])
@@ -82,7 +102,7 @@ class SSaveLora(SUserInfo):
                             showType=version['showType'],
                             updateTime=version['updateTime'],
                             vipUsed=model['vipUsed'],
-                            tagCodesV2=json.dumps(tagCodesV2),
+                            otherInfo=json.dumps(otherInfo),
                             timestamp=datetime.datetime.now()
                         ).where(Model.user_uuid == self.userInfo['uuid'], Model.modelId == version["id"]).execute()
                     else:
@@ -95,7 +115,7 @@ class SSaveLora(SUserInfo):
                             modelType=model['modelType'],
                             showType=version['showType'],
                             vipUsed=model['vipUsed'],
-                            tagCodesV2=json.dumps(tagCodesV2),
+                            otherInfo=json.dumps(otherInfo),
                             createTime=version['createTime'],
                             updateTime=version['updateTime'],
                         ).execute()
