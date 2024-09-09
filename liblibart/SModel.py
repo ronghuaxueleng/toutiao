@@ -21,6 +21,7 @@ class Model(Model):
     updateTime = DateTimeField(null=True)
     isEnable = IntegerField(null=False, default=1)
     vipUsed = IntegerField(null=False, default=0)
+    tagCodesV2 = TextField(null=True)
     timestamp = DateTimeField(null=True, default=datetime.datetime.now)
 
     class Meta:
