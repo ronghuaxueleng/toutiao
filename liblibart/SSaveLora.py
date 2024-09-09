@@ -66,6 +66,10 @@ class SSaveLora(SUserInfo):
                 response = requests.request("POST", version_url, headers=headers, data=payload)
 
                 model_data = json.loads(response.text)
+                tagCodesV2 = []
+                for tag in model_data['data']['tagsV2']['modelContent']:
+                    tagCodesV2.append(tag['id'])
+
                 for version in model_data['data']['versions']:
                     query = Model.select().where(
                         Model.user_uuid == self.userInfo['uuid'],
@@ -78,6 +82,7 @@ class SSaveLora(SUserInfo):
                             showType=version['showType'],
                             updateTime=version['updateTime'],
                             vipUsed=model['vipUsed'],
+                            tagCodesV2=json.dumps(tagCodesV2),
                             timestamp=datetime.datetime.now()
                         ).where(Model.user_uuid == self.userInfo['uuid'], Model.modelId == version["id"]).execute()
                     else:
@@ -90,6 +95,7 @@ class SSaveLora(SUserInfo):
                             modelType=model['modelType'],
                             showType=version['showType'],
                             vipUsed=model['vipUsed'],
+                            tagCodesV2=json.dumps(tagCodesV2),
                             createTime=version['createTime'],
                             updateTime=version['updateTime'],
                         ).execute()

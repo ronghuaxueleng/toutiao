@@ -108,7 +108,6 @@ def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", use
         for liblib_cookie in liblib_cookies:
             if get_all or liblib_cookie['status'] == 0:
                 values = json.loads(liblib_cookie['value'])
-                print(values)
                 user = {
                     'id': liblib_cookie['id'],
                 }
