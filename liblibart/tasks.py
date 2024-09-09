@@ -96,7 +96,7 @@ class LiblibTasks:
             Model.user_uuid,
             Model.modelId,
             Model.modelName
-        ).where(Model.isEnable == True, Model.modelType == 5).execute()
+        ).where(Model.isEnable == True, Model.modelType == 5, Model.vipUsed != 1).execute()
         for model in models:
             user_models = user_model_dict.setdefault(model.user_uuid, [])
             user_models.append(model_to_dict(model))

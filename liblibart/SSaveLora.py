@@ -77,6 +77,7 @@ class SSaveLora(SUserInfo):
                             modelVersionName=version['name'],
                             showType=version['showType'],
                             updateTime=version['updateTime'],
+                            vipUsed=model['vipUsed'],
                             timestamp=datetime.datetime.now()
                         ).where(Model.user_uuid == self.userInfo['uuid'], Model.modelId == version["id"]).execute()
                     else:
@@ -88,6 +89,7 @@ class SSaveLora(SUserInfo):
                             modelVersionName=version['name'],
                             modelType=model['modelType'],
                             showType=version['showType'],
+                            vipUsed=model['vipUsed'],
                             createTime=version['createTime'],
                             updateTime=version['updateTime'],
                         ).execute()

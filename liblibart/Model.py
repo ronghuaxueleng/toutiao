@@ -20,6 +20,7 @@ class Model(Model):
     createTime = DateTimeField(null=True)
     updateTime = DateTimeField(null=True)
     isEnable = IntegerField(null=False, default=1)
+    vipUsed = IntegerField(null=False, default=0)
     timestamp = DateTimeField(null=True, default=datetime.datetime.now)
 
     class Meta:
