@@ -246,6 +246,9 @@ class SLiblibTasks:
                         image.getLogger().error('token无效')
                         self.update_userInfo()
                         raise Exception('token无效')
+                    elif image_num == 'initiated':
+                        time.sleep(2)
+                        doDrawImage(user, my_loras)
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
