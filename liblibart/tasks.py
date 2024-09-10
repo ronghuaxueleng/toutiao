@@ -6,7 +6,6 @@ import random
 import time
 
 from apscheduler.schedulers.blocking import BlockingScheduler
-from playhouse.shortcuts import model_to_dict
 
 from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
 from DownLoadImage import DownLoadImage
@@ -93,13 +92,11 @@ class LiblibTasks:
     def get_models(self):
         user_model_dict = {}
         models = Model.select(
-            Model.user_uuid,
-            Model.modelId,
-            Model.modelName
+            Model.otherInfo
         ).where(Model.isEnable == True, Model.modelType == 5, Model.vipUsed != 1).execute()
         for model in models:
             user_models = user_model_dict.setdefault(model.user_uuid, [])
-            user_models.append(model_to_dict(model))
+            user_models.append(json.loads(model.otherInfo))
             user_model_dict[model.user_uuid] = user_models
 
         final_user_model_dict = {}
