@@ -295,7 +295,7 @@ class SLiblibTasks:
             while True:
                 next(gen)
         except StopIteration as e:
-            print(e.value)
+            print(traceback.format_exc())
         finally:
             gen.close()
             s = scheduler.get_job(job_id)
