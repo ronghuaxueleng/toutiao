@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 import time
+import traceback
 
 import requests
 from peewee import *
@@ -206,7 +207,7 @@ if __name__ == '__main__':
             else:
                 disable_ids.append(user['id'])
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
     if len(disable_ids) > 0:
         ql_env.disable(disable_ids)
     if len(enable_ids) > 0:

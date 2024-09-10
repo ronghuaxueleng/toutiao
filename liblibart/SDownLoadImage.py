@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 import time
+import traceback
 
 import requests
 
@@ -135,4 +136,4 @@ if __name__ == '__main__':
             SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
                           f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import traceback
 
 import requests
 
@@ -50,4 +51,4 @@ if __name__ == '__main__':
             Msg(user['usertoken'], user['webid'], '/mitmproxy/logs/Msg.log').getMsg()
         except Exception as e:
             print('error', e)
-            print(e)
+            print(traceback.format_exc())
