@@ -120,8 +120,11 @@ def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", use
                         user['webid'] = value['value']
                     if value['name'] == '_bl_uid':
                         user['_bl_uid'] = value['value']
-                if user['usertoken'] not in exclude_user:
-                    users.append(user)
+                try:
+                    if user['usertoken'] not in exclude_user:
+                        users.append(user)
+                except:
+                    print(liblib_cookie['remarks'])
     except Exception as e:
         print(traceback.format_exc())
     return users
