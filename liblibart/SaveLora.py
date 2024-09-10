@@ -65,6 +65,15 @@ class SaveLora(UserInfo):
 
                 model_data = json.loads(response.text)
                 for version in model_data['data']['versions']:
+                    to_save_data = {
+                        "modelId": version["id"],
+                        "type": 0,
+                        "modelName": model["name"],
+                        "modelVersionName": version['name'],
+                        "weight": 0.8,
+                        "user_uuid": self.userInfo['uuid'],
+                        "modelType": model['modelType']
+                    }
                     query = Model.select().where(
                         Model.user_uuid == self.userInfo['uuid'],
                         Model.modelId == version["id"]
@@ -77,6 +86,7 @@ class SaveLora(UserInfo):
                             showType=version['showType'],
                             updateTime=version['updateTime'],
                             vipUsed=model['vipUsed'],
+                            otherInfo=json.dumps(to_save_data),
                             timestamp=datetime.datetime.now()
                         ).where(Model.user_uuid == self.userInfo['uuid'], Model.modelId == version["id"]).execute()
                     else:
@@ -89,6 +99,7 @@ class SaveLora(UserInfo):
                             modelType=model['modelType'],
                             showType=version['showType'],
                             vipUsed=model['vipUsed'],
+                            otherInfo=json.dumps(to_save_data),
                             createTime=version['createTime'],
                             updateTime=version['updateTime'],
                         ).execute()
