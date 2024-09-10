@@ -99,12 +99,11 @@ class SUserInfo(LogInfo):
         self.user_model_dict = {}
         models = MyModel.select(
             MyModel.user_uuid,
-            MyModel.modelId,
-            MyModel.modelName
+            MyModel.otherInfo
         ).where(MyModel.isEnable == True, MyModel.modelType == 5, MyModel.vipUsed != 1).execute()
         for model in models:
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
-            user_models.append(model_to_dict(model))
+            user_models.append(json.loads(model.otherInfo))
             self.user_model_dict[model.user_uuid] = user_models
         checkpointids = [1496861, 1511727]
         self.to_run_checkpointId = 1511727
