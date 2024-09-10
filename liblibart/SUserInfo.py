@@ -7,7 +7,6 @@ import time
 
 import requests
 from peewee import *
-from playhouse.shortcuts import model_to_dict
 
 from liblibart.CookieUtils import get_users
 from liblibart.DbUtils import get_conn
@@ -106,10 +105,21 @@ class SUserInfo(LogInfo):
             user_models.append(json.loads(model.otherInfo))
             self.user_model_dict[model.user_uuid] = user_models
         checkpointids = [1496861, 1511727]
-        self.to_run_checkpointId = 1511727
+        self.to_run_checkpointId = 1531927
         if self.uuid == '7d3786acb7364cee97eb754bf5a3d180':
             checkpointIdIndex = int(datetime.datetime.now().strftime('%S')) % len(checkpointids)
             self.to_run_checkpointId = checkpointids[checkpointIdIndex]
+
+        checkpoints = MyModel.select(
+            MyModel.modelId,
+            MyModel.user_uuid,
+            MyModel.otherInfo
+        ).where(MyModel.isEnable == True, MyModel.modelType == 1, MyModel.vipUsed != 1).execute()
+        checkpoint_dict = {}
+        for checkpoint in checkpoints:
+            checkpoint_dict[checkpoint.modelId] = json.loads(checkpoint.otherInfo)
+
+        self.to_run_checkpoint = checkpoint_dict[str(self.to_run_checkpointId)]
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
