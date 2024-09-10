@@ -26,21 +26,18 @@ class SBase(SUserInfo):
                 "presetBaseModelId": "null",
                 "baseModel": "null",
                 "loraModels": [],
-                "width": 384,
-                "height": 768,
+                "width": 1024,
+                "height": 1024,
                 "isFixedRatio": "true",
                 "hires": "true",
                 "count": 1,
-                "prompt": "1girl,solo,realistic,jewelry,necklace,brown eyes,earrings,lips,looking at viewer,long hair BREAK\nwhite shirt,short sleeves,bracelet,black hair,smile,closed mouth,facing viewer,\nmakeup,fashion model,picture-perfect face,flowing hair,(full body:1.5),shiny skin,(masterpiece, top quality),master piece,professional artwork,famous artwork,(realistic,photorealistic:1.37),HDR,UHD,8K,ultra realistic 8k cg,8K,32k,HD,",
-                "negativePrompt": "EasyNegativeV2,(badhandv4:1.2),(worst quality, low quality, cgi, bad eye, worst eye, illustration, cartoon),deformed,distorted,disfigured,poorly drawn,bad anatomy,wrong anatomy,(normal quality:2),lowres,bad anatomy,bad hands,normal quality,((monochrome)),((grayscale)),easynegative,paintings,sketches,",
+                "prompt": self.prompt,
+                "negativePrompt": "",
                 "presetNegativePrompts": [
                     "common",
-                    "bad_hand",
-                    "real_portrait",
-                    "bad_image",
-                    "anime"
+                    "bad_hand"
                 ],
-                "samplerMethod": "8",
+                "samplerMethod": "15",
                 "samplingSteps": 30,
                 "seedType": "0",
                 "seedNumber": "",
@@ -48,54 +45,69 @@ class SBase(SUserInfo):
                 "cfgScale": 7,
                 "clipSkip": 2,
                 "controlnets": [],
-                "hiresOptions": {
-                    "enabled": "false",
-                    "scale": 1.33,
-                    "upscaler": "15",
-                    "strength": 0.5,
-                    "steps": 20,
-                    "width": 384,
-                    "height": 768
-                },
                 "changed": "true",
                 "modelGroupCoverUrl": "null",
                 "checkpoint": {
-                    "name": "my_checkpoint_00000",
-                    "versionId": 1511727,
-                    "modelId": 1810480,
+                    "name": "my_checkpoint_xx",
+                    "versionId": 1531927,
+                    "modelId": 1827982,
                     "versionName": "v1",
-                    "uuid": "a2ff8a38cb194c339391362adc681631",
+                    "uuid": "7a0ea24618aa4fc8804e66d37b7b4dfb",
+                    "tagV2Ids": [
+                        100031,
+                        100054,
+                        100070,
+                        100026,
+                        100028,
+                        100029,
+                        100069
+                    ],
                     "baseType": "SD 1.5",
                     "modelType": "Checkpoint",
                     "runCount": 0,
-                    "userAvatar": "https://lh3.googleusercontent.com/a/ACg8ocKX_-zG28CmwqlFavPDjDVrOOS8DlFVWsioe2rkTl8JgNSAyeKu=s96-c",
-                    "userName": "ronghuahaha",
-                    "imageUrl": "https://liblibai-online.vibrou.com/img/02749e73219936808ff45d707b2d01cf/eeeea8451ea05ec8d4f17f3b8333f45f9314287cccfce8d3e66838c1d8ea85c7.png",
+                    "userAvatar": "https://models-online-persist.shakker.cloud/img/44d172fc437d490f87bfc261258fb183/d8040a5eab6ae654eb53f1cf4793466c3f50679692cf3782f5fa067dcfce0da6.png",
+                    "userName": "ronghua",
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/b8b05c9cf1c1487b802fba02dbfb128d/b8b5fce330f93e6b937f96f5d2ea5152214a8325806c025abb3b7ce3b27a2aa9.png",
                     "vipUsed": 0,
                     "weight": "null",
-                    "modelUuid": "25e6c8796cba48d1a7dea267731ae5ad",
+                    "modelUuid": "de7debe397b54451b36b59b2af8daaab",
                     "triggerWord": "1girl",
                     "remark": "null",
                     "ngPrompt": "nsfw,EasyNegative, EasyNegativeV2, ng_deepnegative_v1_75t, worst quality, low quality,bad-hands-5,BadHandsV5"
                 },
+                "hiresOptions": {
+                    "enabled": "true",
+                    "scale": 1.33,
+                    "upscaler": "15",
+                    "strength": 0.5,
+                    "steps": 20,
+                    "width": 768,
+                    "height": 768
+                },
+                "modelCfgScale": 7,
                 "addOns": [
                     {
                         "name": "Fix Face",
                         "value": 0,
                         "mergeMode": 1,
                         "edge": -4
+                    },
+                    {
+                        "name": "Fix Hand",
+                        "value": 1,
+                        "mergeMode": 1,
+                        "edge": -4
                     }
                 ],
-                "seed": 3363921491,
                 "mode": 1,
                 "isSimpleMode": "false",
                 "generateType": "normal",
-                "renderWidth": 384,
-                "renderHeight": 768,
+                "renderWidth": 1024,
+                "renderHeight": 1024,
                 "samplerMethodName": "DPM++ SDE"
             },
             "vae": 22541,
-            "checkpointId": 1511727,
+            "checkpointId": 1531927,
             "additionalNetwork": [],
             "adetailerList": [
                 {
@@ -125,15 +137,43 @@ class SBase(SUserInfo):
                         "separateNoiseMultiplier": "false",
                         "restoreFacesAfterADetailer": "false"
                     }
+                },
+                {
+                    "adetailerModelVerId": 1,
+                    "prompt": "",
+                    "negativePrompt": "",
+                    "detection": {
+                        "threshold": 0.3,
+                        "maskMinAreaRatio": 0,
+                        "maskMaxAreaRatio": 1
+                    },
+                    "maskPreprocessing": {
+                        "maskXOffset": 0,
+                        "maskYOffset": 0,
+                        "maskScaling": -4,
+                        "maskMergeMode": 1
+                    },
+                    "inpainting": {
+                        "maskBlur": 4,
+                        "denoisingStrength": 0.4,
+                        "onlyMasked": "true",
+                        "onlyMaskedPaddingPixels": 32,
+                        "separateWH": "false",
+                        "separateSteps": "true",
+                        "adetailerSteps": 25,
+                        "separateCFGScale": "false",
+                        "separateNoiseMultiplier": "false",
+                        "restoreFacesAfterADetailer": "false"
+                    }
                 }
             ],
             "generateType": 1,
             "text2img": {
-                "width": 384,
+                "width": 768,
                 "height": 768,
                 "prompt": self.prompt,
                 "negativePrompt": self.negativePrompt,
-                "samplingMethod": "8",
+                "samplingMethod": "15",
                 "samplingStep": 30,
                 "batchSize": 1,
                 "batchCount": 1,
@@ -143,11 +183,19 @@ class SBase(SUserInfo):
                 "tiling": 0,
                 "seedExtra": 0,
                 "restoreFaces": 0,
-                "hiResFix": 0,
+                "hiResFix": 1,
                 "extraNetwork": [],
-                "promptRecommend": "true"
+                "promptRecommend": "true",
+                "hiResFixInfo": {
+                    "upscaler": 15,
+                    "upscaleBy": 1.33,
+                    "resizeWidth": 1024,
+                    "resizeHeight": 1024
+                },
+                "hiresSteps": 20,
+                "denoisingStrength": 0.5
             },
-            "cid": "1723355030078utiwqxrz"
+            "cid": "1725802989955hopmyqxc"
         }
 
         if not os.path.exists(gen_params_path):

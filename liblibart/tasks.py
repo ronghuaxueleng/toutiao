@@ -92,6 +92,7 @@ class LiblibTasks:
     def get_models(self):
         user_model_dict = {}
         models = Model.select(
+            Model.user_uuid,
             Model.otherInfo
         ).where(Model.isEnable == True, Model.modelType == 5, Model.vipUsed != 1).execute()
         for model in models:

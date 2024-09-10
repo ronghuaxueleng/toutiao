@@ -78,6 +78,7 @@ class UserInfo(LogInfo):
         self.model_dict = {}
         self.user_model_dict = {}
         models = MyModel.select(
+            MyModel.user_uuid,
             MyModel.otherInfo
         ).where(MyModel.isEnable == True,
                 MyModel.modelType == 5,
