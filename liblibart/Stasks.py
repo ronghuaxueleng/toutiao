@@ -6,7 +6,6 @@ import random
 import time
 
 from apscheduler.schedulers.blocking import BlockingScheduler
-from playhouse.shortcuts import model_to_dict
 
 from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
 from SDownLoadImage import SDownLoadImage
@@ -84,12 +83,11 @@ class SLiblibTasks:
         user_model_dict = {}
         models = Model.select(
             Model.user_uuid,
-            Model.modelId,
-            Model.modelName
+            Model.otherInfo
         ).where(Model.isEnable == True, Model.modelType == 5, Model.vipUsed != 1).execute()
         for model in models:
             user_models = user_model_dict.setdefault(model.user_uuid, [])
-            user_models.append(model_to_dict(model))
+            user_models.append(json.loads(model.otherInfo))
             user_model_dict[model.user_uuid] = user_models
 
         final_user_model_dict = {}
@@ -222,10 +220,14 @@ class SLiblibTasks:
                                   f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log')
                     runCount = {}
                     for model in my_loras:
-                        userUuid = model['user_uuid']
-                        del model['user_uuid']
-                        del model['modelType']
-                        image.param['additionalNetwork'].append(model)
+                        userUuid = model['uuid']
+                        modelId = model['modelId']
+                        image.param['additionalNetwork'].append({
+                            "modelId": modelId,
+                            "weight": 0.8,
+                            "type": 0
+                        })
+                        image.param['projectData']['loraModels'].append(model)
                         run_model = runCount.setdefault(userUuid, {})
                         __model = run_model.setdefault(model['modelId'], model)
                         run_count = __model.setdefault('count', 0)

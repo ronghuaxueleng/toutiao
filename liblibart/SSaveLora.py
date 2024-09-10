@@ -76,7 +76,7 @@ class SSaveLora(SUserInfo):
                         "versionId": version['id'],
                         "modelId": model['id'],
                         "versionName": version['name'],
-                        "uuid": self.uuid,
+                        "uuid": model['uuid'],
                         "tagV2Ids": tagCodesV2,
                         "baseType": "SD 1.5",
                         "modelType": model['modelTypeName'],

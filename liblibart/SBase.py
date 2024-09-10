@@ -7,9 +7,6 @@ from SUserInfo import SUserInfo
 from CookieUtils import save_to_suanlibuzu_users
 
 current_day_json_path = '/mitmproxy/config/s_current_day.json'
-checkpointIds_path = '/mitmproxy/config/s_checkpointIds.json'
-gen_params_path = '/mitmproxy/config/s_gen_params.json'
-
 
 class SBase(SUserInfo):
     def __init__(self, token, webid, bl_uid, filename=None):
@@ -198,20 +195,6 @@ class SBase(SUserInfo):
             "cid": "1725802989955hopmyqxc"
         }
 
-        if not os.path.exists(gen_params_path):
-            with open(gen_params_path, 'w') as fp:
-                json.dump(self.gen_param, fp, indent=4)
-        else:
-            with open(gen_params_path, 'r') as fp:
-                self.gen_param = json.load(fp)
-
-        self.checkpointIds = [1511727]
-        if not os.path.exists(checkpointIds_path):
-            with open(checkpointIds_path, 'w') as fp:
-                json.dump(self.checkpointIds, fp, indent=4)
-        else:
-            with open(checkpointIds_path, 'r') as fp:
-                self.checkpointIds = json.load(fp)
         dt = datetime.datetime.now()
         self.today = dt.strftime("%Y%m%d")
         self.current_day = {

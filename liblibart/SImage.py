@@ -42,20 +42,23 @@ class SImage(SBase):
         runCount = {}
         for userUuid, models in self.user_model_dict.items():
             if len(models) >= 6:
-                my_loras = random.sample(models, 6)
+                my_loras = random.sample(models, 1)
             else:
                 my_loras = models
             for value in my_loras:
                 if userUuid != self.uuid:
                     modelId = value['modelId']
-                    userUuid = value['user_uuid']
+                    userUuid = value['uuid']
                     run_model = runCount.setdefault(userUuid, {})
                     __model = run_model.setdefault(modelId, value)
                     run_count = __model.setdefault('count', 0)
                     runCount[userUuid][modelId]['count'] = run_count + 1
-                    del value['user_uuid']
-                    del value['modelType']
-                    self.param['additionalNetwork'].append(value)
+                    self.param['additionalNetwork'].append({
+                        "modelId": modelId,
+                        "weight": 0.8,
+                        "type": 0
+                    })
+                    self.param['projectData']['loraModels'].append(value)
 
 
         image_num = self.gen(runCount)
@@ -69,6 +72,7 @@ class SImage(SBase):
 
     def gen(self, runCount):
         self.param["checkpointId"] = self.to_run_checkpointId
+        self.param['projectData']['checkpoint'] = self.to_run_checkpoint
         payload = json.dumps(self.param)
 
         headers = self.headers
