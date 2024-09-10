@@ -6,7 +6,6 @@ import time
 
 import requests
 from peewee import *
-from playhouse.shortcuts import model_to_dict
 
 from liblibart.CookieUtils import get_users
 from liblibart.LogInfo import LogInfo
