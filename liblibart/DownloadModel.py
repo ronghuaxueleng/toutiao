@@ -3,6 +3,7 @@ import datetime
 import os
 import random
 import time
+import traceback
 
 import requests
 import json
@@ -142,4 +143,4 @@ if __name__ == '__main__':
             DownloadModel(user['usertoken'], user['webid'],
                           f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())

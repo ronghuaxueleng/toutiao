@@ -6,6 +6,7 @@ import os
 import random
 import threading
 import time
+import traceback
 import uuid
 
 import requests
@@ -192,4 +193,4 @@ if __name__ == '__main__':
         try:
             SImage(user['usertoken'], user['webid'], user['_bl_uid'], f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())

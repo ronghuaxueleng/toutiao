@@ -3,6 +3,7 @@ import base64
 import json
 import os
 import time
+import traceback
 
 import requests
 from peewee import *
@@ -81,15 +82,17 @@ class UserInfo(LogInfo):
             MyModel.user_uuid,
             MyModel.otherInfo
         ).where(MyModel.isEnable == True,
-                MyModel.modelType == 5,
-                MyModel.user_uuid != self.uuid, MyModel.vipUsed != 1).execute()
+                MyModel.modelType == 5, MyModel.vipUsed != 1).execute()
         for model in models:
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
             user_models.append(json.loads(model.otherInfo))
             self.user_model_dict[model.user_uuid] = user_models
         self.to_run_checkpointId = 2016037#2531860
-        if self.uuid == 'b8b05c9cf1c1487b802fba02dbfb128d':
-            self.to_run_checkpointId = 1094830#2367748
+        try:
+            if self.uuid == 'b8b05c9cf1c1487b802fba02dbfb128d':
+                self.to_run_checkpointId = 1094830#2367748
+        except Exception as e:
+            pass
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
@@ -134,7 +137,7 @@ if __name__ == '__main__':
             else:
                 disable_ids.append(user['id'])
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
     if len(disable_ids) > 0:
         ql_env.disable(disable_ids)
     if len(enable_ids) > 0:

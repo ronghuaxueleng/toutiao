@@ -3,6 +3,7 @@ import datetime
 import json
 import os
 import time
+import traceback
 
 import requests
 
@@ -113,4 +114,4 @@ if __name__ == '__main__':
                      f'/mitmproxy/logs/SaveLora_{os.getenv("RUN_OS_KEY")}.log').get_models()
         except Exception as e:
             print('error', e)
-            print(e)
+            print(traceback.format_exc())

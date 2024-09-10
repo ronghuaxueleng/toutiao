@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+import traceback
 
 from liblibart.RunningInfo import RunningInfo
 from liblibart.SRunningInfo import RunningInfo as SRunningInfo
@@ -122,5 +123,5 @@ def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", use
                 if user['usertoken'] not in exclude_user:
                     users.append(user)
     except Exception as e:
-        print(e)
+        print(traceback.format_exc())
     return users

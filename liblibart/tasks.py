@@ -4,6 +4,7 @@ import json
 import os
 import random
 import time
+import traceback
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -142,7 +143,7 @@ class LiblibTasks:
                 else:
                     disable_ids.append(user['id'])
             except Exception as e:
-                print(e)
+                print(traceback.format_exc())
         if len(disable_ids) > 0:
             ql_env.disable(disable_ids)
         if len(enable_ids) > 0:
@@ -172,7 +173,7 @@ class LiblibTasks:
                 DownloadModel(user['usertoken'], user['webid'],
                               f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
             except Exception as e:
-                print(e)
+                print(traceback.format_exc())
         s = scheduler.get_job(job_id)
         if s is None:
             scheduler.add_job(
@@ -199,7 +200,7 @@ class LiblibTasks:
                 DownLoadImage(user['usertoken'], user['webid'],
                               f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
             except Exception as e:
-                print(e)
+                print(traceback.format_exc())
         s = scheduler.get_job(job_id)
         if s is None:
             if scheduler.get_job(job_id) is None:
@@ -247,7 +248,7 @@ class LiblibTasks:
                                       f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(
                             False)
                     except Exception as e:
-                        print(e)
+                        print(traceback.format_exc())
                     image.getLogger().info(f'递归层级{depth}')
                     return depth
 
@@ -289,7 +290,7 @@ class LiblibTasks:
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
-                print(e)
+                print(traceback.format_exc())
 
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users()
@@ -329,7 +330,7 @@ class LiblibTasks:
             while True:
                 next(gen)
         except StopIteration as e:
-            print(e.value)
+            print(traceback.format_exc())
         finally:
             gen.close()
             s = scheduler.get_job(job_id)
