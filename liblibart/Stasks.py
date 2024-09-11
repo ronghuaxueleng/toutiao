@@ -88,7 +88,9 @@ class SLiblibTasks:
         ).where(Model.isEnable == True, Model.modelType == 5, Model.vipUsed != 1).execute()
         for model in models:
             user_models = user_model_dict.setdefault(model.user_uuid, [])
-            user_models.append(json.loads(model.otherInfo))
+            otherInfo = json.loads(model.otherInfo)
+            otherInfo['user_uuid'] = model.user_uuid
+            user_models.append(otherInfo)
             user_model_dict[model.user_uuid] = user_models
 
         final_user_model_dict = {}
@@ -221,8 +223,9 @@ class SLiblibTasks:
                                   f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log')
                     runCount = {}
                     for model in my_loras:
-                        userUuid = model['uuid']
-                        modelId = model['modelId']
+                        userUuid = model['user_uuid']
+                        del model['user_uuid']
+                        modelId = model['versionId']
                         image.param['additionalNetwork'].append({
                             "modelId": modelId,
                             "weight": 0.8,
@@ -230,9 +233,9 @@ class SLiblibTasks:
                         })
                         image.param['projectData']['loraModels'].append(model)
                         run_model = runCount.setdefault(userUuid, {})
-                        __model = run_model.setdefault(model['modelId'], model)
+                        __model = run_model.setdefault(modelId, model)
                         run_count = __model.setdefault('count', 0)
-                        runCount[userUuid][model['modelId']]['count'] = run_count + 1
+                        runCount[userUuid][modelId]['count'] = run_count + 1
                     image_num = image.gen(runCount)
                     if image_num == 'suanlibuzu':
                         suanlibuzu.append(user['usertoken'])
