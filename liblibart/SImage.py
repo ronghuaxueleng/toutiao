@@ -145,6 +145,8 @@ class SImage(SBase):
             return 'vipmoxing'
         elif res['code'] == 1200000171:
             return 'initiated'
+        elif res['code'] == 1200000113:
+            return 'hasongoingtask'
         else:
             self.getLogger().error(response.text)
             return 'qitacuowu'
