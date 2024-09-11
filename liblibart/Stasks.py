@@ -255,6 +255,8 @@ class SLiblibTasks:
                     elif image_num == 'initiated':
                         time.sleep(2)
                         doDrawImage(user, my_loras)
+                    elif image_num == 'hasongoingtask':
+                        time.sleep(60 * 2)
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
