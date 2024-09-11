@@ -48,8 +48,9 @@ class SImage(SBase):
                 my_loras = models
             for value in my_loras:
                 if userUuid != self.uuid:
-                    modelId = value['modelId']
-                    userUuid = value['uuid']
+                    modelId = value['versionId']
+                    versionId = value['versionId']
+                    versionUuid = value['uuid']
                     run_model = runCount.setdefault(userUuid, {})
                     __model = run_model.setdefault(modelId, value)
                     run_count = __model.setdefault('count', 0)
@@ -60,7 +61,6 @@ class SImage(SBase):
                         "type": 0
                     })
                     self.param['projectData']['loraModels'].append(value)
-
 
         image_num = self.gen(runCount)
         if image_num != 'suanlibuzu':
@@ -128,7 +128,7 @@ class SImage(SBase):
                         RunStatistics.insert(
                             user_uuid=user_uuid,
                             modelId=modelId,
-                            modelName=model['modelName'],
+                            modelName=model['name'],
                             runCount=model['count'],
                             day=self.day
                         ).execute()
@@ -189,8 +189,9 @@ class SImage(SBase):
 if __name__ == '__main__':
     users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
     for user in random.sample(users, 1):
-    # for user in users:
+        # for user in users:
         try:
-            SImage(user['usertoken'], user['webid'], user['_bl_uid'], f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
+            SImage(user['usertoken'], user['webid'], user['_bl_uid'],
+                   f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
         except Exception as e:
             print(traceback.format_exc())

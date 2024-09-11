@@ -119,8 +119,10 @@ class SUserInfo(LogInfo):
         checkpoint_dict = {}
         for checkpoint in checkpoints:
             checkpoint_dict[checkpoint.modelId] = json.loads(checkpoint.otherInfo)
-
-        self.to_run_checkpoint = checkpoint_dict[str(self.to_run_checkpointId)]
+        try:
+            self.to_run_checkpoint = checkpoint_dict[str(self.to_run_checkpointId)]
+        except KeyError:
+            pass
 
     def getUserInfo(self):
         url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"

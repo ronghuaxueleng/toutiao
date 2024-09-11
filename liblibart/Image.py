@@ -51,7 +51,6 @@ class Image(Base):
             for value in my_loras:
                 if userUuid != self.uuid:
                     modelId = value['modelId']
-                    userUuid = value['user_uuid']
                     run_model = runCount.setdefault(userUuid, {})
                     __model = run_model.setdefault(modelId, value)
                     run_count = __model.setdefault('count', 0)
