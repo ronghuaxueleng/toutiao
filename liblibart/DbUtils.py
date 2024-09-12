@@ -14,6 +14,6 @@ def get_conn(database='bGlibGli'):
                          password=str(base64.b64decode(password), 'utf-8'),
                          host=str(base64.b64decode(host), 'utf-8'),
                          port=int(str(base64.b64decode(port), 'utf-8')),
-                        max_connections=10,
+                        max_connections=20,
                         stale_timeout=300,
                          )
