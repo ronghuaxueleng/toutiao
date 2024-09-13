@@ -74,9 +74,9 @@ class Image(Base):
                         self.getLogger().error(f"nickname：{self.userInfo['nickname']} DownLoadImage，{e}")
                     return True
 
-    def gen(self, runCount):
+    def gen(self, runCount, to_run_checkpointId=None):
         if len(self.param['additionalNetwork']) > 0:
-            self.param["checkpointId"] = self.to_run_checkpointId
+            self.param["checkpointId"] = self.to_run_checkpointId if to_run_checkpointId is None else to_run_checkpointId
             payload = json.dumps(self.param)
             headers = self.headers
             headers['content-type'] = 'application/json'

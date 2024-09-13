@@ -14,10 +14,13 @@ from Model import Model
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
+from DbUtils import get_redis_conn
+
 # 指定env文件
 env_path = Path.cwd().joinpath('env').joinpath('os.env')
 env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
+r = get_redis_conn()
 
 
 class SaveLora(UserInfo):
@@ -54,43 +57,44 @@ class SaveLora(UserInfo):
                 response = requests.request("POST", version_url, headers=headers, data=payload)
 
                 model_data = json.loads(response.text)
-                for version in model_data['data']['versions']:
-                    to_save_data = {
-                        "modelId": version["id"],
-                        "type": 0,
-                        "modelName": model["name"],
-                        "modelVersionName": version['name'],
-                        "weight": 0.8,
-                        "user_uuid": self.userInfo['uuid'],
-                        "modelType": model['modelType']
-                    }
-                    key = f"{self.userInfo['uuid']}_{version['id']}"
-                    if key in __saved_models:
-                        del __saved_models[key]
-                        Model.update(
-                            user_name=self.userInfo['nickname'],
-                            modelName=model["name"],
-                            modelVersionName=version['name'],
-                            showType=version['showType'],
-                            updateTime=version['updateTime'],
-                            vipUsed=model['vipUsed'],
-                            otherInfo=json.dumps(to_save_data),
-                            timestamp=datetime.datetime.now()
-                        ).where(Model.user_uuid == self.userInfo['uuid'], Model.modelId == version["id"]).execute()
-                    else:
-                        Model.insert(
-                            user_uuid=self.userInfo['uuid'],
-                            user_name=self.userInfo['nickname'],
-                            modelId=version["id"],
-                            modelName=model["name"],
-                            modelVersionName=version['name'],
-                            modelType=model['modelType'],
-                            showType=version['showType'],
-                            vipUsed=model['vipUsed'],
-                            otherInfo=json.dumps(to_save_data),
-                            createTime=version['createTime'],
-                            updateTime=version['updateTime'],
-                        ).execute()
+                if model_data['code'] == 0:
+                    for version in model_data['data']['versions']:
+                        to_save_data = {
+                            "modelId": version["id"],
+                            "type": 0,
+                            "modelName": model["name"],
+                            "modelVersionName": version['name'],
+                            "weight": 0.8,
+                            "user_uuid": self.userInfo['uuid'],
+                            "modelType": model['modelType']
+                        }
+                        key = f"{self.userInfo['uuid']}_{version['id']}"
+                        if key in __saved_models:
+                            del __saved_models[key]
+                            Model.update(
+                                user_name=self.userInfo['nickname'],
+                                modelName=model["name"],
+                                modelVersionName=version['name'],
+                                showType=version['showType'],
+                                updateTime=version['updateTime'],
+                                vipUsed=model['vipUsed'],
+                                otherInfo=json.dumps(to_save_data),
+                                timestamp=datetime.datetime.now()
+                            ).where(Model.user_uuid == self.userInfo['uuid'], Model.modelId == version["id"]).execute()
+                        else:
+                            Model.insert(
+                                user_uuid=self.userInfo['uuid'],
+                                user_name=self.userInfo['nickname'],
+                                modelId=version["id"],
+                                modelName=model["name"],
+                                modelVersionName=version['name'],
+                                modelType=model['modelType'],
+                                showType=version['showType'],
+                                vipUsed=model['vipUsed'],
+                                otherInfo=json.dumps(to_save_data),
+                                createTime=version['createTime'],
+                                updateTime=version['updateTime'],
+                            ).execute()
 
         for model in __saved_models:
             Model.delete().where(Model.modelId == model.modelId).execute()
@@ -112,3 +116,14 @@ if __name__ == '__main__':
         except Exception as e:
             print('error', e)
             print(traceback.format_exc())
+
+    models = Model.select().where(Model.isEnable == True, Model.modelType == 1, Model.vipUsed != 1,
+                                  Model.showType == 1).execute()
+
+    checkpoints = {}
+    for model in models:
+        ids = checkpoints.setdefault(model.user_uuid, [])
+        ids.append(model.modelId)
+        checkpoints[model.user_uuid] = ids
+    print(checkpoints)
+    r.set("checkpoints", json.dumps(checkpoints))

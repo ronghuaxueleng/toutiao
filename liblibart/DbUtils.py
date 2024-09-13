@@ -23,5 +23,9 @@ def get_conn(database='bGlibGli'):
 def get_redis_conn():
     host = 'MTkyLjE0NC4yMTUuMjE4'
     port = 'NjM3OQ=='
-    pool = redis.ConnectionPool(host=host, port=port, db=1, decode_responses=True)
+    pool = redis.ConnectionPool(
+        host=str(base64.b64decode(host), 'utf-8'),
+        port=int(str(base64.b64decode(port), 'utf-8')),
+        db=1
+    )
     return redis.Redis(connection_pool=pool)
