@@ -14,7 +14,7 @@ from liblibart.SUserInfo import SUserInfo
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
-from DbUtils import get_redis_conn
+from liblibart.DbUtils import get_redis_conn
 
 # 指定env文件
 env_path = Path.cwd().joinpath('env').joinpath('sos.env')
