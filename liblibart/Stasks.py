@@ -302,7 +302,6 @@ class SLiblibTasks:
             self.notAvailableToImageUsers[self.today] = []
             save_to_run_users([], True)
         user_model_dict = self.get_models()
-        to_run_checkpoint_id, to_run_checkpoint = self.get_to_run_checkpoint()
 
         def simple_generator():
             # 当前时间
@@ -323,6 +322,7 @@ class SLiblibTasks:
                     20 if len(to_run_models) >= 20 else len(to_run_models))
                 to_run_models = random.sample(to_run_models, to_run_model_count)
                 group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
+                to_run_checkpoint_id, to_run_checkpoint = self.get_to_run_checkpoint()
                 for to_run_model in group_every_two:
                     yield doDrawImage(user, to_run_model, to_run_checkpoint_id, to_run_checkpoint)
 
