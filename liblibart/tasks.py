@@ -135,7 +135,7 @@ class LiblibTasks:
             to_run_checkpoint_id = checkpointIdList.pop()
             r.set('to_runcheckpoints', json.dumps(checkpointIdList))
 
-        r.persist("to_runcheckpoints")
+        r.expire("to_runcheckpoints", 60*60*24*365)
         return to_run_checkpoint_id
 
     def update_userInfo(self):

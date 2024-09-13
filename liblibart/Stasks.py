@@ -129,8 +129,7 @@ class SLiblibTasks:
             to_run_checkpoint_id = checkpointIdList.pop()
             r.set('s_to_runcheckpoints', json.dumps(checkpointIdList))
 
-        r.persist("s_to_runcheckpoints")
-
+        r.expire("s_to_runcheckpoints", 60*60*24*365)
         to_run_checkpoint = checkpointMap[to_run_checkpoint_id]
 
         return to_run_checkpoint_id, to_run_checkpoint

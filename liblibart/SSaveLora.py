@@ -141,5 +141,4 @@ if __name__ == '__main__':
         ids.append(json.loads(model.otherInfo))
         checkpoints[model.user_uuid] = ids
     r.set("s_checkpoints", json.dumps(checkpoints))
-    # 设置过期时间为永久
-    r.persist("s_checkpoints")
+    r.expire("s_checkpoints", 60*60*24*365)
