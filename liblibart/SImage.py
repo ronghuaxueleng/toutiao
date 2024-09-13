@@ -69,9 +69,9 @@ class SImage(SBase):
                 else:
                     self.nps()
 
-    def gen(self, runCount):
-        self.param["checkpointId"] = self.to_run_checkpointId
-        self.param['projectData']['checkpoint'] = self.to_run_checkpoint
+    def gen(self, runCount, to_run_checkpointId=None, to_run_checkpoint=None):
+        self.param["checkpointId"] = self.to_run_checkpointId if to_run_checkpointId is None else to_run_checkpointId
+        self.param['projectData']['checkpoint'] = self.to_run_checkpoint if to_run_checkpoint is None else to_run_checkpoint
         payload = json.dumps(self.param)
 
         headers = self.headers
