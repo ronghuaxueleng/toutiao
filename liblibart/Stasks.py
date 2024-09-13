@@ -9,6 +9,7 @@ import traceback
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
+from DbUtils import get_redis_conn
 from SDownLoadImage import SDownLoadImage
 from SImage import SImage
 from SModel import Model
@@ -26,7 +27,7 @@ env_path = Path.cwd().joinpath('env').joinpath('sos.env')
 print(env_path)
 env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
-
+r = get_redis_conn()
 misfire_grace_time = 60
 
 
@@ -105,6 +106,35 @@ class SLiblibTasks:
                 final_user_model_list.extend(user_model)
             final_user_model_dict[usertoken] = final_user_model_list
         return final_user_model_dict
+
+    def get_to_run_checkpoint(self):
+        checkpoints = json.loads(r.get('s_checkpoints'))
+        checkpointIdList = []
+        checkpointMap = {}
+        for uuid, checkpoint in checkpoints.items():
+            for item in checkpoint:
+                checkpointIdList.append(item['versionId'])
+                checkpointMap[item['versionId']] = item
+
+        to_run_checkpoints = r.get('s_to_runcheckpoints')
+        if to_run_checkpoints is not None:
+            to_run_checkpoints = json.loads(to_run_checkpoints)
+            if len(to_run_checkpoints) > 0:
+                to_run_checkpoint_id = to_run_checkpoints.pop()
+                r.set('s_to_runcheckpoints', json.dumps(to_run_checkpoints))
+            else:
+                to_run_checkpoint_id = checkpointIdList.pop()
+                r.set('s_to_runcheckpoints', json.dumps(checkpointIdList))
+        else:
+            to_run_checkpoint_id = checkpointIdList.pop()
+            r.set('s_to_runcheckpoints', json.dumps(checkpointIdList))
+
+        r.persist("s_to_runcheckpoints")
+
+        to_run_checkpoint = checkpointMap[to_run_checkpoint_id]
+
+        return to_run_checkpoint_id, to_run_checkpoint
+
 
     def update_userInfo(self):
         users = get_users(True, cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
@@ -212,7 +242,7 @@ class SLiblibTasks:
                     image.getLogger().info(f'递归层级{depth}')
                     return depth
 
-        def doDrawImage(user, my_loras):
+        def doDrawImage(user, my_loras, to_run_checkpoint_id, to_run_checkpoint):
             try:
                 to_save_run_users = load_from_run_users(True)
                 if user['usertoken'] in to_save_run_users:
@@ -236,7 +266,7 @@ class SLiblibTasks:
                         __model = run_model.setdefault(modelId, model)
                         run_count = __model.setdefault('count', 0)
                         runCount[userUuid][modelId]['count'] = run_count + 1
-                    image_num = image.gen(runCount)
+                    image_num = image.gen(runCount, to_run_checkpoint_id, to_run_checkpoint)
                     if image_num == 'suanlibuzu':
                         suanlibuzu.append(user['usertoken'])
                         notAvailableToImageUsers = self.notAvailableToImageUsers.setdefault(self.today, [])
@@ -254,7 +284,7 @@ class SLiblibTasks:
                         raise Exception('token无效')
                     elif image_num == 'initiated':
                         time.sleep(2)
-                        doDrawImage(user, my_loras)
+                        doDrawImage(user, my_loras, to_run_checkpoint_id, to_run_checkpoint)
                     elif image_num == 'hasongoingtask':
                         time.sleep(60 * 2)
                     else:
@@ -272,6 +302,7 @@ class SLiblibTasks:
             self.notAvailableToImageUsers[self.today] = []
             save_to_run_users([], True)
         user_model_dict = self.get_models()
+        to_run_checkpoint_id, to_run_checkpoint = self.get_to_run_checkpoint()
 
         def simple_generator():
             # 当前时间
@@ -293,7 +324,7 @@ class SLiblibTasks:
                 to_run_models = random.sample(to_run_models, to_run_model_count)
                 group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
                 for to_run_model in group_every_two:
-                    yield doDrawImage(user, to_run_model)
+                    yield doDrawImage(user, to_run_model, to_run_checkpoint_id, to_run_checkpoint)
 
         gen = simple_generator()
         try:
