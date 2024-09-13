@@ -7,20 +7,18 @@ import traceback
 
 import requests
 
-from CookieUtils import get_users
+from CookieUtils import get_users, save_checkpoints
 from UserInfo import UserInfo
 from Model import Model
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
-from DbUtils import get_redis_conn
 
 # 指定env文件
 env_path = Path.cwd().joinpath('env').joinpath('os.env')
 env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
-r = get_redis_conn()
 
 
 class SaveLora(UserInfo):
@@ -126,5 +124,4 @@ if __name__ == '__main__':
         ids.append(model.modelId)
         checkpoints[model.user_uuid] = ids
     print(checkpoints)
-    r.set("checkpoints", json.dumps(checkpoints))
-    r.expire("checkpoints", 60*60*24*365)
+    save_checkpoints(checkpoints)

@@ -8,8 +8,8 @@ import traceback
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
-from DbUtils import get_redis_conn
+from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users, \
+    load_from_checkpoints, load_from_to_runcheckpoints, save_to_runcheckpoints
 from SDownLoadImage import SDownLoadImage
 from SImage import SImage
 from SModel import Model
@@ -27,7 +27,6 @@ env_path = Path.cwd().joinpath('env').joinpath('sos.env')
 print(env_path)
 env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
-r = get_redis_conn()
 misfire_grace_time = 60
 
 
@@ -108,7 +107,7 @@ class SLiblibTasks:
         return final_user_model_dict
 
     def get_to_run_checkpoint(self):
-        checkpoints = json.loads(r.get('s_checkpoints'))
+        checkpoints = json.loads(load_from_checkpoints(True))
         checkpointIdList = []
         checkpointMap = {}
         for uuid, checkpoint in checkpoints.items():
@@ -116,20 +115,19 @@ class SLiblibTasks:
                 checkpointIdList.append(item['versionId'])
                 checkpointMap[item['versionId']] = item
 
-        to_run_checkpoints = r.get('s_to_runcheckpoints')
+        to_run_checkpoints = load_from_to_runcheckpoints(True)
         if to_run_checkpoints is not None:
             to_run_checkpoints = json.loads(to_run_checkpoints)
             if len(to_run_checkpoints) > 0:
                 to_run_checkpoint_id = to_run_checkpoints.pop()
-                r.set('s_to_runcheckpoints', json.dumps(to_run_checkpoints))
+                save_to_runcheckpoints(to_run_checkpoints)
             else:
                 to_run_checkpoint_id = checkpointIdList.pop()
-                r.set('s_to_runcheckpoints', json.dumps(checkpointIdList))
+                save_to_runcheckpoints(checkpointIdList)
         else:
             to_run_checkpoint_id = checkpointIdList.pop()
-            r.set('s_to_runcheckpoints', json.dumps(checkpointIdList))
+            save_to_runcheckpoints(checkpointIdList)
 
-        r.expire("s_to_runcheckpoints", 60*60*24*365)
         to_run_checkpoint = checkpointMap[to_run_checkpoint_id]
 
         return to_run_checkpoint_id, to_run_checkpoint

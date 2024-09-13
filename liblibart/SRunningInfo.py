@@ -12,7 +12,8 @@ db = get_conn(database='c2hha2tlcg==')
 class RunningInfo(Model):
     _id = PrimaryKeyField
     to_run_users = TextField(null=True)
-    checkpointIds = TextField(null=True)
+    checkpoints = TextField(null=True)
+    to_runcheckpoints = TextField(null=True)
     current_day = TextField(null=True)
     suanlibuzu_users = TextField(null=True)
     timestamp = DateTimeField(null=True, default=datetime.datetime.now)
