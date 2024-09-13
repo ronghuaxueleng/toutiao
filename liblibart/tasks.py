@@ -8,7 +8,8 @@ import traceback
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users
+from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users, \
+    load_from_checkpoints, load_from_to_runcheckpoints, save_to_runcheckpoints
 from liblibart.DbUtils import get_redis_conn
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
@@ -28,7 +29,6 @@ env_path = Path.cwd().joinpath('env').joinpath('os.env')
 print(env_path)
 env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
-r = get_redis_conn()
 misfire_grace_time = 60
 
 
@@ -116,26 +116,25 @@ class LiblibTasks:
         return final_user_model_dict
 
     def get_to_run_checkpoint(self):
-        checkpoints = json.loads(r.get('checkpoints'))
+        checkpoints = json.loads(load_from_checkpoints())
         checkpointIdList = []
         for uuid, checkpoint in checkpoints.items():
             for item in checkpoint:
                 checkpointIdList.append(item)
 
-        to_run_checkpoints = r.get('to_runcheckpoints')
+        to_run_checkpoints = load_from_to_runcheckpoints()
         if to_run_checkpoints is not None:
             to_run_checkpoints = json.loads(to_run_checkpoints)
             if len(to_run_checkpoints) > 0:
                 to_run_checkpoint_id = to_run_checkpoints.pop()
-                r.set('to_runcheckpoints', json.dumps(to_run_checkpoints))
+                save_to_runcheckpoints(to_run_checkpoints)
             else:
                 to_run_checkpoint_id = checkpointIdList.pop()
-                r.set('to_runcheckpoints', json.dumps(checkpointIdList))
+                save_to_runcheckpoints(checkpointIdList)
         else:
             to_run_checkpoint_id = checkpointIdList.pop()
-            r.set('to_runcheckpoints', json.dumps(checkpointIdList))
+            save_to_runcheckpoints(checkpointIdList)
 
-        r.expire("to_runcheckpoints", 60*60*24*365)
         return to_run_checkpoint_id
 
     def update_userInfo(self):

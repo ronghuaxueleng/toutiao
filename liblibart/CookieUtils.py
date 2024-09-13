@@ -100,6 +100,98 @@ def load_from_run_users(is_shakker=False):
             return []
 
 
+def save_checkpoints(checkpoints, is_shakker=False):
+    if is_shakker:
+        query = SRunningInfo.select().where(SRunningInfo.id == 1)
+        if query.exists():
+            SRunningInfo.update(
+                checkpoints=json.dumps(checkpoints),
+                timestamp=datetime.datetime.now()
+            ).where(SRunningInfo.id == 1).execute()
+        else:
+            SRunningInfo.insert(
+                id=1,
+                checkpoints=json.dumps(checkpoints),
+                timestamp=datetime.datetime.now()
+            ).execute()
+    else:
+        query = RunningInfo.select().where(RunningInfo.id == 1)
+        if query.exists():
+            RunningInfo.update(
+                checkpoints=json.dumps(checkpoints),
+                timestamp=datetime.datetime.now()
+            ).where(RunningInfo.id == 1).execute()
+        else:
+            RunningInfo.insert(
+                id=1,
+                checkpoints=json.dumps(checkpoints),
+                timestamp=datetime.datetime.now()
+            ).execute()
+
+
+def load_from_checkpoints(is_shakker=False):
+    if is_shakker:
+        query = SRunningInfo.select().where(SRunningInfo.id == 1)
+        if query.exists():
+            info = SRunningInfo.get(SRunningInfo.id == 1)
+            return json.loads(info.checkpoints)
+        else:
+            return {}
+    else:
+        query = RunningInfo.select().where(RunningInfo.id == 1)
+        if query.exists():
+            info = RunningInfo.get(RunningInfo.id == 1)
+            return json.loads(info.checkpoints)
+        else:
+            return {}
+
+
+def save_to_runcheckpoints(to_runcheckpoints, is_shakker=False):
+    if is_shakker:
+        query = SRunningInfo.select().where(SRunningInfo.id == 1)
+        if query.exists():
+            SRunningInfo.update(
+                to_runcheckpoints=json.dumps(to_runcheckpoints),
+                timestamp=datetime.datetime.now()
+            ).where(SRunningInfo.id == 1).execute()
+        else:
+            SRunningInfo.insert(
+                id=1,
+                to_runcheckpoints=json.dumps(to_runcheckpoints),
+                timestamp=datetime.datetime.now()
+            ).execute()
+    else:
+        query = RunningInfo.select().where(RunningInfo.id == 1)
+        if query.exists():
+            RunningInfo.update(
+                to_runcheckpoints=json.dumps(to_runcheckpoints),
+                timestamp=datetime.datetime.now()
+            ).where(RunningInfo.id == 1).execute()
+        else:
+            RunningInfo.insert(
+                id=1,
+                to_runcheckpoints=json.dumps(to_runcheckpoints),
+                timestamp=datetime.datetime.now()
+            ).execute()
+
+
+def load_from_to_runcheckpoints(is_shakker=False):
+    if is_shakker:
+        query = SRunningInfo.select().where(SRunningInfo.id == 1)
+        if query.exists():
+            info = SRunningInfo.get(SRunningInfo.id == 1)
+            return json.loads(info.to_runcheckpoints)
+        else:
+            return []
+    else:
+        query = RunningInfo.select().where(RunningInfo.id == 1)
+        if query.exists():
+            info = RunningInfo.get(RunningInfo.id == 1)
+            return json.loads(info.to_runcheckpoints)
+        else:
+            return []
+
+
 def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", usertoken_name="usertoken"):
     if exclude_user is None:
         exclude_user = []
