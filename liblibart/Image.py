@@ -166,7 +166,10 @@ class Image(Base):
                 self.getLogger().error(payload)
                 return 'vipmoxing'
             else:
-                self.getLogger().error(response.text)
+                if res['code'] == 1200000403:
+                    self.getLogger().error(f'checkpoint模型[{self.param["checkpointId"]}]已被删除或下架，请更换其他模型')
+                else:
+                    self.getLogger().error(response.text)
                 return 'qitacuowu'
 
     def get_percent(self, image_num):
