@@ -138,7 +138,8 @@ if __name__ == '__main__':
     checkpoints = {}
     for model in models:
         ids = checkpoints.setdefault(model.user_uuid, [])
-        ids.append(model.modelId)
+        ids.append(json.loads(model.otherInfo))
         checkpoints[model.user_uuid] = ids
-    print(checkpoints)
     r.set("s_checkpoints", json.dumps(checkpoints))
+    # 设置过期时间为永久
+    r.persist("s_checkpoints")
