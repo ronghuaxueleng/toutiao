@@ -115,7 +115,7 @@ class LiblibTasks:
         return final_user_model_dict
 
     def get_to_run_checkpoint(self):
-        checkpoints = json.loads(load_from_checkpoints())
+        checkpoints = load_from_checkpoints()
         checkpointIdList = []
         for uuid, checkpoint in checkpoints.items():
             for item in checkpoint:
@@ -123,7 +123,7 @@ class LiblibTasks:
 
         to_run_checkpoints = load_from_to_runcheckpoints()
         if to_run_checkpoints is not None:
-            to_run_checkpoints = json.loads(to_run_checkpoints)
+            to_run_checkpoints = to_run_checkpoints
             if len(to_run_checkpoints) > 0:
                 to_run_checkpoint_id = to_run_checkpoints.pop()
                 save_to_runcheckpoints(to_run_checkpoints)
