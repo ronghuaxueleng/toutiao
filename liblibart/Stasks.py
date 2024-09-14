@@ -120,13 +120,13 @@ class SLiblibTasks:
             to_run_checkpoints = to_run_checkpoints
             if len(to_run_checkpoints) > 0:
                 to_run_checkpoint_id = to_run_checkpoints.pop()
-                save_to_runcheckpoints(to_run_checkpoints)
+                save_to_runcheckpoints(to_run_checkpoints, True)
             else:
                 to_run_checkpoint_id = checkpointIdList.pop()
-                save_to_runcheckpoints(checkpointIdList)
+                save_to_runcheckpoints(checkpointIdList, True)
         else:
             to_run_checkpoint_id = checkpointIdList.pop()
-            save_to_runcheckpoints(checkpointIdList)
+            save_to_runcheckpoints(checkpointIdList, True)
 
         to_run_checkpoint = checkpointMap[to_run_checkpoint_id]
 
