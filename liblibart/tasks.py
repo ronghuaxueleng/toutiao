@@ -10,7 +10,6 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users, \
     load_from_checkpoints, load_from_to_runcheckpoints, save_to_runcheckpoints
-from liblibart.DbUtils import get_redis_conn
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image

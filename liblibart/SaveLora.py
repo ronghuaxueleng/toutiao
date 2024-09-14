@@ -37,7 +37,7 @@ class SaveLora(UserInfo):
         pageNo = 1
         total_models = None
         while total_models is None or total_models > 0:
-            url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
+            url = f"https://{self.web_host}/api/www/model/list?timestamp={time.time()}"
             payload = json.dumps({
                 "pageNo": pageNo,
                 "pageSize": 10,
@@ -50,7 +50,7 @@ class SaveLora(UserInfo):
             pageNo = pageNo + 1
             total_models = len(data['data']['list'])
             for model in data['data']['list']:
-                version_url = f"https://{self.api_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
+                version_url = f"https://{self.web_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
                 payload = {}
                 response = requests.request("POST", version_url, headers=headers, data=payload)
 
