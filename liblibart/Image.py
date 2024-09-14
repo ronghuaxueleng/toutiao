@@ -81,14 +81,14 @@ class Image(Base):
             headers = self.headers
             headers['content-type'] = 'application/json'
             headers['referer'] = f'https://{self.web_host}/v4/editor'
-            url = f"https://{self.api_host}/gateway/sd-api/generate/image"
+            url = f"https://{self.web_host}/gateway/sd-api/generate/image"
             response = requests.request("POST", url, headers=headers, data=payload)
             res = json.loads(response.text)
 
             if res['code'] == 0:
                 self.getLogger().info(f"nickname：{self.userInfo['nickname']} generate image，{response.text}")
                 res1 = self.progress_msg(headers, res['data'])
-                url = f"https://{self.api_host}/api/www/log/acceptor/f"
+                url = f"https://{self.web_host}/api/www/log/acceptor/f"
                 payload = json.dumps({
                     "abtest": [
                         {
@@ -173,7 +173,7 @@ class Image(Base):
                 return 'qitacuowu'
 
     def get_percent(self, image_num):
-        url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/v1/{image_num}"
+        url = f"https://{self.web_host}/gateway/sd-api/generate/progress/msg/v1/{image_num}"
         payload = json.dumps({
             "flag": 0
         })
@@ -185,7 +185,7 @@ class Image(Base):
         return json.loads(response.text)
 
     def nps(self):
-        url = f"https://{self.api_host}/gateway/sd-api/common/getStatisticsCount"
+        url = f"https://{self.web_host}/gateway/sd-api/common/getStatisticsCount"
 
         payload = json.dumps({
             "businessType": "nps",
@@ -200,7 +200,7 @@ class Image(Base):
         self.getLogger().info(f"nickname：{self.userInfo['nickname']} getStatisticsCount，{response.text}")
 
     def progress_msg(self, headers, progress_code):
-        url = f"https://{self.api_host}/gateway/sd-api/generate/progress/msg/{progress_code}"
+        url = f"https://{self.web_host}/gateway/sd-api/generate/progress/msg/{progress_code}"
 
         payload = json.dumps({})
         response = requests.request("POST", url, headers=headers, data=payload)

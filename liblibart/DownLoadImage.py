@@ -26,7 +26,7 @@ class DownLoadImage(UserInfo):
         super().__init__(token, webid, log_filename)
 
     def download(self, delete=True, fromTime=None, pageSize=1):
-        url = f"https://{self.api_host}/gateway/sd-api/generate/image/history"
+        url = f"https://{self.web_host}/gateway/sd-api/generate/image/history"
 
         if fromTime is None:
             day = datetime.datetime.now() - datetime.timedelta(days=7)
@@ -47,7 +47,7 @@ class DownLoadImage(UserInfo):
         res = json.loads(response.text)
 
         if len(res['data']['list']) > 0:
-            url = f"https://{self.api_host}/api/www/log/acceptor/f"
+            url = f"https://{self.web_host}/api/www/log/acceptor/f"
 
             payload = json.dumps({
                 "abtest": [
@@ -99,7 +99,7 @@ class DownLoadImage(UserInfo):
                         self.getLogger().error(f'更新下载次数失败: {e}')
 
             if delete:
-                url = f"https://{self.api_host}/gateway/sd-api/generate/image/delete"
+                url = f"https://{self.web_host}/gateway/sd-api/generate/image/delete"
 
                 payload = json.dumps({
                     "idList": idList

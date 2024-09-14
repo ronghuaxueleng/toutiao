@@ -36,7 +36,7 @@ class DownloadModel(UserInfo):
                 MyModel.user_uuid != self.uuid, MyModel.vipUsed != 1).execute()
         for model in models:
             download_models.append(model.modelId)
-        url = f"https://{self.api_host}/api/www/model/list?timestamp={time.time()}"
+        url = f"https://{self.web_host}/api/www/model/list?timestamp={time.time()}"
         for uuid in self.uuids:
             if uuid != self.uuid:
                 for pageNo in range(1, 5):
@@ -57,7 +57,7 @@ class DownloadModel(UserInfo):
                     model_list = data['data']['list']
                     if len(model_list) > 0:
                         for model in model_list:
-                            url = f"https://{self.api_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
+                            url = f"https://{self.web_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
                             payload = {}
                             response = requests.request("POST", url, headers=headers, data=payload)
 
@@ -72,7 +72,7 @@ class DownloadModel(UserInfo):
                                         downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
                                         if downloadModelCount >= 1000:
                                             continue
-                                    url = f"https://{self.api_host}/api/www/community/downloadCheck?timestamp={time.time()}"
+                                    url = f"https://{self.web_host}/api/www/community/downloadCheck?timestamp={time.time()}"
                                     payload = json.dumps({
                                         "uuid": model["uuid"],
                                         "cid": self.webid,
@@ -86,7 +86,7 @@ class DownloadModel(UserInfo):
                                     self.getLogger().info(
                                         f"token:{uuid}, 模型[{model['name']}], 版本[{version['uuid']}], 运行结果：{response.text}")
 
-                                    url = f"https://{self.api_host}/api/www/log/acceptor/f?timestamp={time.time()}"
+                                    url = f"https://{self.web_host}/api/www/log/acceptor/f?timestamp={time.time()}"
 
                                     payload = json.dumps({
                                         "t": 2,
