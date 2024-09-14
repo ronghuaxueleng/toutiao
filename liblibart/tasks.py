@@ -274,7 +274,7 @@ class LiblibTasks:
                     image.getLogger().info(f'递归层级{depth}')
                     return depth
 
-        def doDrawImage(user, my_loras, to_run_checkpoint_id):
+        def doDrawImage(user, my_loras):
             try:
                 to_save_run_users = load_from_run_users()
                 if user['usertoken'] in to_save_run_users:
@@ -293,6 +293,7 @@ class LiblibTasks:
                         __model = run_model.setdefault(model['modelId'], model)
                         run_count = __model.setdefault('count', 0)
                         runCount[userUuid][model['modelId']]['count'] = run_count + 1
+                    to_run_checkpoint_id = self.get_to_run_checkpoint()
                     image_num = image.gen(runCount, to_run_checkpoint_id)
                     if image_num == 'suanlibuzu':
                         suanlibuzu.append(user['usertoken'])
@@ -344,9 +345,8 @@ class LiblibTasks:
                     20 if len(to_run_models) >= 20 else len(to_run_models))
                 to_run_models = random.sample(to_run_models, to_run_model_count)
                 group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
-                to_run_checkpoint_id = self.get_to_run_checkpoint()
                 for to_run_model in group_every_two:
-                    yield doDrawImage(user, to_run_model, to_run_checkpoint_id)
+                    yield doDrawImage(user, to_run_model)
 
         gen = simple_generator()
         try:

@@ -239,7 +239,7 @@ class SLiblibTasks:
                     image.getLogger().info(f'递归层级{depth}')
                     return depth
 
-        def doDrawImage(user, my_loras, to_run_checkpoint_id, to_run_checkpoint):
+        def doDrawImage(user, my_loras):
             try:
                 to_save_run_users = load_from_run_users(True)
                 if user['usertoken'] in to_save_run_users:
@@ -263,6 +263,7 @@ class SLiblibTasks:
                         __model = run_model.setdefault(modelId, model)
                         run_count = __model.setdefault('count', 0)
                         runCount[userUuid][modelId]['count'] = run_count + 1
+                    to_run_checkpoint_id, to_run_checkpoint = self.get_to_run_checkpoint()
                     image_num = image.gen(runCount, to_run_checkpoint_id, to_run_checkpoint)
                     if image_num == 'suanlibuzu':
                         suanlibuzu.append(user['usertoken'])
@@ -281,7 +282,7 @@ class SLiblibTasks:
                         raise Exception('token无效')
                     elif image_num == 'initiated':
                         time.sleep(2)
-                        doDrawImage(user, my_loras, to_run_checkpoint_id, to_run_checkpoint)
+                        doDrawImage(user, my_loras)
                     elif image_num == 'hasongoingtask':
                         time.sleep(60 * 2)
                     else:
@@ -319,9 +320,8 @@ class SLiblibTasks:
                     20 if len(to_run_models) >= 20 else len(to_run_models))
                 to_run_models = random.sample(to_run_models, to_run_model_count)
                 group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
-                to_run_checkpoint_id, to_run_checkpoint = self.get_to_run_checkpoint()
                 for to_run_model in group_every_two:
-                    yield doDrawImage(user, to_run_model, to_run_checkpoint_id, to_run_checkpoint)
+                    yield doDrawImage(user, to_run_model)
 
         gen = simple_generator()
         try:
