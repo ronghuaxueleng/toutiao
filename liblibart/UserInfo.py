@@ -95,7 +95,7 @@ class UserInfo(LogInfo):
             pass
 
     def getUserInfo(self):
-        url = f"https://{self.api_host}/api/www/user/getUserInfo?timestamp={time.time()}"
+        url = f"https://{self.web_host}/api/www/user/getUserInfo?timestamp={time.time()}"
         payload = {}
         response = requests.request("POST", url, headers=self.headers, data=payload)
         res = json.loads(response.text)
