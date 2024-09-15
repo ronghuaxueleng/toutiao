@@ -3,193 +3,81 @@ import datetime
 import json
 import traceback
 
-from RunningInfo import RunningInfo
-from SRunningInfo import RunningInfo as SRunningInfo
+from DbUtils import get_redis_conn
 from ql import ql_env
+
+r = get_redis_conn()
 
 
 def save_to_suanlibuzu_users(suanlibuzu_users, is_shakker=False):
     if is_shakker:
-        query = SRunningInfo.select().where(SRunningInfo.id == 1)
-        if query.exists():
-            SRunningInfo.update(
-                suanlibuzu_users=json.dumps(suanlibuzu_users),
-                timestamp=datetime.datetime.now()
-            ).where(SRunningInfo.id == 1).execute()
-        else:
-            SRunningInfo.insert(
-                id=1,
-                suanlibuzu_users=json.dumps(suanlibuzu_users),
-                timestamp=datetime.datetime.now()
-            ).execute()
+        r.set("s_suanlibuzu_users", json.dumps(suanlibuzu_users))
     else:
-        query = RunningInfo.select().where(RunningInfo.id == 1)
-        if query.exists():
-            RunningInfo.update(
-                suanlibuzu_users=json.dumps(suanlibuzu_users),
-                timestamp=datetime.datetime.now()
-            ).where(RunningInfo.id == 1).execute()
-        else:
-            RunningInfo.insert(
-                id=1,
-                suanlibuzu_users=json.dumps(suanlibuzu_users),
-                timestamp=datetime.datetime.now()
-            ).execute()
+        r.set("suanlibuzu_users", json.dumps(suanlibuzu_users))
 
 
 def load_from_suanlibuzu_users(is_shakker=False):
     if is_shakker:
-        query = SRunningInfo.select().where(SRunningInfo.id == 1)
-        if query.exists():
-            info = SRunningInfo.get(SRunningInfo.id == 1)
-            return json.loads(info.suanlibuzu_users)
-        else:
-            return []
+        suanlibuzu_users = r.get('s_suanlibuzu_users')
     else:
-        query = RunningInfo.select().where(RunningInfo.id == 1)
-        if query.exists():
-            info = RunningInfo.get(RunningInfo.id == 1)
-            return json.loads(info.suanlibuzu_users)
-        else:
-            return []
+        suanlibuzu_users = r.get('suanlibuzu_users')
+    if suanlibuzu_users is not None:
+        return json.loads(suanlibuzu_users)
+    else:
+        return []
 
 
 def save_to_run_users(to_run_users, is_shakker=False):
     if is_shakker:
-        query = SRunningInfo.select().where(SRunningInfo.id == 1)
-        if query.exists():
-            SRunningInfo.update(
-                to_run_users=json.dumps(to_run_users),
-                timestamp=datetime.datetime.now()
-            ).where(SRunningInfo.id == 1).execute()
-        else:
-            SRunningInfo.insert(
-                id=1,
-                to_run_users=json.dumps(to_run_users),
-                timestamp=datetime.datetime.now()
-            ).execute()
+        r.set("s_to_run_users", json.dumps(to_run_users))
     else:
-        query = RunningInfo.select().where(RunningInfo.id == 1)
-        if query.exists():
-            RunningInfo.update(
-                to_run_users=json.dumps(to_run_users),
-                timestamp=datetime.datetime.now()
-            ).where(RunningInfo.id == 1).execute()
-        else:
-            RunningInfo.insert(
-                id=1,
-                to_run_users=json.dumps(to_run_users),
-                timestamp=datetime.datetime.now()
-            ).execute()
+        r.set("to_run_users", json.dumps(to_run_users))
 
 
 def load_from_run_users(is_shakker=False):
     if is_shakker:
-        query = SRunningInfo.select().where(SRunningInfo.id == 1)
-        if query.exists():
-            info = SRunningInfo.get(SRunningInfo.id == 1)
-            return json.loads(info.to_run_users)
-        else:
-            return []
+        to_run_users = r.get('s_to_run_users')
     else:
-        query = RunningInfo.select().where(RunningInfo.id == 1)
-        if query.exists():
-            info = RunningInfo.get(RunningInfo.id == 1)
-            return json.loads(info.to_run_users)
-        else:
-            return []
-
+        to_run_users = r.get('to_run_users')
+    if to_run_users is not None:
+        return json.loads(to_run_users)
+    else:
+        return []
 
 def save_checkpoints(checkpoints, is_shakker=False):
     if is_shakker:
-        query = SRunningInfo.select().where(SRunningInfo.id == 1)
-        if query.exists():
-            SRunningInfo.update(
-                checkpoints=json.dumps(checkpoints),
-                timestamp=datetime.datetime.now()
-            ).where(SRunningInfo.id == 1).execute()
-        else:
-            SRunningInfo.insert(
-                id=1,
-                checkpoints=json.dumps(checkpoints),
-                timestamp=datetime.datetime.now()
-            ).execute()
+        r.set("s_checkpoints", json.dumps(checkpoints))
     else:
-        query = RunningInfo.select().where(RunningInfo.id == 1)
-        if query.exists():
-            RunningInfo.update(
-                checkpoints=json.dumps(checkpoints),
-                timestamp=datetime.datetime.now()
-            ).where(RunningInfo.id == 1).execute()
-        else:
-            RunningInfo.insert(
-                id=1,
-                checkpoints=json.dumps(checkpoints),
-                timestamp=datetime.datetime.now()
-            ).execute()
+        r.set("checkpoints", json.dumps(checkpoints))
 
 
 def load_from_checkpoints(is_shakker=False):
     if is_shakker:
-        query = SRunningInfo.select().where(SRunningInfo.id == 1)
-        if query.exists():
-            info = SRunningInfo.get(SRunningInfo.id == 1)
-            return json.loads(info.checkpoints)
-        else:
-            return {}
+        checkpoints = r.get('s_checkpoints')
     else:
-        query = RunningInfo.select().where(RunningInfo.id == 1)
-        if query.exists():
-            info = RunningInfo.get(RunningInfo.id == 1)
-            return json.loads(info.checkpoints)
-        else:
-            return {}
+        checkpoints = r.get('checkpoints')
+    if checkpoints is not None:
+        return json.loads(checkpoints)
+    else:
+        return {}
 
 
 def save_to_runcheckpoints(to_runcheckpoints, is_shakker=False):
     if is_shakker:
-        query = SRunningInfo.select().where(SRunningInfo.id == 1)
-        if query.exists():
-            SRunningInfo.update(
-                to_runcheckpoints=json.dumps(to_runcheckpoints),
-                timestamp=datetime.datetime.now()
-            ).where(SRunningInfo.id == 1).execute()
-        else:
-            SRunningInfo.insert(
-                id=1,
-                to_runcheckpoints=json.dumps(to_runcheckpoints),
-                timestamp=datetime.datetime.now()
-            ).execute()
+        r.set('s_to_runcheckpoints', json.dumps(to_runcheckpoints))
     else:
-        query = RunningInfo.select().where(RunningInfo.id == 1)
-        if query.exists():
-            RunningInfo.update(
-                to_runcheckpoints=json.dumps(to_runcheckpoints),
-                timestamp=datetime.datetime.now()
-            ).where(RunningInfo.id == 1).execute()
-        else:
-            RunningInfo.insert(
-                id=1,
-                to_runcheckpoints=json.dumps(to_runcheckpoints),
-                timestamp=datetime.datetime.now()
-            ).execute()
+        r.set('to_runcheckpoints', json.dumps(to_runcheckpoints))
 
 
 def load_from_to_runcheckpoints(is_shakker=False):
     if is_shakker:
-        query = SRunningInfo.select().where(SRunningInfo.id == 1)
-        if query.exists():
-            info = SRunningInfo.get(SRunningInfo.id == 1)
-            return json.loads(info.to_runcheckpoints)
-        else:
-            return []
+        to_run_checkpoints = r.get('s_to_runcheckpoints')
     else:
-        query = RunningInfo.select().where(RunningInfo.id == 1)
-        if query.exists():
-            info = RunningInfo.get(RunningInfo.id == 1)
-            return json.loads(info.to_runcheckpoints)
-        else:
-            return []
+        to_run_checkpoints = r.get('to_runcheckpoints')
+    if to_run_checkpoints is not None:
+        return json.loads(to_run_checkpoints)
+    else:
+        return []
 
 
 def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", usertoken_name="usertoken"):
