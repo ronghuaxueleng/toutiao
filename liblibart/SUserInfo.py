@@ -103,8 +103,10 @@ class SUserInfo(LogInfo):
         ).where(MyModel.isEnable == True, MyModel.modelType == 5, MyModel.vipUsed != 1).execute()
         for model in models:
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
-            user_models.append(json.loads(model.otherInfo))
+            otherInfo = json.loads(model.otherInfo)
+            user_models.append(otherInfo)
             self.user_model_dict[model.user_uuid] = user_models
+            self.model_dict['versionId'] = otherInfo
         checkpointids = [1496861, 1511727]
         self.to_run_checkpointId = 1531927
         if self.uuid == '7d3786acb7364cee97eb754bf5a3d180':
