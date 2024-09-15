@@ -110,16 +110,14 @@ class DownLoadImage(UserInfo):
                 self.getLogger().info(f'删除图片结果：{response.text}')
             for user_uuid, model_list in downloadImageCount.items():
                 for modelId, model in model_list.items():
-                    query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid,
-                                                                   DownLoadImageStatistics.modelId == modelId,
+                    query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.modelId == modelId,
                                                                    DownLoadImageStatistics.day == self.day)
                     if query.exists():
                         downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
                         DownLoadImageStatistics.update(
                             downloadImageCount=downloadImageCount + model['count'],
                             timestamp=datetime.datetime.now()
-                        ).where(DownLoadImageStatistics.user_uuid == user_uuid,
-                                DownLoadImageStatistics.modelId == modelId,
+                        ).where(DownLoadImageStatistics.modelId == modelId,
                                 DownLoadImageStatistics.day == self.day).execute()
                     else:
                         DownLoadImageStatistics.insert(
