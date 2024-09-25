@@ -95,7 +95,10 @@ def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", use
                 for value in values:
                     if value['name'] == usertoken_name:
                         user['usertoken'] = value['value']
-                        user['expirationDate'] = value['expirationDate']
+                        try:
+                            user['expirationDate'] = value['expirationDate']
+                        except Exception as e:
+                            print(e)
                     if value['name'] == 'webid':
                         user['webid'] = value['value']
                     if value['name'] == '_bl_uid':
