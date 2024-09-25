@@ -263,7 +263,7 @@ class LiblibTasks:
                     if percentCompleted == 0:
                         queue_info = image.get_queue_num()
                         if queue_info['code'] == 0:
-                            info = res['data'][0]
+                            info = queue_info['data'][0]
                             queueNum = info['queueNum']
                             totalQueueNum = info['totalQueueNum']
                             image.getLogger().info(f"当前队列：{queueNum}/{totalQueueNum}")
