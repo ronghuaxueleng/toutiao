@@ -259,14 +259,14 @@ class LiblibTasks:
             if res['code'] == 0:
                 percentCompleted = res['data']['percentCompleted']
                 image.getLogger().info(f"nickname：{image.userInfo['nickname']}，{percentCompleted}%.....")
-                if percentCompleted == 0:
-                    queue_info = image.get_queue_num()
-                    if queue_info['code'] == 0:
-                        info = res['data'][0]
-                        queueNum = info['queueNum']
-                        totalQueueNum = info['totalQueueNum']
-                        image.getLogger().info(f"当前队列：{queueNum}/{totalQueueNum}")
-                elif percentCompleted != 100:
+                if percentCompleted != 100:
+                    if percentCompleted == 0:
+                        queue_info = image.get_queue_num()
+                        if queue_info['code'] == 0:
+                            info = res['data'][0]
+                            queueNum = info['queueNum']
+                            totalQueueNum = info['totalQueueNum']
+                            image.getLogger().info(f"当前队列：{queueNum}/{totalQueueNum}")
                     time.sleep(7)
                     get_percent(user, image, image_num, depth + 1)
                 else:
