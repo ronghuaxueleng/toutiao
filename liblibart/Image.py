@@ -180,7 +180,7 @@ class Image(Base):
         headers = copy.deepcopy(self.headers)
         del headers['authority']
         headers['content-type'] = 'application/json'
-        headers['referer'] = f'https://{self.web_host}'
+        headers['referer'] = f'https://{self.web_host}/sd'
         response = requests.request("POST", url, headers=headers, data=payload)
         return json.loads(response.text)
 
@@ -203,6 +203,19 @@ class Image(Base):
         url = f"https://{self.web_host}/gateway/sd-api/generate/progress/msg/{progress_code}"
 
         payload = json.dumps({})
+        response = requests.request("POST", url, headers=headers, data=payload)
+        return json.loads(response.text)
+
+    def get_queue_num(self):
+        url = f"https://{self.web_host}/gateway/sd-api/generate/progress/msg/v3?timestamp={time.time()}"
+        payload = json.dumps({
+            "pageNo": 1,
+            "pageSize": 1,
+            "bizType": "SD"
+        })
+        headers = copy.deepcopy(self.headers)
+        headers['content-type'] = 'application/json'
+        headers['referer'] = f'https://{self.web_host}/sd'
         response = requests.request("POST", url, headers=headers, data=payload)
         return json.loads(response.text)
 
