@@ -206,7 +206,7 @@ class Image(Base):
         response = requests.request("POST", url, headers=headers, data=payload)
         return json.loads(response.text)
 
-    def get_queue_num(self):
+    def get_queue_num(self, frontId):
         url = f"https://{self.web_host}/gateway/sd-api/generate/progress/msg/v3?timestamp={time.time()}"
         payload = json.dumps({
             "pageNo": 1,
@@ -214,6 +214,7 @@ class Image(Base):
             "bizType": "SD"
         })
         headers = copy.deepcopy(self.headers)
+        headers['webid'] = frontId
         headers['content-type'] = 'application/json'
         headers['referer'] = f'https://{self.web_host}/sd'
         response = requests.request("POST", url, headers=headers, data=payload)
