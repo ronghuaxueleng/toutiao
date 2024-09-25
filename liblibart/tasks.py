@@ -261,7 +261,9 @@ class LiblibTasks:
                 image.getLogger().info(f"nickname：{image.userInfo['nickname']}，{percentCompleted}%.....")
                 if percentCompleted != 100:
                     if percentCompleted == 0:
-                        queue_info = image.get_queue_num()
+                        frontCustomerReq = res['data']['frontCustomerReq']
+                        frontId = frontCustomerReq['frontId']
+                        queue_info = image.get_queue_num(frontId)
                         if queue_info['code'] == 0:
                             info = queue_info['data'][0]
                             queueNum = info['queueNum']
