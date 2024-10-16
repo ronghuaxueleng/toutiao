@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*
+import base64
 import calendar
 import datetime
 import json
@@ -9,7 +10,8 @@ from flask import Flask, jsonify, request
 from flask import render_template
 from peewee import fn
 
-from app.liblibLogin import LiblibLogin
+from app.liblibQQLogin import liblibQQLogin
+from app.liblibWXLogin import LiblibwxLogin
 from run_task import profit_detail
 from db.toutiao_jisu import Account, CommonParams
 from liblibart.UserInfo import Account as LiblibAccount
@@ -225,7 +227,7 @@ def getLastShakker():
 @app.route('/wx-qrcode')
 def wxQrcodeShow():
     id = request.args["id"]
-    login = LiblibLogin()
+    login = LiblibwxLogin()
     login.get_qrcode()
     ticket = login.ticket
     qrCodeUrl = login.qrCodeUrl
@@ -242,6 +244,32 @@ def wxQrcodeCheck():
     id = request.args["id"]
     ticket = request.args["ticket"]
     starttime = request.args["starttime"]
-    login = LiblibLogin(starttime)
+    login = LiblibwxLogin(starttime)
     login.qrcode(ticket, id)
+    return 'ok'
+
+
+@app.route('/qq-qrcode')
+def qqQrcodeShow():
+    id = request.args["id"]
+    login = liblibQQLogin()
+    qr = login.qrShow()
+    qrsig = login.sess.cookies.get_dict().get('qrsig', '')
+    login_sig = login.sess.cookies.get_dict().get('pt_login_sig', '')
+    return render_template('qqQrcode.html',
+                           id=id,
+                           qrsig=qrsig,
+                           login_sig=login_sig,
+                           img_stream=base64.b64encode(qr.content).decode('utf-8'),
+                           )
+
+
+@app.route('/qq-qrcode-check', methods=['POST'])
+def qqQrcodeCheck():
+    data = request.form
+    id = data.get('id')
+    qrsig = data.get('qrsig')
+    login_sig = data.get('login_sig')
+    login = liblibQQLogin()
+    login.qrLogin(id, qrsig, login_sig)
     return 'ok'

