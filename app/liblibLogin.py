@@ -91,7 +91,7 @@ class LiblibLogin:
     def get_cookies(self, usertoken, webid):
         cookies = [
             {
-                "domain": ".www.liblib.art",
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
                 "hostOnly": False,
                 "httpOnly": False,
                 "name": "usertoken",
@@ -103,7 +103,7 @@ class LiblibLogin:
                 "value": usertoken
             },
             {
-                "domain": ".www.liblib.art",
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
                 "hostOnly": False,
                 "httpOnly": False,
                 "name": "webid",
