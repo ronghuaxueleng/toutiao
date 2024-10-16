@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*
-import base64
 import calendar
 import datetime
 import json
 import time
-from io import BytesIO
 from urllib.parse import urlencode
 
 from flask import Flask, jsonify, request
@@ -226,11 +224,13 @@ def getLastShakker():
 
 @app.route('/wx-qrcode')
 def wxQrcodeShow():
+    id = request.args["id"]
     login = LiblibLogin()
     login.get_qrcode()
     ticket = login.ticket
     qrCodeUrl = login.qrCodeUrl
     return render_template('qrcode.html',
+                           id=id,
                            qrCodeUrl=qrCodeUrl,
                            ticket=ticket,
                            starttime=int(time.time())
@@ -239,8 +239,9 @@ def wxQrcodeShow():
 
 @app.route('/wx-qrcode-check')
 def wxQrcodeCheck():
+    id = request.args["id"]
     ticket = request.args["ticket"]
     starttime = request.args["starttime"]
     login = LiblibLogin(starttime)
-    login.qrcode(ticket)
+    login.qrcode(ticket, id)
     return 'ok'

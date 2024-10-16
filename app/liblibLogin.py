@@ -6,6 +6,8 @@ import time
 
 import requests
 
+from liblibart.ql import ql_env
+
 
 class LiblibLogin:
     def __init__(self, starttime=None):
@@ -43,7 +45,7 @@ class LiblibLogin:
         self.qrCodeUrl = data['qrCodeUrl']
         return res['data']
 
-    def qrcode(self, ticket):
+    def qrcode(self, ticket, id=None):
         headers = copy.deepcopy(self.headers)
         headers['content-type'] = 'application/json'
         while int(time.time()) - int(self.starttime) < self.expireSeconds:
@@ -61,10 +63,56 @@ class LiblibLogin:
             res = json.loads(response.text)
             data = res['data']
             if data is not None:
+                token = data['userToken']
+                if id is None:
+                    headers['token'] = token
+                    headers['content-type'] = 'application/x-www-form-urlencoded'
+                    url = str(base64.b64decode("aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L3VzZXIvZ2V0VXNlckluZm8/dGltZXN0YW1wPQ=="), 'utf-8') + str(int(time.time()))
+                    response = requests.request("POST", url, headers=headers, data={})
+                    res = json.loads(response.text)
+                    data = res['data']
+                    nickname = data['nickname']
                 cookies = headers['cookie']
                 cookies = dict([l.split("=", 1) for l in cookies.split("; ")])
-                cookies['usertoken'] = data['userToken']
+                cookies['usertoken'] = token
                 cookies['webid'] = '1729047875238gwboidea'
+                value = self.get_cookies(cookies['usertoken'], cookies['webid'])
+                if id is not None:
+                    info = ql_env.get_by_id(id)
+                    if info['code'] == 200:
+                        data = info['data']
+                        name = data['name']
+                        remarks = data['remarks']
+                        ql_env.update(value, name, id, remarks)
                 return 'ok'
             time.sleep(2)
         return 'fail'
+
+    def get_cookies(self, usertoken, webid):
+        cookies = [
+            {
+                "domain": ".www.liblib.art",
+                "hostOnly": False,
+                "httpOnly": False,
+                "name": "usertoken",
+                "path": "/",
+                "sameSite": None,
+                "secure": False,
+                "session": True,
+                "storeId": None,
+                "value": usertoken
+            },
+            {
+                "domain": ".www.liblib.art",
+                "hostOnly": False,
+                "httpOnly": False,
+                "name": "webid",
+                "path": "/",
+                "sameSite": None,
+                "secure": False,
+                "session": True,
+                "storeId": None,
+                "value": webid
+            }
+        ]
+        return json.dumps(cookies, ensure_ascii=False, indent=4)
