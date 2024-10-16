@@ -84,6 +84,7 @@ class LiblibLogin:
                         name = data['name']
                         remarks = data['remarks']
                         ql_env.update(value, name, id, remarks)
+                        ql_env.enable([id])
                 return 'ok'
             time.sleep(2)
         return 'fail'
