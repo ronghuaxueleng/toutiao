@@ -274,5 +274,5 @@ def qqQrcodeCheck():
     login_sig = data.get('login_sig')
     session_id = data.get('session_id')
     login = liblibQQLogin(session_id)
-    login.qrLogin(id, qrsig, login_sig)
+    login.qrLogin(qrsig, login_sig, id)
     return 'ok'

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import json
 import re
 import time
 import uuid
@@ -8,11 +9,13 @@ from urllib.parse import urlencode
 
 import requests
 
+from liblibart.ql import ql_env
+
 sourceURL = "https://graph.qq.com/oauth2.0/login_jump"
 
 sessionMap = {}
 
-pattern = re.compile("ptuiCB\('(?P<status>.*?)','(.*?)','(?P<url>.*?)','(?P<title>.*?),'(.*?), '(.*?)'\);?")
+pattern = re.compile("ptuiCB\('(?P<status>.*?)','(.*?)','(?P<url>.*?)','(?P<title>.*?),'(?P<nikename>.*?), '(.*?)'\);?")
 
 class liblibQQLogin:
     def __init__(self, session_id=None):
@@ -49,6 +52,35 @@ class liblibQQLogin:
             h += (h << 5) + ord(s)
 
         return h & 2147483647
+
+    def get_cookies(self, usertoken, webid):
+        cookies = [
+            {
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "hostOnly": False,
+                "httpOnly": False,
+                "name": "usertoken",
+                "path": "/",
+                "sameSite": None,
+                "secure": False,
+                "session": True,
+                "storeId": None,
+                "value": usertoken
+            },
+            {
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "hostOnly": False,
+                "httpOnly": False,
+                "name": "webid",
+                "path": "/",
+                "sameSite": None,
+                "secure": False,
+                "session": True,
+                "storeId": None,
+                "value": webid
+            }
+        ]
+        return json.dumps(cookies, ensure_ascii=False, indent=4)
 
     def qrShow(self):
         url = 'https://xui.ptlogin2.qq.com/cgi-bin/xlogin'
@@ -89,7 +121,7 @@ class liblibQQLogin:
         resp = self.sess.get(url, params=params, timeout=1000)
         return resp
 
-    def qrLogin(self, id, qrsig, login_sig):
+    def qrLogin(self, qrsig, login_sig, id=None):
         while True:
             url = 'https://ssl.ptlogin2.qq.com/ptqrlogin'
             params = {
@@ -117,6 +149,7 @@ class liblibQQLogin:
             if checked is not None:
                 url = checked.group('url')
                 status = checked.group('status')
+                nikename = checked.group('nikename')
                 if status == '0' and url != '':
                     self.sess.get(url, timeout=1000, allow_redirects=True)
                     url = "https://graph.qq.com/oauth2.0/login_jump"
@@ -137,8 +170,18 @@ class liblibQQLogin:
                         'auth_time': int(time.time() * 1000),
                         'ui': '3D5C88EA-A27B-4D14-9A7A-A7804716337E'
                     }
-                    res = self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
-                    print(res.text)
+                    self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
+                    p_uin = self.sess.cookies.get_dict().get('p_uin', '')
+                    webid = self.sess.cookies.get_dict().get('webid', '')
                     usertoken = self.sess.cookies.get_dict().get('usertoken', '')
+                    value = self.get_cookies(usertoken, webid)
+                    if id is not None and id != "":
+                        info = ql_env.get_by_id(id)
+                        if info['code'] == 200:
+                            data = info['data']
+                            name = data['name']
+                            remarks = data['remarks']
+                            ql_env.update(value, name, id, remarks)
+                            ql_env.enable([id])
                     break
             time.sleep(2)
