@@ -94,5 +94,5 @@ class liblibQQLogin:
                 "pt_js_version": "v1.57.0"
             }
             res = self.sess.get(url, params=params, timeout=1000)
-            print(res)
+            print(res.text)
             time.sleep(2)

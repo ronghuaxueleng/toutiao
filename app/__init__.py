@@ -226,7 +226,7 @@ def getLastShakker():
 
 @app.route('/wx-qrcode')
 def wxQrcodeShow():
-    id = request.args["id"]
+    id = request.args.get("id")
     login = LiblibwxLogin()
     login.get_qrcode()
     ticket = login.ticket
@@ -241,9 +241,9 @@ def wxQrcodeShow():
 
 @app.route('/wx-qrcode-check')
 def wxQrcodeCheck():
-    id = request.args["id"]
-    ticket = request.args["ticket"]
-    starttime = request.args["starttime"]
+    id = request.args.get("id")
+    ticket = request.args.get("ticket")
+    starttime = request.args.get("starttime")
     login = LiblibwxLogin(starttime)
     login.qrcode(ticket, id)
     return 'ok'
@@ -251,7 +251,7 @@ def wxQrcodeCheck():
 
 @app.route('/qq-qrcode')
 def qqQrcodeShow():
-    id = request.args["id"]
+    id = request.args.get("id")
     login = liblibQQLogin()
     qr = login.qrShow()
     qrsig = login.sess.cookies.get_dict().get('qrsig', '')
