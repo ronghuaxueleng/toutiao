@@ -10,6 +10,7 @@ sourceURL = "https://graph.qq.com/oauth2.0/login_jump"
 
 sessionMap = {}
 
+pattern = re.compile("ptuiCB\('(?P<status>.*?)','(.*?)','(?P<url>.*?)','(?P<title>.*?),'(.*?), '(.*?)'\);?")
 
 class liblibQQLogin:
     def __init__(self, session_id=None):
@@ -102,6 +103,8 @@ class liblibQQLogin:
                 "pt_js_version": "v1.57.0"
             }
             res = self.sess.get(url, params=params, timeout=1000)
-            print(res)
-            print(res.text)
+            checked = pattern.search(res.text)
+            if checked is not None:
+                url = checked.group('url')
+                res = self.sess.get(url, timeout=1000)
             time.sleep(2)
