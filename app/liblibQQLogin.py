@@ -137,7 +137,7 @@ class liblibQQLogin:
                         'auth_time': int(time.time() * 1000),
                         'ui': '3D5C88EA-A27B-4D14-9A7A-A7804716337E'
                     }
-                    self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
+                    res = self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
                     print(res.text)
                     break
             time.sleep(2)
