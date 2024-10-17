@@ -17,6 +17,7 @@ sessionMap = {}
 
 pattern = re.compile("ptuiCB\('(?P<status>.*?)','(.*?)','(?P<url>.*?)','(?P<title>.*?),'(?P<nikename>.*?), '(.*?)'\);?")
 
+
 class liblibQQLogin:
     def __init__(self, session_id=None):
         self.sess = None
@@ -28,6 +29,8 @@ class liblibQQLogin:
         else:
             self.session_id = session_id
             self.sess = sessionMap[self.session_id]
+        self.expireSeconds = 120
+        self.starttime = int(time.time())
 
     def newSession(self):
         self.sess = requests.Session()
@@ -122,7 +125,7 @@ class liblibQQLogin:
         return resp
 
     def qrLogin(self, qrsig, login_sig, id=None):
-        while True:
+        while int(time.time()) - int(self.starttime) < self.expireSeconds:
             url = 'https://ssl.ptlogin2.qq.com/ptqrlogin'
             params = {
                 "u1": sourceURL,
@@ -185,3 +188,4 @@ class liblibQQLogin:
                             ql_env.enable([id])
                     break
             time.sleep(2)
+        del sessionMap[self.session_id]
