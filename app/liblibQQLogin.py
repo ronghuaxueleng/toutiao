@@ -1,18 +1,27 @@
 # -*- coding: utf-8 -*-
 import re
 import time
+import uuid
 from random import random
-
 
 import requests
 
 sourceURL = "https://graph.qq.com/oauth2.0/login_jump"
 
+sessionMap = {}
+
 
 class liblibQQLogin:
-    def __init__(self):
+    def __init__(self, session_id=None):
+        self.sess = None
         self.js_ver = '24091915'
-        self.newSession()
+        if session_id is None:
+            self.newSession()
+            self.session_id = str(uuid.uuid1())
+            sessionMap[self.session_id] = self.sess
+        else:
+            self.session_id = session_id
+            self.sess = sessionMap[self.session_id]
 
     def newSession(self):
         self.sess = requests.Session()
@@ -31,7 +40,6 @@ class liblibQQLogin:
         return str(qrtoken)
 
     def qrShow(self):
-        self.newSession()
         url = 'https://xui.ptlogin2.qq.com/cgi-bin/xlogin'
         params = {
             "appid": 716027609,
@@ -94,5 +102,6 @@ class liblibQQLogin:
                 "pt_js_version": "v1.57.0"
             }
             res = self.sess.get(url, params=params, timeout=1000)
+            print(res)
             print(res.text)
             time.sleep(2)

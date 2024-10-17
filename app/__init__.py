@@ -254,12 +254,14 @@ def qqQrcodeShow():
     id = request.args.get("id")
     login = liblibQQLogin()
     qr = login.qrShow()
+    session_id = login.session_id
     qrsig = login.sess.cookies.get_dict().get('qrsig', '')
     login_sig = login.sess.cookies.get_dict().get('pt_login_sig', '')
     return render_template('qqQrcode.html',
                            id=id,
                            qrsig=qrsig,
                            login_sig=login_sig,
+                           session_id=session_id,
                            img_stream=base64.b64encode(qr.content).decode('utf-8'),
                            )
 
@@ -270,6 +272,7 @@ def qqQrcodeCheck():
     id = data.get('id')
     qrsig = data.get('qrsig')
     login_sig = data.get('login_sig')
-    login = liblibQQLogin()
+    session_id = data.get('session_id')
+    login = liblibQQLogin(session_id)
     login.qrLogin(id, qrsig, login_sig)
     return 'ok'
