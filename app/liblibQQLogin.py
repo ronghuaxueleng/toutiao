@@ -106,5 +106,9 @@ class liblibQQLogin:
             checked = pattern.search(res.text)
             if checked is not None:
                 url = checked.group('url')
-                res = self.sess.get(url, timeout=1000)
+                status = checked.group('status')
+                if status == '0' and url != '':
+                    res = self.sess.get(url, timeout=1000)
+                    print(res.text)
+                    break
             time.sleep(2)
