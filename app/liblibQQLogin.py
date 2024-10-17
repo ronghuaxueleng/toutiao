@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import base64
 import re
 import time
 import uuid
 from random import random
+from urllib.parse import urlencode
 
 import requests
 
@@ -39,6 +41,14 @@ class liblibQQLogin:
             e += (e << 5) + ord(qrsig[i])
         qrtoken = (e & 2147483647)
         return str(qrtoken)
+
+    def get_g_tk(self, p_skey):
+        h = 5381
+
+        for s in p_skey:
+            h += (h << 5) + ord(s)
+
+        return h & 2147483647
 
     def qrShow(self):
         url = 'https://xui.ptlogin2.qq.com/cgi-bin/xlogin'
@@ -108,7 +118,26 @@ class liblibQQLogin:
                 url = checked.group('url')
                 status = checked.group('status')
                 if status == '0' and url != '':
-                    res = self.sess.get(url, timeout=1000)
+                    self.sess.get(url, timeout=1000, allow_redirects=True)
+                    url = "https://graph.qq.com/oauth2.0/login_jump"
+                    self.sess.get(url, timeout=1000, allow_redirects=True)
+                    url = "https://graph.qq.com/oauth2.0/authorize"
+                    data_dict = {
+                        'response_type': 'code',
+                        'client_id': '102049234',
+                        'redirect_uri': f"{str(base64.b64decode('aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L2xvZ2luL2xvZ2luQnlRUUFuZFJlZGlyZWN0'), 'utf-8')}?cid=1729157068424hgnvpkyw&platform=undefined",
+                        'scope': '',
+                        'state': '',
+                        'switch': '',
+                        'from_ptlogin': '1',
+                        'src': '1',
+                        'update_auth': '1',
+                        'openapi': '1010',
+                        'g_tk': self.get_g_tk(self.sess.cookies.get_dict().get('p_skey', '')),
+                        'auth_time': int(time.time() * 1000),
+                        'ui': '3D5C88EA-A27B-4D14-9A7A-A7804716337E'
+                    }
+                    self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
                     print(res.text)
                     break
             time.sleep(2)
