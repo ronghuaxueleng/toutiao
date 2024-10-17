@@ -6,7 +6,7 @@ import json
 import time
 from urllib.parse import urlencode
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask import render_template
 from peewee import fn
 
@@ -253,7 +253,7 @@ def wxQrcodeCheck():
 def qqQrcodeShow():
     id = request.args.get("id")
     login = liblibQQLogin()
-    qr = login.qrShow()
+    img = login.qrShow()
     session_id = login.session_id
     qrsig = login.sess.cookies.get_dict().get('qrsig', '')
     login_sig = login.sess.cookies.get_dict().get('pt_login_sig', '')
@@ -262,7 +262,8 @@ def qqQrcodeShow():
                            qrsig=qrsig,
                            login_sig=login_sig,
                            session_id=session_id,
-                           img_stream=base64.b64encode(qr.content).decode('utf-8'),
+                           # img_stream=base64.b64encode(img.content).decode('utf-8'),
+                           img_url=img
                            )
 
 
@@ -271,8 +272,16 @@ def qqQrcodeCheck():
     data = request.form
     id = data.get('id')
     qrsig = data.get('qrsig')
+    img_url = data.get('img_url')
     login_sig = data.get('login_sig')
     session_id = data.get('session_id')
     login = liblibQQLogin(session_id)
-    login.qrLogin(qrsig, login_sig, id)
+    login.qrLogin(qrsig, login_sig, img_url, id)
     return 'ok'
+
+
+@app.route("/api/pic/<file_name>", methods=['GET'])
+def get_img(file_name):
+    path = f'/mitmproxy/logs/{file_name}'
+    resp = Response(open(path, 'rb'), mimetype="image/jpeg")
+    return resp

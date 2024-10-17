@@ -6,7 +6,8 @@
     <script src="../static/js/jquery.js"></script>
 </head>
 <body>
-<img src="data:;base64,{{ img_stream }}">
+<!--<img src="data:;base64,{{ img_stream }}">-->
+<img src="/api/pic/{{ img_url }}">
 </body>
 <script type="application/javascript">
     window.onload = function () {
@@ -14,7 +15,8 @@
             "id": "{{ id }}",
             "qrsig": "{{ qrsig }}",
             "session_id": "{{ session_id }}",
-            "login_sig": "{{ login_sig }}"
+            "login_sig": "{{ login_sig }}",
+            "img_url": "{{ img_url }}"
         })
     }
 </script>

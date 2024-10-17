@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 import json
+import os
 import re
 import time
 import uuid
@@ -122,9 +123,13 @@ class liblibQQLogin:
             "u1": sourceURL
         }
         resp = self.sess.get(url, params=params, timeout=1000)
-        return resp
+        file_name = f'{time.strftime("%Y%m%d%H%M%S")}.jpg'
+        path = f'/mitmproxy/logs/{file_name}'
+        with open(path, 'wb') as f:
+            f.write(resp.content)
+        return file_name
 
-    def qrLogin(self, qrsig, login_sig, id=None):
+    def qrLogin(self, qrsig, login_sig, file_name, id=None):
         while int(time.time()) - int(self.starttime) < self.expireSeconds:
             url = 'https://ssl.ptlogin2.qq.com/ptqrlogin'
             params = {
@@ -189,3 +194,6 @@ class liblibQQLogin:
                     break
             time.sleep(2)
         del sessionMap[self.session_id]
+        path = f'/mitmproxy/logs/{file_name}'
+        os.remove(path)
+
