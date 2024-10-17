@@ -139,6 +139,6 @@ class liblibQQLogin:
                     }
                     res = self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
                     print(res.text)
-                    usertoken = self.get_g_tk(self.sess.cookies.get_dict().get('usertoken', ''))
+                    usertoken = self.sess.cookies.get_dict().get('usertoken', '')
                     break
             time.sleep(2)
