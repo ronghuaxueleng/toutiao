@@ -130,70 +130,77 @@ class liblibQQLogin:
         return file_name
 
     def qrLogin(self, qrsig, login_sig, file_name, id=None):
-        while int(time.time()) - int(self.starttime) < self.expireSeconds:
-            url = 'https://ssl.ptlogin2.qq.com/ptqrlogin'
-            params = {
-                "u1": sourceURL,
-                "ptqrtoken": self.genQRToken(qrsig),
-                "ptredirect": 0,
-                "h": 1,
-                "t": 1,
-                "g": 1,
-                "from_ui": 1,
-                "ptlang": 2052,
-                "action": '0-0-%d' % (time.time() * 1000),
-                "js_ver": self.js_ver,
-                "js_type": 1,
-                "login_sig": login_sig,
-                "pt_uistyle": 40,
-                "aid": 716027609,
-                "daid": 383,
-                "pt_3rd_aid": 102049234,
-                "o1vId": "531f114a7808a5cfef819c6f7a04c98d",
-                "pt_js_version": "v1.57.0"
-            }
-            res = self.sess.get(url, params=params, timeout=1000)
-            checked = pattern.search(res.text)
-            if checked is not None:
-                url = checked.group('url')
-                status = checked.group('status')
-                nikename = checked.group('nikename')
-                if status == '0' and url != '':
-                    self.sess.get(url, timeout=1000, allow_redirects=True)
-                    url = "https://graph.qq.com/oauth2.0/login_jump"
-                    self.sess.get(url, timeout=1000, allow_redirects=True)
-                    url = "https://graph.qq.com/oauth2.0/authorize"
-                    data_dict = {
-                        'response_type': 'code',
-                        'client_id': '102049234',
-                        'redirect_uri': f"{str(base64.b64decode('aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L2xvZ2luL2xvZ2luQnlRUUFuZFJlZGlyZWN0'), 'utf-8')}?cid=1729157068424hgnvpkyw&platform=undefined",
-                        'scope': '',
-                        'state': '',
-                        'switch': '',
-                        'from_ptlogin': '1',
-                        'src': '1',
-                        'update_auth': '1',
-                        'openapi': '1010',
-                        'g_tk': self.get_g_tk(self.sess.cookies.get_dict().get('p_skey', '')),
-                        'auth_time': int(time.time() * 1000),
-                        'ui': '3D5C88EA-A27B-4D14-9A7A-A7804716337E'
-                    }
-                    self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
-                    p_uin = self.sess.cookies.get_dict().get('p_uin', '')
-                    webid = self.sess.cookies.get_dict().get('webid', '')
-                    usertoken = self.sess.cookies.get_dict().get('usertoken', '')
-                    value = self.get_cookies(usertoken, webid)
-                    if id is not None and id != "":
-                        info = ql_env.get_by_id(id)
-                        if info['code'] == 200:
-                            data = info['data']
-                            name = data['name']
-                            remarks = data['remarks']
-                            ql_env.update(value, name, id, remarks)
-                            ql_env.enable([id])
-                    break
-            time.sleep(2)
-        del sessionMap[self.session_id]
-        path = f'/mitmproxy/logs/{file_name}'
-        os.remove(path)
+        try:
+            while int(time.time()) - int(self.starttime) < self.expireSeconds:
+                url = 'https://ssl.ptlogin2.qq.com/ptqrlogin'
+                params = {
+                    "u1": sourceURL,
+                    "ptqrtoken": self.genQRToken(qrsig),
+                    "ptredirect": 0,
+                    "h": 1,
+                    "t": 1,
+                    "g": 1,
+                    "from_ui": 1,
+                    "ptlang": 2052,
+                    "action": '0-0-%d' % (time.time() * 1000),
+                    "js_ver": self.js_ver,
+                    "js_type": 1,
+                    "login_sig": login_sig,
+                    "pt_uistyle": 40,
+                    "aid": 716027609,
+                    "daid": 383,
+                    "pt_3rd_aid": 102049234,
+                    "o1vId": "531f114a7808a5cfef819c6f7a04c98d",
+                    "pt_js_version": "v1.57.0"
+                }
+                res = self.sess.get(url, params=params, timeout=1000)
+                checked = pattern.search(res.text)
+                if checked is not None:
+                    url = checked.group('url')
+                    status = checked.group('status')
+                    nikename = checked.group('nikename')
+                    if status == '0' and url != '':
+                        self.sess.get(url, timeout=1000, allow_redirects=True)
+                        url = "https://graph.qq.com/oauth2.0/login_jump"
+                        self.sess.get(url, timeout=1000, allow_redirects=True)
+                        url = "https://graph.qq.com/oauth2.0/authorize"
+                        data_dict = {
+                            'response_type': 'code',
+                            'client_id': '102049234',
+                            'redirect_uri': f"{str(base64.b64decode('aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L2xvZ2luL2xvZ2luQnlRUUFuZFJlZGlyZWN0'), 'utf-8')}?cid=1729157068424hgnvpkyw&platform=undefined",
+                            'scope': '',
+                            'state': '',
+                            'switch': '',
+                            'from_ptlogin': '1',
+                            'src': '1',
+                            'update_auth': '1',
+                            'openapi': '1010',
+                            'g_tk': self.get_g_tk(self.sess.cookies.get_dict().get('p_skey', '')),
+                            'auth_time': int(time.time() * 1000),
+                            'ui': '3D5C88EA-A27B-4D14-9A7A-A7804716337E'
+                        }
+                        self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
+                        p_uin = self.sess.cookies.get_dict().get('p_uin', '')
+                        webid = self.sess.cookies.get_dict().get('webid', '')
+                        usertoken = self.sess.cookies.get_dict().get('usertoken', '')
+                        value = self.get_cookies(usertoken, webid)
+                        if id is not None and id != "":
+                            info = ql_env.get_by_id(id)
+                            if info['code'] == 200:
+                                data = info['data']
+                                name = data['name']
+                                remarks = data['remarks']
+                                ql_env.update(value, name, id, remarks)
+                                ql_env.enable([id])
+                        break
+                time.sleep(2)
+        except Exception as e:
+            print(e)
+        finally:
+            try:
+                del sessionMap[self.session_id]
+                path = f'/mitmproxy/logs/{file_name}'
+                os.remove(path)
+            except Exception as e:
+                pass
 
