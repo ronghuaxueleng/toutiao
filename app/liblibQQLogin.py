@@ -141,11 +141,12 @@ class liblibQQLogin:
             "u1": sourceURL
         }
         resp = self.sess.get(url, params=params, timeout=1000)
-        file_name = f'{time.strftime("%Y%m%d%H%M%S")}.jpg'
-        path = f'/mitmproxy/logs/{file_name}'
-        with open(path, 'wb') as f:
-            f.write(resp.content)
-        return file_name
+        return resp
+        # file_name = f'{time.strftime("%Y%m%d%H%M%S")}.jpg'
+        # path = f'/mitmproxy/logs/{file_name}'
+        # with open(path, 'wb') as f:
+        #     f.write(resp.content)
+        # return file_name
 
     def qrLogin(self, qrsig, login_sig, file_name, id=None):
         try:
