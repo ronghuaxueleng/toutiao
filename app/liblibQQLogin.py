@@ -3,12 +3,15 @@ import base64
 import json
 import os
 import re
+import subprocess
 import time
 import traceback
 import uuid
+from functools import partial
 from random import random
 from urllib.parse import urlencode
-
+subprocess.Popen = partial(subprocess.Popen, encoding="utf-8")
+import execjs
 import requests
 
 from liblibart.ql import ql_env
@@ -87,6 +90,14 @@ class liblibQQLogin:
         ]
         return json.dumps(cookies, ensure_ascii=False, indent=4)
 
+    def ptuiCB(self, call_str):
+        fun_def = """
+        function ptuiCB(status, b, url, d, msg, nickname) {
+            return {'status' : status, 'url' : url, 'msg' : msg, 'nickname' : nickname}
+        }
+        return """
+        return execjs.compile(fun_def + call_str).call("")
+
     def qrShow(self):
         url = 'https://xui.ptlogin2.qq.com/cgi-bin/xlogin'
         params = {
@@ -155,57 +166,55 @@ class liblibQQLogin:
                     "pt_js_version": "v1.57.0"
                 }
                 res = self.sess.get(url, params=params, timeout=1000)
-                checked = pattern.search(res.text)
-                if checked is not None:
-                    url = checked.group('url')
-                    status = checked.group('status')
-                    nikename = checked.group('nikename')
-                    if status == '0' and url != '':
-                        self.sess.get(url, timeout=1000, allow_redirects=True)
-                        url = "https://graph.qq.com/oauth2.0/login_jump"
-                        self.sess.get(url, timeout=1000, allow_redirects=True)
-                        url = "https://graph.qq.com/oauth2.0/authorize"
-                        data_dict = {
-                            'response_type': 'code',
-                            'client_id': '102049234',
-                            'redirect_uri': f"{str(base64.b64decode('aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L2xvZ2luL2xvZ2luQnlRUUFuZFJlZGlyZWN0'), 'utf-8')}?cid=1729157068424hgnvpkyw&platform=undefined",
-                            'scope': '',
-                            'state': '',
-                            'switch': '',
-                            'from_ptlogin': '1',
-                            'src': '1',
-                            'update_auth': '1',
-                            'openapi': '1010',
-                            'g_tk': self.get_g_tk(self.sess.cookies.get_dict().get('p_skey', '')),
-                            'auth_time': int(time.time() * 1000),
-                            'ui': '3D5C88EA-A27B-4D14-9A7A-A7804716337E'
-                        }
-                        self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
-                        p_uin = self.sess.cookies.get_dict().get('p_uin', '')
-                        webid = self.sess.cookies.get_dict().get('webid', '')
-                        usertoken = self.sess.cookies.get_dict().get('usertoken', '')
-                        value = self.get_cookies(usertoken, webid)
-                        if id is not None and id != "" and id != "None":
-                            info = ql_env.get_by_id(id)
-                            if info['code'] == 200:
-                                data = info['data']
-                                name = data['name']
-                                remarks = data['remarks']
-                                ql_env.update(value, name, id, remarks)
-                                ql_env.enable([id])
+                _poll_res = self.ptuiCB(res.text)
+                status = _poll_res.get('status')
+                url = _poll_res.get('url')
+                nickname = _poll_res.get('nickname')
+                if status == '0' and url != '':
+                    self.sess.get(url, timeout=1000, allow_redirects=True)
+                    url = "https://graph.qq.com/oauth2.0/login_jump"
+                    self.sess.get(url, timeout=1000, allow_redirects=True)
+                    url = "https://graph.qq.com/oauth2.0/authorize"
+                    data_dict = {
+                        'response_type': 'code',
+                        'client_id': '102049234',
+                        'redirect_uri': f"{str(base64.b64decode('aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L2xvZ2luL2xvZ2luQnlRUUFuZFJlZGlyZWN0'), 'utf-8')}?cid=1729157068424hgnvpkyw&platform=undefined",
+                        'scope': '',
+                        'state': '',
+                        'switch': '',
+                        'from_ptlogin': '1',
+                        'src': '1',
+                        'update_auth': '1',
+                        'openapi': '1010',
+                        'g_tk': self.get_g_tk(self.sess.cookies.get_dict().get('p_skey', '')),
+                        'auth_time': int(time.time() * 1000),
+                        'ui': '3D5C88EA-A27B-4D14-9A7A-A7804716337E'
+                    }
+                    self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
+                    p_uin = self.sess.cookies.get_dict().get('p_uin', '')
+                    webid = self.sess.cookies.get_dict().get('webid', '')
+                    usertoken = self.sess.cookies.get_dict().get('usertoken', '')
+                    value = self.get_cookies(usertoken, webid)
+                    if id is not None and id != "" and id != "None":
+                        info = ql_env.get_by_id(id)
+                        if info['code'] == 200:
+                            data = info['data']
+                            name = data['name']
+                            remarks = data['remarks']
+                            ql_env.update(value, name, id, remarks)
+                            ql_env.enable([id])
+                    else:
+                        name = 'liblib_cookie'
+                        remarks = f'qq-{p_uin}-{nickname}'
+                        res = ql_env.search(remarks)
+                        if len(res) > 0:
+                            info = res[0]
+                            id = info['id']
+                            ql_env.update(value, name, id, remarks)
+                            ql_env.enable([id])
                         else:
-                            name = 'liblib_cookie'
-                            remarks = f'qq-{p_uin}-{nikename}'
-                            res = ql_env.search(remarks)
-                            data = res['data']
-                            if len(data) > 0:
-                                info = data[0]
-                                id = info['id']
-                                ql_env.update(value, name, id, remarks)
-                                ql_env.enable([id])
-                            else:
-                                ql_env.add(name, value, remarks)
-                        break
+                            ql_env.add(name, value, remarks)
+                    break
                 time.sleep(2)
         except Exception as e:
             print(traceback.format_exc())
