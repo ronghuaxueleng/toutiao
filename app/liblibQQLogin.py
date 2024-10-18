@@ -10,8 +10,7 @@ import uuid
 from functools import partial
 from random import random
 from urllib.parse import urlencode
-subprocess.Popen = partial(subprocess.Popen, encoding="utf-8")
-import execjs
+
 import requests
 
 from liblibart.ql import ql_env
@@ -20,8 +19,7 @@ sourceURL = "https://graph.qq.com/oauth2.0/login_jump"
 
 sessionMap = {}
 
-pattern = re.compile("ptuiCB\('(?P<status>.*?)','(.*?)','(?P<url>.*?)','(?P<title>.*?),'(?P<nikename>.*?), '(.*?)'\);?")
-
+pattern = re.compile("ptuiCB\('(?P<status>.*?)',(\s+)?'(.*?)',(\s+)?'(?P<url>.*?)',(\s+)?'(.*?)',(\s+)?'(?P<title>.*?)',(\s+)?'(?P<nickname>.*?)'(,(\s+)?(.*?)'\))?;?")
 
 class liblibQQLogin:
     def __init__(self, session_id=None):
@@ -91,12 +89,13 @@ class liblibQQLogin:
         return json.dumps(cookies, ensure_ascii=False, indent=4)
 
     def ptuiCB(self, call_str):
-        fun_def = """
-        function ptuiCB(status, b, url, d, msg, nickname) {
-            return {'status' : status, 'url' : url, 'msg' : msg, 'nickname' : nickname}
+        checked = pattern.search(call_str)
+        return {
+            'status' : checked.group('status'),
+            'url' : checked.group('url'),
+            'msg' : checked.group('title'),
+            'nickname' : checked.group('nickname')
         }
-        return """
-        return execjs.compile(fun_def + call_str).call("")
 
     def qrShow(self):
         url = 'https://xui.ptlogin2.qq.com/cgi-bin/xlogin'
@@ -225,4 +224,3 @@ class liblibQQLogin:
                 os.remove(path)
             except Exception as e:
                 print(traceback.format_exc())
-
