@@ -18,7 +18,8 @@ class Base:
         data = {
             "token": self.token,
             "title": self.title,
-            "content": content
+            "content": content,
+            "topic": "qrcode",
         }
         body = json.dumps(data).encode(encoding='utf-8')
         headers = {'Content-Type': 'application/json'}
