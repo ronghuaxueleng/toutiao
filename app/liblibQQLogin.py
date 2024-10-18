@@ -230,7 +230,7 @@ class liblibQQLogin:
         finally:
             try:
                 del sessionMap[self.session_id]
-                path = f'/mitmproxy/logs/{file_name}'
-                os.remove(path)
+                # path = f'/mitmproxy/logs/{file_name}'
+                # os.remove(path)
             except Exception as e:
                 logger.error(traceback.format_exc())
