@@ -143,12 +143,12 @@ class liblibQQLogin(Base):
             "u1": sourceURL
         }
         resp = self.sess.get(url, params=params, timeout=1000)
-        return resp
-        # file_name = f'{time.strftime("%Y%m%d%H%M%S")}.jpg'
-        # path = f'/mitmproxy/logs/{file_name}'
-        # with open(path, 'wb') as f:
-        #     f.write(resp.content)
-        # return file_name
+        # return resp
+        file_name = f'{time.strftime("%Y%m%d%H%M%S")}.jpg'
+        path = f'/mitmproxy/logs/{file_name}'
+        with open(path, 'wb') as f:
+            f.write(resp.content)
+        return file_name
 
     def qrLogin(self, qrsig, login_sig, file_name, id=None):
         try:
@@ -235,7 +235,7 @@ class liblibQQLogin(Base):
         finally:
             try:
                 del sessionMap[self.session_id]
-                # path = f'/mitmproxy/logs/{file_name}'
-                # os.remove(path)
+                path = f'/mitmproxy/logs/{file_name}'
+                os.remove(path)
             except Exception as e:
                 logger.error(traceback.format_exc())

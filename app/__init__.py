@@ -262,8 +262,8 @@ def qqQrcodeShow():
                            qrsig=qrsig,
                            login_sig=login_sig,
                            session_id=session_id,
-                           img_stream=base64.b64encode(img.content).decode('utf-8'),
-                           # img_url=img
+                           # img_stream=base64.b64encode(img.content).decode('utf-8'),
+                           img_url=img
                            )
 
 
