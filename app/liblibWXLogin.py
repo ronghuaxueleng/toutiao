@@ -63,8 +63,9 @@ class LiblibwxLogin:
             res = json.loads(response.text)
             data = res['data']
             if data is not None:
+                nickname = ''
                 token = data['userToken']
-                if id is None:
+                if id is None or id == "" or id == "None":
                     headers['token'] = token
                     headers['content-type'] = 'application/x-www-form-urlencoded'
                     url = str(base64.b64decode("aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L3VzZXIvZ2V0VXNlckluZm8/dGltZXN0YW1wPQ=="), 'utf-8') + str(int(time.time()))
@@ -77,7 +78,7 @@ class LiblibwxLogin:
                 cookies['usertoken'] = token
                 cookies['webid'] = '1729047875238gwboidea'
                 value = self.get_cookies(cookies['usertoken'], cookies['webid'])
-                if id is not None:
+                if id is not None and id != "" and id != "None":
                     info = ql_env.get_by_id(id)
                     if info['code'] == 200:
                         data = info['data']
@@ -85,6 +86,17 @@ class LiblibwxLogin:
                         remarks = data['remarks']
                         ql_env.update(value, name, id, remarks)
                         ql_env.enable([id])
+                else:
+                    name = 'liblib_cookie'
+                    remarks = f'wx-{nickname}'
+                    res = ql_env.search(remarks)
+                    if len(res) > 0:
+                        info = res[0]
+                        id = info['id']
+                        ql_env.update(value, name, id, remarks)
+                        ql_env.enable([id])
+                    else:
+                        ql_env.add(name, value, remarks)
                 return 'ok'
             time.sleep(2)
         return 'fail'
