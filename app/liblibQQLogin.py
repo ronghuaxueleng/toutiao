@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import base64
 import json
+import logging
 import os
 import re
-import subprocess
 import time
 import traceback
 import uuid
-from functools import partial
 from random import random
 from urllib.parse import urlencode
 
@@ -19,7 +18,15 @@ sourceURL = "https://graph.qq.com/oauth2.0/login_jump"
 
 sessionMap = {}
 
-pattern = re.compile("ptuiCB\('(?P<status>.*?)',(\s+)?'(.*?)',(\s+)?'(?P<url>.*?)',(\s+)?'(.*?)',(\s+)?'(?P<title>.*?)',(\s+)?'(?P<nickname>.*?)'(,(\s+)?(.*?)'\))?;?")
+pattern = re.compile(
+    "ptuiCB\('(?P<status>.*?)',(\s+)?'(.*?)',(\s+)?'(?P<url>.*?)',(\s+)?'(.*?)',(\s+)?'(?P<title>.*?)',(\s+)?'(?P<nickname>.*?)'(,(\s+)?(.*?)'\))?;?")
+
+logging.basicConfig(level=logging.DEBUG,
+                    filename='/mitmproxy/logs/qqlogin.log',
+                    datefmt='%Y/%m/%d %H:%M:%S',
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 
 class liblibQQLogin:
     def __init__(self, session_id=None):
@@ -91,10 +98,10 @@ class liblibQQLogin:
     def ptuiCB(self, call_str):
         checked = pattern.search(call_str)
         return {
-            'status' : checked.group('status'),
-            'url' : checked.group('url'),
-            'msg' : checked.group('title'),
-            'nickname' : checked.group('nickname')
+            'status': checked.group('status'),
+            'url': checked.group('url'),
+            'msg': checked.group('title'),
+            'nickname': checked.group('nickname')
         }
 
     def qrShow(self):
@@ -200,11 +207,13 @@ class liblibQQLogin:
                             data = info['data']
                             name = data['name']
                             remarks = data['remarks']
+                            logger.info(f"{remarks}登录")
                             ql_env.update(value, name, id, remarks)
                             ql_env.enable([id])
                     else:
                         name = 'liblib_cookie'
                         remarks = f'qq-{p_uin}-{nickname}'
+                        logger.info(f"{remarks}登录")
                         res = ql_env.search(remarks)
                         if len(res) > 0:
                             info = res[0]
@@ -216,11 +225,11 @@ class liblibQQLogin:
                     break
                 time.sleep(2)
         except Exception as e:
-            print(traceback.format_exc())
+            logger.error(traceback.format_exc())
         finally:
             try:
                 del sessionMap[self.session_id]
                 path = f'/mitmproxy/logs/{file_name}'
                 os.remove(path)
             except Exception as e:
-                print(traceback.format_exc())
+                logger.error(traceback.format_exc())
