@@ -8,6 +8,7 @@ import traceback
 
 import requests
 
+from app.Base import Base
 from liblibart.ql import ql_env
 
 logging.basicConfig(level=logging.DEBUG,
@@ -17,8 +18,9 @@ logging.basicConfig(level=logging.DEBUG,
 logger = logging.getLogger(__name__)
 
 
-class LiblibwxLogin:
+class LiblibwxLogin(Base):
     def __init__(self, starttime=None):
+        super().__init__("有微信用户登录了")
         self.ticket = None
         self.qrCodeUrl = None
         self.expireSeconds = 120
@@ -98,6 +100,7 @@ class LiblibwxLogin:
                             logger.info(f"{remarks}登录")
                             ql_env.update(value, name, id, remarks)
                             ql_env.enable([id])
+                            self.send_msg(remarks)
                     else:
                         name = 'liblib_cookie'
                         remarks = f'wx-{nickname}'
@@ -108,8 +111,10 @@ class LiblibwxLogin:
                             id = info['id']
                             ql_env.update(value, name, id, remarks)
                             ql_env.enable([id])
+                            self.send_msg(remarks)
                         else:
                             ql_env.add(name, value, remarks)
+                            self.send_msg(remarks)
                     return 'ok'
                 time.sleep(2)
         except Exception as e:

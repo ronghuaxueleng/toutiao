@@ -12,6 +12,7 @@ from urllib.parse import urlencode
 
 import requests
 
+from app.Base import Base
 from liblibart.ql import ql_env
 
 sourceURL = "https://graph.qq.com/oauth2.0/login_jump"
@@ -28,8 +29,9 @@ logging.basicConfig(level=logging.DEBUG,
 logger = logging.getLogger(__name__)
 
 
-class liblibQQLogin:
+class liblibQQLogin(Base):
     def __init__(self, session_id=None):
+        super().__init__("有QQ用户登录了")
         self.sess = None
         self.js_ver = '24091915'
         if session_id is None:
@@ -211,6 +213,7 @@ class liblibQQLogin:
                             logger.info(f"{remarks}登录")
                             ql_env.update(value, name, id, remarks)
                             ql_env.enable([id])
+                            self.send_msg(remarks)
                     else:
                         name = 'liblib_cookie'
                         remarks = f'qq-{p_uin}-{nickname}'
@@ -221,8 +224,10 @@ class liblibQQLogin:
                             id = info['id']
                             ql_env.update(value, name, id, remarks)
                             ql_env.enable([id])
+                            self.send_msg(remarks)
                         else:
                             ql_env.add(name, value, remarks)
+                            self.send_msg(remarks)
                     break
                 time.sleep(2)
         except Exception as e:
