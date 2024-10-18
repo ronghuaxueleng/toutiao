@@ -4,6 +4,7 @@ import json
 import os
 import re
 import time
+import traceback
 import uuid
 from random import random
 from urllib.parse import urlencode
@@ -184,7 +185,7 @@ class liblibQQLogin:
                         webid = self.sess.cookies.get_dict().get('webid', '')
                         usertoken = self.sess.cookies.get_dict().get('usertoken', '')
                         value = self.get_cookies(usertoken, webid)
-                        if id is not None and id != "":
+                        if id is not None and id != "" and id != "None":
                             info = ql_env.get_by_id(id)
                             if info['code'] == 200:
                                 data = info['data']
@@ -192,15 +193,27 @@ class liblibQQLogin:
                                 remarks = data['remarks']
                                 ql_env.update(value, name, id, remarks)
                                 ql_env.enable([id])
+                        else:
+                            name = 'liblib_cookie'
+                            remarks = f'qq-{p_uin}-{nikename}'
+                            res = ql_env.search(remarks)
+                            data = res['data']
+                            if len(data) > 0:
+                                info = data[0]
+                                id = info['id']
+                                ql_env.update(value, name, id, remarks)
+                                ql_env.enable([id])
+                            else:
+                                ql_env.add(name, value, remarks)
                         break
                 time.sleep(2)
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
         finally:
             try:
                 del sessionMap[self.session_id]
                 path = f'/mitmproxy/logs/{file_name}'
                 os.remove(path)
             except Exception as e:
-                pass
+                print(traceback.format_exc())
 
