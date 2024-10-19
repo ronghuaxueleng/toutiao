@@ -141,9 +141,9 @@ class LiblibTasks:
         disable_ids = []
         enable_ids = []
         for user in users:
+            userInfo = UserInfo(user['usertoken'], user['webid'],
+                                f'/mitmproxy/logs/UserInfo_{os.getenv("RUN_OS_KEY")}.log')
             try:
-                userInfo = UserInfo(user['usertoken'], user['webid'],
-                                    f'/mitmproxy/logs/UserInfo_{os.getenv("RUN_OS_KEY")}.log')
                 realUser = userInfo.userInfo
                 if realUser is not None:
                     enable_ids.append(user['id'])
@@ -165,7 +165,7 @@ class LiblibTasks:
                 else:
                     disable_ids.append(user['id'])
             except Exception as e:
-                print(traceback.format_exc())
+                userInfo.getLogger().error(f"nickname：{userInfo.userInfo['nickname']} UserInfo，{traceback.format_exc()}")
         if len(disable_ids) > 0:
             ql_env.disable(disable_ids)
         if len(enable_ids) > 0:
@@ -191,11 +191,12 @@ class LiblibTasks:
         job_id = 'downloadModel'
         users = get_users()
         for user in random.sample(users, 4):
+            downloadModel = DownloadModel(user['usertoken'], user['webid'],
+                          f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log')
             try:
-                DownloadModel(user['usertoken'], user['webid'],
-                              f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
+                downloadModel.download_model()
             except Exception as e:
-                print(traceback.format_exc())
+                downloadModel.getLogger().error(f"nickname：{downloadModel.userInfo['nickname']} DownloadModel，{traceback.format_exc()}")
         s = scheduler.get_job(job_id)
         if s is None:
             scheduler.add_job(
@@ -218,11 +219,12 @@ class LiblibTasks:
 
         users = get_users()
         for user in users:
+            downLoadImage = DownLoadImage(user['usertoken'], user['webid'],
+                          f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
             try:
-                DownLoadImage(user['usertoken'], user['webid'],
-                              f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
+                downLoadImage.download()
             except Exception as e:
-                print(traceback.format_exc())
+                downLoadImage.getLogger().error(f"nickname：{downLoadImage.userInfo['nickname']} DownLoadImage，{traceback.format_exc()}")
         s = scheduler.get_job(job_id)
         if s is None:
             if scheduler.get_job(job_id) is None:
@@ -279,7 +281,7 @@ class LiblibTasks:
                                       f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(
                             False)
                     except Exception as e:
-                        print(traceback.format_exc())
+                        image.getLogger().error(f"nickname：{image.userInfo['nickname']} Image，{traceback.format_exc()}")
                     image.getLogger().info(f'递归层级{depth}')
                     return depth
 
@@ -322,7 +324,7 @@ class LiblibTasks:
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
-                print(traceback.format_exc())
+                user.getLogger().error(f"nickname：{user.userInfo['nickname']} Image，{traceback.format_exc()}")
 
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users()

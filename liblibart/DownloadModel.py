@@ -27,6 +27,7 @@ class DownloadModel(UserInfo):
         super().__init__(token, webid, log_filename)
 
     def download_model(self):
+        global query, downloadModelCount
         download_models = []
         models = MyModel.select(
             MyModel.user_uuid,
@@ -64,14 +65,17 @@ class DownloadModel(UserInfo):
                             model_data = json.loads(response.text)
                             for version in model_data['data']['versions']:
                                 if version['id'] in download_models:
-                                    query = DownloadModelStatistics.select().where(
-                                        DownloadModelStatistics.user_uuid == uuid,
-                                        DownloadModelStatistics.modelId == version['id'],
-                                        DownloadModelStatistics.day == self.day)
-                                    if query.exists():
-                                        downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
-                                        if downloadModelCount >= 1000:
-                                            continue
+                                    try:
+                                        query = DownloadModelStatistics.select().where(
+                                            DownloadModelStatistics.user_uuid == uuid,
+                                            DownloadModelStatistics.modelId == version['id'],
+                                            DownloadModelStatistics.day == self.day)
+                                        if query.exists():
+                                            downloadModelCount = int(query.dicts().get().get('downloadModelCount'))
+                                            if downloadModelCount >= 1000:
+                                                continue
+                                    except Exception as e:
+                                        self.getLogger().error(f'更新下载次数失败: {traceback.format_exc()}')
                                     url = f"https://{self.web_host}/api/www/community/downloadCheck?timestamp={time.time()}"
                                     payload = json.dumps({
                                         "uuid": model["uuid"],
@@ -117,30 +121,33 @@ class DownloadModel(UserInfo):
                                     headers['referer'] = f"https://{self.web_host}/modelinfo/{model['uuid']}"
 
                                     requests.request("POST", url, headers=headers, data=payload)
-
-                                    if query.exists():
-                                        DownloadModelStatistics.update(
-                                            downloadModelCount=downloadModelCount + 1,
-                                            timestamp=datetime.datetime.now()
-                                        ).where(DownloadModelStatistics.user_uuid == uuid,
-                                                DownloadModelStatistics.modelId == version['id'],
-                                                DownloadModelStatistics.day == self.day).execute()
-                                    else:
-                                        DownloadModelStatistics.insert(
-                                            user_uuid=uuid,
-                                            modelId=version['id'],
-                                            modelName=model["name"],
-                                            downloadModelCount=1,
-                                            day=self.day
-                                        ).execute()
+                                    try:
+                                        if query.exists():
+                                            DownloadModelStatistics.update(
+                                                downloadModelCount=downloadModelCount + 1,
+                                                timestamp=datetime.datetime.now()
+                                            ).where(DownloadModelStatistics.user_uuid == uuid,
+                                                    DownloadModelStatistics.modelId == version['id'],
+                                                    DownloadModelStatistics.day == self.day).execute()
+                                        else:
+                                            DownloadModelStatistics.insert(
+                                                user_uuid=uuid,
+                                                modelId=version['id'],
+                                                modelName=model["name"],
+                                                downloadModelCount=1,
+                                                day=self.day
+                                            ).execute()
+                                    except Exception as e:
+                                        self.getLogger().error(f'更新下载次数失败: {traceback.format_exc()}')
                                     time.sleep(2)
 
 
 if __name__ == '__main__':
     users = get_users()
     for user in random.sample(users, 4):
+        downloadModel = DownloadModel(user['usertoken'], user['webid'],
+                      f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log')
         try:
-            DownloadModel(user['usertoken'], user['webid'],
-                          f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log').download_model()
+            downloadModel.download_model()
         except Exception as e:
-            print(traceback.format_exc())
+            downloadModel.getLogger().error(f"nickname：{downloadModel.userInfo['nickname']} DownloadModel，{traceback.format_exc()}")

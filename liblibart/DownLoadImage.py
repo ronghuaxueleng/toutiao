@@ -96,7 +96,7 @@ class DownLoadImage(UserInfo):
                         download_count = __model.setdefault('count', 0)
                         downloadImageCount[userUuid][modelVersionId]['count'] = download_count + 1
                     except Exception as e:
-                        self.getLogger().error(f'更新下载次数失败: {e}')
+                        self.getLogger().error(f'更新下载次数失败: {traceback.format_exc()}')
 
             if delete:
                 url = f"https://{self.web_host}/gateway/sd-api/generate/image/delete"
@@ -109,31 +109,39 @@ class DownLoadImage(UserInfo):
 
                 self.getLogger().info(f'删除图片结果：{response.text}')
             for user_uuid, model_list in downloadImageCount.items():
-                for modelId, model in model_list.items():
-                    query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.modelId == modelId,
-                                                                   DownLoadImageStatistics.day == self.day)
-                    if query.exists():
-                        downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
-                        DownLoadImageStatistics.update(
-                            downloadImageCount=downloadImageCount + model['count'],
-                            timestamp=datetime.datetime.now()
-                        ).where(DownLoadImageStatistics.modelId == modelId,
-                                DownLoadImageStatistics.day == self.day).execute()
-                    else:
-                        DownLoadImageStatistics.insert(
-                            user_uuid=user_uuid,
-                            modelId=modelId,
-                            modelName=model['modelName'],
-                            downloadImageCount=model['count'],
-                            day=self.day
-                        ).execute()
+                try:
+                    for modelId, model in model_list.items():
+                        try:
+                            query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.modelId == modelId,
+                                                                           DownLoadImageStatistics.day == self.day)
+                            if query.exists():
+                                downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
+                                DownLoadImageStatistics.update(
+                                    downloadImageCount=downloadImageCount + model['count'],
+                                    timestamp=datetime.datetime.now()
+                                ).where(DownLoadImageStatistics.modelId == modelId,
+                                        DownLoadImageStatistics.day == self.day).execute()
+                            else:
+                                DownLoadImageStatistics.insert(
+                                    user_uuid=user_uuid,
+                                    modelId=modelId,
+                                    modelName=model['modelName'],
+                                    downloadImageCount=model['count'],
+                                    day=self.day
+                                ).execute()
+                        except Exception as e:
+                            self.getLogger().error(f'更新下载次数失败: {traceback.format_exc()}')
+                except Exception as e:
+                    self.getLogger().error(f'更新下载次数失败: {traceback.format_exc()}')
+
 
 
 if __name__ == '__main__':
     users = get_users()
     for user in users:
+        downLoadImage = DownLoadImage(user['usertoken'], user['webid'],
+                      f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
         try:
-            DownLoadImage(user['usertoken'], user['webid'],
-                          f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download()
+            downLoadImage.download()
         except Exception as e:
-            print(traceback.format_exc())
+            downLoadImage.getLogger().error(f"nickname：{downLoadImage.userInfo['nickname']} DownLoadImage，{traceback.format_exc()}")
