@@ -97,7 +97,7 @@ def get_users(get_all=False, exclude_user=None, cookie_name="liblib_cookie", use
                         try:
                             user['expirationDate'] = value['expirationDate']
                         except Exception as e:
-                            print(e)
+                            pass
                     if value['name'] == 'webid':
                         user['webid'] = value['value']
                     if value['name'] == '_bl_uid':
