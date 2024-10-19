@@ -115,9 +115,9 @@ if __name__ == '__main__':
     disable_ids = []
     enable_ids = []
     for user in users:
+        userInfo = UserInfo(user['usertoken'], user['webid'],
+                            f'/mitmproxy/logs/UserInfo_{os.getenv("RUN_OS_KEY")}.log')
         try:
-            userInfo = UserInfo(user['usertoken'], user['webid'],
-                                f'/mitmproxy/logs/UserInfo_{os.getenv("RUN_OS_KEY")}.log')
             realUser = userInfo.userInfo
             if realUser is not None:
                 enable_ids.append(user['id'])
@@ -139,7 +139,7 @@ if __name__ == '__main__':
             else:
                 disable_ids.append(user['id'])
         except Exception as e:
-            print(traceback.format_exc())
+            userInfo.getLogger().error(f"nickname：{userInfo.userInfo['nickname']} UserInfo，{traceback.format_exc()}")
     if len(disable_ids) > 0:
         ql_env.disable(disable_ids)
     if len(enable_ids) > 0:

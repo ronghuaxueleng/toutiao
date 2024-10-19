@@ -128,25 +128,31 @@ class Image(Base):
                 self.getLogger().info(f"nickname：{self.userInfo['nickname']} log acceptor，{response.text}")
 
                 for user_uuid, model_list in runCount.items():
-                    for modelId, model in model_list.items():
-                        query = RunStatistics.select().where(RunStatistics.user_uuid == user_uuid,
-                                                             RunStatistics.modelId == modelId,
-                                                             RunStatistics.day == self.day)
-                        if query.exists():
-                            runCount = int(query.dicts().get().get('runCount'))
-                            RunStatistics.update(
-                                runCount=runCount + model['count'],
-                                timestamp=datetime.datetime.now()
-                            ).where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId,
-                                    RunStatistics.day == self.day).execute()
-                        else:
-                            RunStatistics.insert(
-                                user_uuid=user_uuid,
-                                modelId=modelId,
-                                modelName=model['modelName'],
-                                runCount=model['count'],
-                                day=self.day
-                            ).execute()
+                    try:
+                        for modelId, model in model_list.items():
+                            try:
+                                query = RunStatistics.select().where(RunStatistics.user_uuid == user_uuid,
+                                                                     RunStatistics.modelId == modelId,
+                                                                     RunStatistics.day == self.day)
+                                if query.exists():
+                                    runCount = int(query.dicts().get().get('runCount'))
+                                    RunStatistics.update(
+                                        runCount=runCount + model['count'],
+                                        timestamp=datetime.datetime.now()
+                                    ).where(RunStatistics.user_uuid == user_uuid, RunStatistics.modelId == modelId,
+                                            RunStatistics.day == self.day).execute()
+                                else:
+                                    RunStatistics.insert(
+                                        user_uuid=user_uuid,
+                                        modelId=modelId,
+                                        modelName=model['modelName'],
+                                        runCount=model['count'],
+                                        day=self.day
+                                    ).execute()
+                            except Exception as e:
+                                self.getLogger().error(f'更新运行次数失败: {traceback.format_exc()}')
+                    except Exception as e:
+                        self.getLogger().error(f'更新运行次数失败: {traceback.format_exc()}')
                 return res['data']
             elif res['code'] == 1200000136 or res['code'] == 1200000170:
                 if res['code'] == 1200000136:
@@ -224,7 +230,8 @@ class Image(Base):
 if __name__ == '__main__':
     users = get_users()
     for user in random.sample(users, 4):
+        image = Image(user['usertoken'], user['webid'], f'/mitmproxy/logs/Image_{os.getenv("RUN_OS_KEY")}.log')
         try:
-            Image(user['usertoken'], user['webid'], f'/mitmproxy/logs/Image_{os.getenv("RUN_OS_KEY")}.log').gen_image()
+            image.gen_image()
         except Exception as e:
-            print(traceback.format_exc())
+            image.getLogger().error(f"nickname：{image.userInfo['nickname']} Image，{traceback.format_exc()}")

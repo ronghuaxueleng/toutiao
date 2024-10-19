@@ -101,26 +101,32 @@ class SDownLoadImage(SUserInfo):
                                     self.getLogger().error(f'更新下载次数失败: {e}')
 
                                 for user_uuid, model_list in downloadImageCount.items():
-                                    for modelId, model in model_list.items():
-                                        query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid,
-                                                                                       DownLoadImageStatistics.modelId == modelId,
-                                                                                       DownLoadImageStatistics.day == self.day)
-                                        if query.exists():
-                                            downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
-                                            DownLoadImageStatistics.update(
-                                                downloadImageCount=downloadImageCount + model['count'],
-                                                timestamp=datetime.datetime.now()
-                                            ).where(DownLoadImageStatistics.user_uuid == user_uuid,
-                                                    DownLoadImageStatistics.modelId == modelId,
-                                                    DownLoadImageStatistics.day == self.day).execute()
-                                        else:
-                                            DownLoadImageStatistics.insert(
-                                                user_uuid=user_uuid,
-                                                modelId=modelId,
-                                                modelName=model['modelName'],
-                                                downloadImageCount=model['count'],
-                                                day=self.day
-                                            ).execute()
+                                    try:
+                                        for modelId, model in model_list.items():
+                                            try:
+                                                query = DownLoadImageStatistics.select().where(DownLoadImageStatistics.user_uuid == user_uuid,
+                                                                                               DownLoadImageStatistics.modelId == modelId,
+                                                                                               DownLoadImageStatistics.day == self.day)
+                                                if query.exists():
+                                                    downloadImageCount = int(query.dicts().get().get('downloadImageCount'))
+                                                    DownLoadImageStatistics.update(
+                                                        downloadImageCount=downloadImageCount + model['count'],
+                                                        timestamp=datetime.datetime.now()
+                                                    ).where(DownLoadImageStatistics.user_uuid == user_uuid,
+                                                            DownLoadImageStatistics.modelId == modelId,
+                                                            DownLoadImageStatistics.day == self.day).execute()
+                                                else:
+                                                    DownLoadImageStatistics.insert(
+                                                        user_uuid=user_uuid,
+                                                        modelId=modelId,
+                                                        modelName=model['modelName'],
+                                                        downloadImageCount=model['count'],
+                                                        day=self.day
+                                                    ).execute()
+                                            except Exception as e:
+                                                self.getLogger().error(f'更新下载次数失败: {traceback.format_exc()}')
+                                    except Exception as e:
+                                        self.getLogger().error(f'更新下载次数失败: {traceback.format_exc()}')
 
                         if share_image:
                             self.share_image(i_en)
@@ -132,8 +138,9 @@ class SDownLoadImage(SUserInfo):
 if __name__ == '__main__':
     users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
     for user in users:
+        sDownLoadImage = SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
+                       f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
         try:
-            SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                          f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
+            sDownLoadImage.download(share_image=True, feed_image=True)
         except Exception as e:
-            print(traceback.format_exc())
+            sDownLoadImage.getLogger().error(f"nickname：{sDownLoadImage.userInfo['nickname']} SDownLoadImage，{traceback.format_exc()}")
