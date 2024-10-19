@@ -100,7 +100,7 @@ class SUserInfo(LogInfo):
         models = MyModel.select(
             MyModel.user_uuid,
             MyModel.otherInfo
-        ).where(MyModel.isEnable == True, MyModel.modelType == 5, MyModel.vipUsed != 1).execute()
+        ).where(MyModel.isEnable == True, MyModel.vipUsed != 1).execute()
         for model in models:
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
             otherInfo = json.loads(model.otherInfo)
