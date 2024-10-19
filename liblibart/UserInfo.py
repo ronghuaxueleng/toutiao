@@ -81,18 +81,17 @@ class UserInfo(LogInfo):
         models = MyModel.select(
             MyModel.user_uuid,
             MyModel.otherInfo
-        ).where(MyModel.isEnable == True,
-                MyModel.modelType == 5, MyModel.vipUsed != 1).execute()
+        ).where(MyModel.isEnable == True, MyModel.vipUsed != 1).execute()
         for model in models:
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
             otherInfo = json.loads(model.otherInfo)
             user_models.append(otherInfo)
             self.user_model_dict[model.user_uuid] = user_models
             self.model_dict[otherInfo['modelId']] = otherInfo
-        self.to_run_checkpointId = 2016037#2531860
+        self.to_run_checkpointId = 2016037  #2531860
         try:
             if self.uuid == 'b8b05c9cf1c1487b802fba02dbfb128d':
-                self.to_run_checkpointId = 1094830#2367748
+                self.to_run_checkpointId = 1094830  #2367748
         except Exception as e:
             pass
 
