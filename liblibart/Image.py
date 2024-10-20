@@ -179,7 +179,7 @@ class Image(Base):
                 return 'qitacuowu'
 
     def get_percent(self, image_num):
-        url = f"https://{self.web_host}/gateway/sd-api/generate/progress/msg/v1/{image_num}"
+        url = f"https://{self.web_host}/gateway/sd-api/generate/progress/msg/v3/{image_num}"
         payload = json.dumps({
             "flag": 0
         })
