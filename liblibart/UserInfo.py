@@ -43,6 +43,12 @@ def create_table(table):
         table.create_table()
 
 
+models = MyModel.select(
+    MyModel.user_uuid,
+    MyModel.otherInfo
+).where(MyModel.isEnable == True, MyModel.vipUsed != 1).execute()
+
+
 class UserInfo(LogInfo):
     def __init__(self, token, webid, log_filename):
         super().__init__(log_filename)
@@ -78,10 +84,6 @@ class UserInfo(LogInfo):
         self.uuids = set()
         self.model_dict = {}
         self.user_model_dict = {}
-        models = MyModel.select(
-            MyModel.user_uuid,
-            MyModel.otherInfo
-        ).where(MyModel.isEnable == True, MyModel.vipUsed != 1).execute()
         for model in models:
             user_models = self.user_model_dict.setdefault(model.user_uuid, [])
             otherInfo = json.loads(model.otherInfo)
