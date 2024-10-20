@@ -172,7 +172,7 @@ class LiblibTasks:
                 else:
                     disable_ids.append(user['id'])
             except Exception as e:
-                logging.error(f"nickname：{userInfo.userInfo['nickname']} UserInfo，{traceback.format_exc()}")
+                logging.error(f"nickname：{userInfo['nickname']} UserInfo，{traceback.format_exc()}")
         if len(disable_ids) > 0:
             ql_env.disable(disable_ids)
         if len(enable_ids) > 0:
@@ -328,7 +328,7 @@ class LiblibTasks:
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
-                logging.error(f"nickname：{user.userInfo['nickname']} Image，{traceback.format_exc()}")
+                logging.error(f"nickname：{user['nickname']} Image，{traceback.format_exc()}")
 
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users()
