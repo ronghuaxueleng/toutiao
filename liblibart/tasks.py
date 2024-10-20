@@ -347,7 +347,7 @@ class LiblibTasks:
             is_time = False  #"00:00:00" < now_localtime < "08:00:00"
             # to_run_user_count = (10 if len(users) >= 10 else len(users)) if is_time else (
             #     5 if len(users) >= 5 else len(users))
-            to_run_user_count = 5 if len(users) >= 5 else len(users)
+            to_run_user_count = 10 if len(users) >= 10 else len(users)
             to_save_run_users = load_from_run_users()
             to_run_users = random.sample(users, to_run_user_count)
             for user in to_run_users:
