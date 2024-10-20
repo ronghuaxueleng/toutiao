@@ -31,11 +31,12 @@ env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
 misfire_grace_time = 60
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.ERROR,
                     filename='/mitmproxy/logs/tasks.log',
                     datefmt='%Y/%m/%d %H:%M:%S',
                     format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s')
 logger = logging.getLogger(__name__)
+
 
 class LiblibTasks:
     def __init__(self):
@@ -198,11 +199,12 @@ class LiblibTasks:
         users = get_users()
         for user in random.sample(users, 4):
             downloadModel = DownloadModel(user['usertoken'], user['webid'],
-                          f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log')
+                                          f'/mitmproxy/logs/DownloadModel_{os.getenv("RUN_OS_KEY")}.log')
             try:
                 downloadModel.download_model()
             except Exception as e:
-                downloadModel.getLogger().error(f"nickname：{downloadModel.userInfo['nickname']} DownloadModel，{traceback.format_exc()}")
+                downloadModel.getLogger().error(
+                    f"nickname：{downloadModel.userInfo['nickname']} DownloadModel，{traceback.format_exc()}")
         s = scheduler.get_job(job_id)
         if s is None:
             scheduler.add_job(
@@ -226,11 +228,12 @@ class LiblibTasks:
         users = get_users()
         for user in users:
             downLoadImage = DownLoadImage(user['usertoken'], user['webid'],
-                          f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
+                                          f'/mitmproxy/logs/DownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
             try:
                 downLoadImage.download()
             except Exception as e:
-                downLoadImage.getLogger().error(f"nickname：{downLoadImage.userInfo['nickname']} DownLoadImage，{traceback.format_exc()}")
+                downLoadImage.getLogger().error(
+                    f"nickname：{downLoadImage.userInfo['nickname']} DownLoadImage，{traceback.format_exc()}")
         s = scheduler.get_job(job_id)
         if s is None:
             if scheduler.get_job(job_id) is None:
