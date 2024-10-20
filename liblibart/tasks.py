@@ -293,6 +293,7 @@ class LiblibTasks:
             try:
                 to_save_run_users = load_from_run_users()
                 if user['usertoken'] in to_save_run_users:
+                    logging.info(f"删除执行的usertoken:{user['usertoken']}")
                     to_save_run_users.remove(user['usertoken'])
                     save_to_run_users(list(set(to_save_run_users)))
                 if user['usertoken'] not in suanlibuzu:
