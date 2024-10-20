@@ -1,6 +1,7 @@
 import copy
 import datetime
 import json
+import logging
 import os
 import random
 import time
@@ -30,6 +31,11 @@ env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
 misfire_grace_time = 60
 
+logging.basicConfig(level=logging.DEBUG,
+                    filename='/mitmproxy/logs/tasks.log',
+                    datefmt='%Y/%m/%d %H:%M:%S',
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class LiblibTasks:
     def __init__(self):
@@ -165,7 +171,7 @@ class LiblibTasks:
                 else:
                     disable_ids.append(user['id'])
             except Exception as e:
-                userInfo.getLogger().error(f"nickname：{userInfo.userInfo['nickname']} UserInfo，{traceback.format_exc()}")
+                logging.error(f"nickname：{userInfo.userInfo['nickname']} UserInfo，{traceback.format_exc()}")
         if len(disable_ids) > 0:
             ql_env.disable(disable_ids)
         if len(enable_ids) > 0:
@@ -319,7 +325,7 @@ class LiblibTasks:
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
-                user.getLogger().error(f"nickname：{user.userInfo['nickname']} Image，{traceback.format_exc()}")
+                logging.error(f"nickname：{user.userInfo['nickname']} Image，{traceback.format_exc()}")
 
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users()
