@@ -22,7 +22,7 @@ sessionMap = {}
 pattern = re.compile(
     "ptuiCB\('(?P<status>.*?)',(\s+)?'(.*?)',(\s+)?'(?P<url>.*?)',(\s+)?'(.*?)',(\s+)?'(?P<title>.*?)',(\s+)?'(?P<nickname>.*?)'(,(\s+)?(.*?)'\))?;?")
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.ERROR,
                     filename='/mitmproxy/logs/qqlogin.log',
                     datefmt='%Y/%m/%d %H:%M:%S',
                     format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s')

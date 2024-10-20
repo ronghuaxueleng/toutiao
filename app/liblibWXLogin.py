@@ -11,7 +11,7 @@ import requests
 from app.Base import Base
 from liblibart.ql import ql_env
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.ERROR,
                     filename='/mitmproxy/logs/wxlogin.log',
                     datefmt='%Y/%m/%d %H:%M:%S',
                     format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s')
