@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S %p"
 format_str = logging.Formatter(LOG_FORMAT, DATE_FORMAT)  #设置日志格式
-logger.setLevel(logging.ERROR)  #设置日志级别
+logger.setLevel(logging.INFO)  #设置日志级别
 sh = logging.StreamHandler()  #往屏幕上输出
 sh.setFormatter(format_str)  #设置屏幕上显示的格式
 # interval 滚动周期， when="MIDNIGHT", interval=1 表示每天0点为更新点，每天生成一个文件,backupCount  表示日志保存个数
