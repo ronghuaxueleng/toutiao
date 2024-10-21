@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import random
+import re
 import time
 import traceback
 from logging import handlers
@@ -39,7 +40,15 @@ format_str = logging.Formatter(LOG_FORMAT, DATE_FORMAT)  #设置日志格式
 logger.setLevel(logging.ERROR)  #设置日志级别
 sh = logging.StreamHandler()  #往屏幕上输出
 sh.setFormatter(format_str)  #设置屏幕上显示的格式
-th = handlers.TimedRotatingFileHandler(filename='/mitmproxy/logs/tasks.log', backupCount=1, encoding='utf-8')
+# interval 滚动周期， when="MIDNIGHT", interval=1 表示每天0点为更新点，每天生成一个文件,backupCount  表示日志保存个数
+file_hander = handlers.TimedRotatingFileHandler(filename='/mitmproxy/logs/tasks.log', when='MIDNIGHT',
+                                       interval=1, backupCount=1, encoding='utf-8')
+# 设置生成日志文件名的格式，以年-月-日来命名
+# suffix设置，会生成文件名为log.2020-02-25.log
+file_hander.suffix = "%Y-%m-%d.log"
+# extMatch是编译好正则表达式，用于匹配日志文件名后缀
+# 需要注意的是suffix和extMatch一定要匹配的上，如果不匹配，过期日志不会被删除。
+file_hander.extMatch = re.compile(r"^\d{4}-\d{2}-\d{2}.log$")
 #往文件里写入#指定间隔时间自动生成文件的处理器
 #实例化TimedRotatingFileHandler
 #interval是时间间隔，backupCount是备份文件的个数，如果超过这个个数，就会自动删除，when是间隔的时间单位，单位有以下几种：
@@ -49,9 +58,9 @@ th = handlers.TimedRotatingFileHandler(filename='/mitmproxy/logs/tasks.log', bac
 # D 天、
 # W 每星期（interval==0时代表星期一）
 # midnight 每天凌晨
-th.setFormatter(format_str)  #设置文件里写入的格式
+file_hander.setFormatter(format_str)  #设置文件里写入的格式
 logger.addHandler(sh)  #把对象加到logger里
-logger.addHandler(th)
+logger.addHandler(file_hander)
 
 
 class LiblibTasks:
