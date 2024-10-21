@@ -10,6 +10,7 @@ from flask import Flask, jsonify, request, Response
 from flask import render_template
 from peewee import fn
 
+from app.ShakkerEmailLogin import ShakkerEmailLogin
 from app.liblibQQLogin import liblibQQLogin
 from app.liblibWXLogin import LiblibwxLogin
 from run_task import profit_detail
@@ -222,6 +223,15 @@ def getLastShakker():
         'month_end': last_period_end
     }
     return jsonify(result)
+
+
+@app.route('/email-login')
+def emailLogin():
+    id = request.args.get("id")
+    email = request.args.get("email")
+    shakkerEmailLogin = ShakkerEmailLogin()
+    shakkerEmailLogin.sendLoginEmail(email)
+    return shakkerEmailLogin.login(id)
 
 
 @app.route('/wx-qrcode')
