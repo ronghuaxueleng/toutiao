@@ -16,7 +16,7 @@ from liblibart.ql import ql_env
 #配置邮箱信息
 sender = 'caoqianghappy@126.com'  #发件人的地址
 password = 'GGVQ5CPAcHtHfkBx'  #此处是我们刚刚在邮箱中获取的授权码
-server = zmail.server(sender, password)
+
 
 logging.basicConfig(level=logging.ERROR,
                     filename='/mitmproxy/logs/emaillogin.log',
@@ -32,6 +32,7 @@ class ShakkerEmailLogin(Base):
         self.newSession()
         self.expireSeconds = 120
         self.starttime = int(time.time())
+        self.server = zmail.server(sender, password)
 
     def newSession(self):
         self.sess = requests.Session()
@@ -75,10 +76,13 @@ class ShakkerEmailLogin(Base):
     def login(self, id):
         try:
             while int(time.time()) - int(self.starttime) < self.expireSeconds:
-                mails = server.get_mails(subject='Sign in to Shakker')
+                mails = self.server.get_mails(subject='Sign in to Shakker')
                 if len(mails) > 0:
                     mail = mails[0]
+                    to = mail['to']
                     mail_id = mail['id']
+                    sender = mail['from']
+                    subject = mail['subject']
                     content_html = mail['content_html']
                     soup = BeautifulSoup(content_html[0], "html.parser")
                     for link in soup.find_all('a'):
@@ -96,7 +100,7 @@ class ShakkerEmailLogin(Base):
                             ql_env.update(value, name, id, remarks)
                             ql_env.enable([id])
                             self.send_msg(remarks)
-                            server.delete(mail_id)
+                            self.server.delete(mail_id)
                             return "登录成功"
                 time.sleep(20)
             return "两分钟后未收到邮件"
