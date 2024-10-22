@@ -98,7 +98,7 @@ class ShakkerEmailLogin(Base):
                             self.send_msg(remarks)
                             server.delete(mail_id)
                             return "登录成功"
-                time.sleep(2)
+                time.sleep(20)
             return "两分钟后未收到邮件"
         except Exception as e:
             logger.error(traceback.format_exc())
