@@ -31,7 +31,11 @@ class SSaveLora(SUserInfo):
         headers['content-type'] = 'application/json'
         headers['referer'] = f"https://{self.web_host}/userpage/{self.userInfo['uuid']}/publish"
 
-        __saved_models = saved_models[self.userInfo['uuid']]
+        if self.userInfo['uuid'] in saved_models:
+            __saved_models = saved_models[self.userInfo['uuid']]
+        else:
+            __saved_models = {}
+
 
         pageNo = 1
         total_models = None
