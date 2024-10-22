@@ -215,7 +215,7 @@ class LiblibTasks:
                                                             seconds=random.randint(0, 59))
 
     def get_draw_image_run_date(self):
-        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(3, 5),
+        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(7, 10),
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
