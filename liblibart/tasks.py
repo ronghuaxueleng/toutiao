@@ -1,13 +1,10 @@
 import copy
 import datetime
 import json
-import logging
 import os
 import random
-import re
 import time
 import traceback
-from logging import handlers
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -16,6 +13,7 @@ from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_us
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image
+from liblibart.LogInfo import LogInfo
 from liblibart.Model import Model
 from liblibart.UserInfo import UserInfo, Account
 from liblibart.ql import ql_env
@@ -33,38 +31,10 @@ env_path.parent.mkdir(exist_ok=True)
 load_dotenv(find_dotenv(str(env_path)))
 misfire_grace_time = 60
 
-logger = logging.getLogger(__name__)
-LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S %p"
-format_str = logging.Formatter(LOG_FORMAT, DATE_FORMAT)  #设置日志格式
-logger.setLevel(logging.INFO)  #设置日志级别
-sh = logging.StreamHandler()  #往屏幕上输出
-sh.setFormatter(format_str)  #设置屏幕上显示的格式
-# interval 滚动周期， when="MIDNIGHT", interval=1 表示每天0点为更新点，每天生成一个文件,backupCount  表示日志保存个数
-file_hander = handlers.TimedRotatingFileHandler(filename='/mitmproxy/logs/tasks.log', when='MIDNIGHT',
-                                       interval=1, backupCount=1, encoding='utf-8')
-# 设置生成日志文件名的格式，以年-月-日来命名
-# suffix设置，会生成文件名为log.2020-02-25.log
-file_hander.suffix = "%Y-%m-%d.log"
-# extMatch是编译好正则表达式，用于匹配日志文件名后缀
-# 需要注意的是suffix和extMatch一定要匹配的上，如果不匹配，过期日志不会被删除。
-file_hander.extMatch = re.compile(r"^\d{4}-\d{2}-\d{2}.log$")
-#往文件里写入#指定间隔时间自动生成文件的处理器
-#实例化TimedRotatingFileHandler
-#interval是时间间隔，backupCount是备份文件的个数，如果超过这个个数，就会自动删除，when是间隔的时间单位，单位有以下几种：
-# S 秒
-# M 分
-# H 小时、
-# D 天、
-# W 每星期（interval==0时代表星期一）
-# midnight 每天凌晨
-file_hander.setFormatter(format_str)  #设置文件里写入的格式
-logger.addHandler(sh)  #把对象加到logger里
-logger.addHandler(file_hander)
 
-
-class LiblibTasks:
+class LiblibTasks(LogInfo):
     def __init__(self):
+        super().__init__('/mitmproxy/logs/tasks.log')
         self.yesterday = 0
         self.today = 0
         self.notAvailableToImageUsers = {}
@@ -197,7 +167,7 @@ class LiblibTasks:
                 else:
                     disable_ids.append(user['id'])
             except Exception as e:
-                logging.error(f"nickname：{userInfo['nickname']} UserInfo，{traceback.format_exc()}")
+                self.getLogger().error(f"nickname：{userInfo.userInfo['nickname']} UserInfo，{traceback.format_exc()}")
         if len(disable_ids) > 0:
             ql_env.disable(disable_ids)
         if len(enable_ids) > 0:
@@ -215,7 +185,7 @@ class LiblibTasks:
                                                             seconds=random.randint(0, 59))
 
     def get_draw_image_run_date(self):
-        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(3, 5),
+        return datetime.datetime.now() + datetime.timedelta(minutes=random.randint(7, 10),
                                                             seconds=random.randint(0, 59))
 
     def downloadModel(self):
@@ -353,7 +323,7 @@ class LiblibTasks:
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
-                logging.error(f"nickname：{user['usertoken']} Image，{traceback.format_exc()}")
+                self.getLogger().error(f"nickname：{user['usertoken']} Image，{traceback.format_exc()}")
 
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users()
