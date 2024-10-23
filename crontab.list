@@ -61,4 +61,6 @@
 # 哩布哩布用户信息更新
 */15 * * * * python3 /mitmproxy/liblibart/SUserInfo.py >> /mitmproxy/logs/SliblibUserInfo.log 2>&1
 # 哩布哩布lora列表更新
-# */30 * * * * python3 /mitmproxy/liblibart/SaveLora.py >> /mitmproxy/logs/liblibSaveLora.log 2>&1
+*/30 * * * * python3 /mitmproxy/liblibart/SaveLora.py >> /mitmproxy/logs/liblibSaveLora.log 2>&1
+# 哩布哩布lora列表更新
+*/40 * * * * python3 /mitmproxy/liblibart/SSaveLora.py >> /mitmproxy/logs/liblibSaveLora.log 2>&1
