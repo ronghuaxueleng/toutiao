@@ -187,7 +187,7 @@ if __name__ == '__main__':
     for user in users:
         try:
             if user['expirationDate'] > time.time():
-                userInfo = SUserInfo(user['usertoken'], user['webid'], user['_bl_uid'],
+                userInfo = SUserInfo(user['usertoken'], user['webid'],
                                      f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
                 realUser = userInfo.userInfo
             else:
