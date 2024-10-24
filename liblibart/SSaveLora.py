@@ -36,7 +36,6 @@ class SSaveLora(SUserInfo):
         else:
             __saved_models = {}
 
-
         pageNo = 1
         total_models = None
         while total_models is None or total_models > 0:
@@ -98,22 +97,25 @@ class SSaveLora(SUserInfo):
                                 timestamp=datetime.datetime.now()
                             ).where(Model.user_uuid == self.userInfo['uuid'], Model.modelId == version["id"]).execute()
                         else:
-                            Model.insert(
-                                user_uuid=self.userInfo['uuid'],
-                                user_name=self.userInfo['nickname'],
-                                modelId=version["id"],
-                                modelName=model["name"],
-                                modelVersionName=version['name'],
-                                modelType=model['modelType'],
-                                showType=version['showType'],
-                                vipUsed=model['vipUsed'],
-                                otherInfo=json.dumps(otherInfo),
-                                createTime=version['createTime'],
-                                updateTime=version['updateTime'],
-                            ).execute()
+                            try:
+                                Model.insert(
+                                    user_uuid=self.userInfo['uuid'],
+                                    user_name=self.userInfo['nickname'],
+                                    modelId=version["id"],
+                                    modelName=model["name"],
+                                    modelVersionName=version['name'],
+                                    modelType=model['modelType'],
+                                    showType=version['showType'],
+                                    vipUsed=model['vipUsed'],
+                                    otherInfo=json.dumps(otherInfo),
+                                    createTime=version['createTime'],
+                                    updateTime=version['updateTime'],
+                                ).execute()
+                            except Exception as e:
+                                self.getLogger().error(traceback.format_exc())
 
-        for model in __saved_models:
-            Model.delete().where(Model.modelId == model.modelId).execute()
+            for model in __saved_models:
+                Model.delete().where(Model.modelId == model.modelId).execute()
 
 
 if __name__ == '__main__':
