@@ -65,7 +65,7 @@ models = MyModel.select(
 
 
 class SUserInfo(LogInfo):
-    def __init__(self, token, webid, bl_uid, log_filename):
+    def __init__(self, token, webid, log_filename):
         super().__init__(log_filename)
         base64_web_host = 'd3d3LnNoYWtrZXIuYWk='
         base64_api_host = 'd3d3LnNoYWtrZXIuYWk='
@@ -88,14 +88,13 @@ class SUserInfo(LogInfo):
             'sec-fetch-mode': 'cors',
             'sec-fetch-site': 'same-origin',
             'token': token,
-            'cookie': f'webid={webid}; liblibai_usertoken={token}; _bl_uid={bl_uid}',
+            'cookie': f'webid={webid}; liblibai_usertoken={token};',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
             'webid': webid,
             'x-language': 'zh-TW'
         }
         self.token = token
         self.webid = webid
-        self.bl_uid = bl_uid
         self.userInfo = {}
         self.getUserInfo()
         if self.userInfo is not None:
