@@ -31,10 +31,9 @@ class SSaveLora(SUserInfo):
         headers['content-type'] = 'application/json'
         headers['referer'] = f"https://{self.web_host}/userpage/{self.userInfo['uuid']}/publish"
 
+        _saved_models = {}
         if self.userInfo['uuid'] in saved_models:
-            __saved_models = saved_models[self.userInfo['uuid']]
-        else:
-            __saved_models = {}
+            _saved_models = saved_models[self.userInfo['uuid']]
 
         pageNo = 1
         total_models = None
@@ -84,8 +83,8 @@ class SSaveLora(SUserInfo):
                             "ngPrompt": "nsfw,EasyNegative, EasyNegativeV2, ng_deepnegative_v1_75t, worst quality, low quality,bad-hands-5,BadHandsV5"
                         }
                         key = f"{self.userInfo['uuid']}_{version['id']}"
-                        if key in __saved_models:
-                            del __saved_models[key]
+                        if key in _saved_models:
+                            del _saved_models[key]
                             Model.update(
                                 user_name=self.userInfo['nickname'],
                                 modelName=model["name"],
@@ -114,8 +113,11 @@ class SSaveLora(SUserInfo):
                             except Exception as e:
                                 self.getLogger().error(traceback.format_exc())
 
-            for model in __saved_models:
-                Model.delete().where(Model.modelId == model.modelId).execute()
+            for key, model in _saved_models.items():
+                try:
+                    Model.delete().where(Model.modelId == model.modelId).execute()
+                except Exception as e:
+                    self.getLogger().error(traceback.format_exc())
 
 
 if __name__ == '__main__':
