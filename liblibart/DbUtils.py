@@ -16,7 +16,7 @@ class ReconnectPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase):
     def get_db_instance(cls, database='bGlibGli'):
         if not cls._instance:
             user = 'cm9vdA=='
-            password = 'MTIzNDU2Nzg='
+            password = 'WGlueWFuMTIwM0BA'
             port = 'MzMwNg=='
             cls._instance = cls(str(base64.b64decode(database), 'utf-8'),
                                 user=str(base64.b64decode(user), 'utf-8'),
