@@ -9,8 +9,8 @@ from CookieUtils import save_to_suanlibuzu_users
 current_day_json_path = '/mitmproxy/config/s_current_day.json'
 
 class SBase(SUserInfo):
-    def __init__(self, token, webid, bl_uid, filename=None):
-        super().__init__(token, webid, bl_uid, filename)
+    def __init__(self, token, webid, filename=None):
+        super().__init__(token, webid, filename)
         self.prompt = "1girl,masterpiece,best quality,4k,1girl,solo,realistic,jewelry,necklace,brown eyes,earrings,lips,looking at viewer,long hair BREAK\nwhite shirt,short sleeves,bracelet,black hair,smile,closed mouth,facing viewer,\nmakeup,fashion model,picture-perfect face,flowing hair,(full body:1.5),shiny skin,(masterpiece, top quality),master piece,professional artwork,famous artwork,(realistic,photorealistic:1.37),HDR,UHD,8K,ultra realistic 8k cg,8K,32k,HD,"
         self.negativePrompt = "EasyNegativeV2,(badhandv4:1.2),(worst quality, low quality, cgi, bad eye, worst eye, illustration, cartoon),deformed,distorted,disfigured,poorly drawn,bad anatomy,wrong anatomy,(normal quality:2),lowres,bad anatomy,bad hands,normal quality,((monochrome)),((grayscale)),easynegative,paintings,sketches,,EasyNegative, EasyNegativeV2, ng_deepnegative_v1_75t, worst quality, low quality,bad-hands-5,BadHandsV5,illustration, 3d, 2d, painting, cartoons, sketch,text, error, missing fingers,verybadimagenegative_v1.3, Bybadartist,badhandv4, lowres, bad anatomy, bad hands, ((monochrome)), ((grayscale)) watermark,nsfw,EasyNegative, EasyNegativeV2, ng_deepnegative_v1_75t, worst quality, low quality,bad-hands-5,BadHandsV5"
         self.gen_param = {

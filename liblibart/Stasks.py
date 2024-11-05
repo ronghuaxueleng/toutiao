@@ -14,6 +14,7 @@ from SDownLoadImage import SDownLoadImage
 from SImage import SImage
 from SModel import Model
 from SUserInfo import SUserInfo, Account
+from liblibart.LogInfo import LogInfo
 from ql import ql_env
 from utils import send_message
 
@@ -30,8 +31,9 @@ load_dotenv(find_dotenv(str(env_path)))
 misfire_grace_time = 60
 
 
-class SLiblibTasks:
+class SLiblibTasks(LogInfo):
     def __init__(self):
+        super().__init__('/mitmproxy/logs/Stasks.log')
         self.yesterday = 0
         self.today = 0
         self.notAvailableToImageUsers = {}
@@ -138,8 +140,7 @@ class SLiblibTasks:
         disable_ids = []
         enable_ids = []
         for user in users:
-            userInfo = SUserInfo(user['usertoken'], user['webid'], user['_bl_uid'],
-                                 f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
+            userInfo = SUserInfo(user['usertoken'], user['webid'], f'/mitmproxy/logs/SUserInfo_{os.getenv("RUN_OS_KEY")}.log')
             try:
                 realUser = userInfo.userInfo
                 if realUser is not None:
@@ -162,7 +163,7 @@ class SLiblibTasks:
                 else:
                     disable_ids.append(user['id'])
             except Exception as e:
-                userInfo.getLogger().error(f"nickname：{userInfo.userInfo['nickname']} UserInfo，{traceback.format_exc()}")
+                self.getLogger().error(f"nickname：{userInfo.userInfo['nickname']} UserInfo，{traceback.format_exc()}")
         if len(disable_ids) > 0:
             ql_env.disable(disable_ids)
         if len(enable_ids) > 0:
@@ -185,8 +186,7 @@ class SLiblibTasks:
         users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
         for user in users:
             try:
-                SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                              f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
+                SDownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
             except Exception as e:
                 print(traceback.format_exc())
         s = scheduler.get_job(job_id)
@@ -231,12 +231,11 @@ class SLiblibTasks:
                 else:
                     image.getLogger().info(f"finished nickname：{image.userInfo['nickname']}，100%.....")
                     image.nps()
-                    sDownLoadImage = SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                                   f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
+                    sDownLoadImage = SDownLoadImage(user['usertoken'], user['webid'], f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
                     try:
                         sDownLoadImage.download(share_image=True, feed_image=True)
                     except Exception as e:
-                        sDownLoadImage.getLogger().error(f"nickname：{sDownLoadImage.userInfo['nickname']} SDownLoadImage，{traceback.format_exc()}")
+                        self.getLogger().error(f"nickname：{sDownLoadImage.userInfo['nickname']} SDownLoadImage，{traceback.format_exc()}")
                     image.getLogger().info(f'递归层级{depth}')
                     return depth
 
@@ -247,8 +246,7 @@ class SLiblibTasks:
                     to_save_run_users.remove(user['usertoken'])
                     save_to_run_users(list(set(to_save_run_users)), True)
                 if user['usertoken'] not in suanlibuzu:
-                    image = SImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                                  f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log')
+                    image = SImage(user['usertoken'], user['webid'], f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log')
                     runCount = {}
                     for model in my_loras:
                         userUuid = model['user_uuid']
@@ -289,7 +287,7 @@ class SLiblibTasks:
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
-                user.getLogger().error(f"nickname：{user.userInfo['nickname']} Image，{traceback.format_exc()}")
+                self.getLogger().error(f"nickname：{user['usertoken']} Image，{traceback.format_exc()}")
 
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users(True)

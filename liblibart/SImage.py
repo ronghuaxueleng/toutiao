@@ -27,8 +27,8 @@ load_dotenv(find_dotenv(str(env_path)))
 class SImage(SBase):
     _instance_lock = threading.Lock()
 
-    def __init__(self, token, webid, bl_uid, log_filename):
-        super().__init__(token, webid, bl_uid, log_filename)
+    def __init__(self, token, webid, log_filename):
+        super().__init__(token, webid, log_filename)
         self.param = copy.deepcopy(self.gen_param)
         self.param['cid'] = self.webid
 
@@ -191,7 +191,6 @@ if __name__ == '__main__':
     for user in random.sample(users, 1):
         # for user in users:
         try:
-            SImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                   f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
+            SImage(user['usertoken'], user['webid'], f'/mitmproxy/logs/SImage_{os.getenv("RUN_OS_KEY")}.log').gen_image()
         except Exception as e:
             print(traceback.format_exc())

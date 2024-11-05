@@ -22,8 +22,8 @@ load_dotenv(find_dotenv(str(env_path)))
 
 
 class SDownLoadImage(SUserInfo):
-    def __init__(self, token, webid, bl_uid, log_filename):
-        super().__init__(token, webid, bl_uid, log_filename)
+    def __init__(self, token, webid, log_filename):
+        super().__init__(token, webid, log_filename)
         self.my_headers = self.headers
         self.my_headers['content-type'] = 'application/json'
         self.my_headers['referer'] = f'https://{self.web_host}/aigenerator'
@@ -138,8 +138,7 @@ class SDownLoadImage(SUserInfo):
 if __name__ == '__main__':
     users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
     for user in users:
-        sDownLoadImage = SDownLoadImage(user['usertoken'], user['webid'], user['_bl_uid'],
-                       f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
+        sDownLoadImage = SDownLoadImage(user['usertoken'], user['webid'], f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log')
         try:
             sDownLoadImage.download(share_image=True, feed_image=True)
         except Exception as e:
