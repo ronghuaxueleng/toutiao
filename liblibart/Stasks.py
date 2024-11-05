@@ -14,7 +14,7 @@ from SDownLoadImage import SDownLoadImage
 from SImage import SImage
 from SModel import Model
 from SUserInfo import SUserInfo, Account
-from liblibart.LogInfo import LogInfo
+from LogInfo import LogInfo
 from ql import ql_env
 from utils import send_message
 
