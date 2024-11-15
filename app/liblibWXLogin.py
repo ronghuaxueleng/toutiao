@@ -5,6 +5,7 @@ import json
 import logging
 import time
 import traceback
+from datetime import datetime
 
 import requests
 
@@ -97,8 +98,11 @@ class LiblibwxLogin(Base):
                             data = info['data']
                             name = data['name']
                             remarks = data['remarks']
+                            sourcetype = '微信'
+                            username = data['username']
+                            createtime = data['createtime']
                             logger.info(f"{remarks}登录")
-                            ql_env.update(value, name, id, remarks)
+                            ql_env.update(value, name, id, remarks, sourcetype, username, createtime)
                             ql_env.enable([id])
                             self.send_msg(remarks)
                     else:
@@ -109,11 +113,18 @@ class LiblibwxLogin(Base):
                         if len(res) > 0:
                             info = res[0]
                             id = info['id']
-                            ql_env.update(value, name, id, remarks)
+                            sourcetype = '微信'
+                            username = info['username']
+                            createtime = info['createtime']
+                            ql_env.update(value, name, id, remarks, sourcetype, username, createtime)
                             ql_env.enable([id])
                             self.send_msg(remarks)
                         else:
-                            ql_env.add(name, value, remarks)
+                            sourcetype = '微信'
+                            username = ''
+                            time_now = datetime.now()
+                            createtime = time_now.strftime("%Y年%m月%d日 %H:%M:%S")
+                            ql_env.add(name, value, remarks, sourcetype, username, createtime)
                             self.send_msg(remarks)
                     return 'ok'
                 time.sleep(2)

@@ -96,8 +96,11 @@ class ShakkerEmailLogin(Base):
                             data = info['data']
                             name = data['name']
                             remarks = data['remarks']
+                            sourcetype = '邮箱'
+                            username = data['username']
+                            createtime = data['createtime']
                             logger.info(f"{remarks}登录")
-                            ql_env.update(value, name, id, remarks)
+                            ql_env.update(value, name, id, remarks, sourcetype, username, createtime)
                             ql_env.enable([id])
                             self.send_msg(remarks)
                             self.server.delete(mail_id)

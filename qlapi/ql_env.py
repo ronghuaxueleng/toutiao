@@ -28,7 +28,7 @@ class qlenv(ql_api):
     def __init__(self, url: str, port: int, client_id: str, client_secret: str):
         super().__init__(url, port, client_id, client_secret)
 
-    def add(self, new_env, value, remarks: ""):
+    def add(self, new_env, value, remarks: "", sourcetype, username, createtime):
         """
         添加环境变量
 
@@ -38,7 +38,14 @@ class qlenv(ql_api):
         :return:  响应结果json
         """
         url = f"{self.url}/open/envs"
-        data = [{"value": value, "name": new_env, "remarks": remarks}]
+        data = [{
+            "value": value,
+            "name": new_env,
+            "remarks": remarks,
+            "sourcetype": sourcetype,
+            "username": username,
+            "createtime": createtime
+        }]
         data = json.dumps(data)
         res = self.s.post(url=url, data=data)
         return res.json()
@@ -78,7 +85,7 @@ class qlenv(ql_api):
         res = self.s.get(url=url).json().get("data")
         return res
 
-    def update(self, value, name, id, remarks=""):
+    def update(self, value, name, id, remarks="", sourcetype="", username="", createtime=""):
         """
         更新环境变量
 
@@ -89,7 +96,15 @@ class qlenv(ql_api):
         :return: 响应结果json
         """
         url = f"{self.url}/open/envs"
-        data = {"value": value, "name": name, "remarks": remarks, "id": id}
+        data = {
+            "value": value,
+            "name": name,
+            "remarks": remarks,
+            "id": id,
+            "sourcetype": sourcetype,
+            "username": username,
+            "createtime": createtime
+        }
         data = json.dumps(data)
         print(data)
         res = self.s.put(url=url, data=data).json()
