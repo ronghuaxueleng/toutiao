@@ -217,7 +217,7 @@ class liblibQQLogin(Base):
                             logger.info(f"{remarks}登录")
                             ql_env.update(value, name, id, remarks, sourcetype, username, createtime)
                             ql_env.enable([id])
-                            self.send_msg(remarks)
+                            self.send_msg(remarks + '-' + username)
                     else:
                         name = 'liblib_cookie'
                         remarks = f'qq-{p_uin}-{nickname}'
@@ -231,7 +231,7 @@ class liblibQQLogin(Base):
                             createtime = info['createtime']
                             ql_env.update(value, name, id, remarks, sourcetype, username, createtime)
                             ql_env.enable([id])
-                            self.send_msg(remarks)
+                            self.send_msg(remarks + '-' + username)
                         else:
                             sourcetype = 'qq'
                             username = ''
