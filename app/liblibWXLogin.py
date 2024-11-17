@@ -29,6 +29,7 @@ class LiblibwxLogin(Base):
         self.headers = {
             'accept': '*/*',
             'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'content-type': 'application/json',
             'cache-control': 'no-cache',
             'content-length': '0',
             'dnt': '1',
@@ -48,7 +49,10 @@ class LiblibwxLogin(Base):
 
     def get_qrcode(self):
         url = str(base64.b64decode("aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L3dlaXhpbi9sb2dpbi9zaG93cXJjb2Rl"), 'utf-8')
-        response = requests.request("POST", url, headers=self.headers, data={})
+        payload = json.dumps({
+            "source": "liblib"
+        })
+        response = requests.request("POST", url, headers=self.headers, data=payload)
         res = json.loads(response.text)
         data = json.loads(res["data"])
         self.ticket = data['ticket']
