@@ -7,6 +7,7 @@ from liblibart.DbUtils import get_conn
 
 db = get_conn()
 
+
 class Statistics(Model):
     _id = PrimaryKeyField
     user_uuid = CharField(null=False)
@@ -18,6 +19,7 @@ class Statistics(Model):
 
     class Meta:
         database = db
+
 
 # 账户信息
 class RunStatistics(Model):
