@@ -46,25 +46,46 @@ def getLiblibStatisticsData(start_period, end_period):
 
 if __name__ == '__main__':
     now = datetime.datetime.now()
-    this_period_start = datetime.datetime(now.year, now.month, 1).strftime('%Y%m%d')
-    this_period_end = datetime.datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1]).strftime(
+    last = now.replace(day=1)
+    last_month = last.month - 2
+    last_period_start = datetime.datetime(now.year, last_month, 1).strftime('%Y%m%d')
+    last_period_end = datetime.datetime(now.year, last_month, calendar.monthrange(now.year, last_month)[1]).strftime(
         '%Y%m%d')
-    datas = getLiblibStatisticsData(this_period_start, this_period_end)
-    for data in datas:
-        query = Statistics.select().where(Statistics.user_uuid == data['user_uuid'],
-                                          Statistics.period == data['period'])
-        if query.exists():
-            Statistics.update(
-                runCount=data['runCounts'],
-                downloadModelCount=data['downloadModelCounts'],
-                downloadImageCount=data['downloadImageCounts']
-            ).where(Statistics.user_uuid == data['user_uuid'],
-                    Statistics.period == data['period']).execute()
-        else:
-            Statistics.insert(
-                period=data['period'],
-                user_uuid=data['user_uuid'],
-                runCount=data['runCounts'],
-                downloadModelCount=data['downloadModelCounts'],
-                downloadImageCount=data['downloadImageCounts']
-            ).execute()
+    datas = {}
+    Statisticsdata = Statistics.select().where(Statistics.period >= f"{last_period_start}-{last_period_end}").order_by(Statistics.user_uuid, Statistics.period)
+    for idx, data in enumerate(Statisticsdata):
+        period = data.period
+        runCount = data.runCount
+        user_uuid = data.user_uuid
+        downloadImageCount = data.downloadImageCount
+        map = datas.setdefault(user_uuid, {})
+        runCount_map = map.setdefault('runCount', {})
+        runCount_map[period] = runCount
+        map['runCount'] = runCount_map
+
+        downloadImageCount_map = map.setdefault('downloadImageCount', {})
+        downloadImageCount_map[period] = downloadImageCount
+        map['downloadImageCount'] = downloadImageCount_map
+
+        datas[user_uuid] = map
+
+    result = []
+    accounts = LiblibAccount.select()
+    for idx, account in enumerate(accounts):
+        if account.user_uuid in datas:
+            profile = datas[account.user_uuid]
+            runCounts = profile['runCount']
+            runCount_list = []
+            for period, runCount in runCounts.items():
+                runCount_list.append(format(runCount, ','))
+
+            downloadImageCounts = profile['downloadImageCount']
+            downloadImageCount_list = []
+            for period, downloadImageCount in downloadImageCounts.items():
+                downloadImageCount_list.append(format(downloadImageCount, ','))
+            result.append({
+                'nickname': account.nickname,
+                'runCount': '/'.join(runCount_list),
+                'downloadImageCount': '/'.join(downloadImageCount_list)
+            })
+    print(result)
