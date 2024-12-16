@@ -4,8 +4,8 @@ import datetime
 
 from peewee import fn
 
-from liblibart.UserInfo import Account as LiblibAccount
-from liblibart.Statistics import Statistics, DownLoadImageStatistics, DownloadModelStatistics, RunStatistics
+from UserInfo import Account as LiblibAccount
+from Statistics import Statistics, DownLoadImageStatistics, DownloadModelStatistics, RunStatistics
 
 
 def getLiblibStatisticsData(start_period, end_period):
