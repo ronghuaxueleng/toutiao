@@ -32,6 +32,7 @@ def getLiblibStatisticsData(start_period, end_period):
                        RunStatistics.day <= end_period).get())
         runCounts = runs.runCount
         data = {
+            'nickname': nickname,
             'user_uuid': user_uuid,
             'period': f"{start_period}-{end_period}",
             'runCounts': 0 if runCounts is None else runCounts,

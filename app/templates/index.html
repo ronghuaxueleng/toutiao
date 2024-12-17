@@ -29,7 +29,7 @@
                             </el-table>
                         </el-row>
                     </el-tab-pane>
-                    <el-tab-pane label="哩布哩布上一周期" name="lastliblib">
+                    <el-tab-pane label="哩布哩布最近三期" name="lastliblib">
                         <el-row :span="24" class="content-row" style="font-size: 14px;">
                             <span v-text="liblibPeriod"></span>
                         </el-row>
@@ -37,7 +37,6 @@
                             <el-table v-loading="loading" :data="liblib.datas" stripe style="margin-top: 10px">
                                 <el-table-column prop="nickname" label="账号" align="center"></el-table-column>
                                 <el-table-column prop="runCounts" label="运行数量" align="center"></el-table-column>
-                                <el-table-column prop="downloadModelCounts" label="模型下载数量" align="center"></el-table-column>
                                 <el-table-column prop="downloadImageCounts" label="图片下载数量" align="center"></el-table-column>
                             </el-table>
                         </el-row>
