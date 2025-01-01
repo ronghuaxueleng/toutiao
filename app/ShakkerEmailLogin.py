@@ -30,7 +30,7 @@ class ShakkerEmailLogin(Base):
         super().__init__("有邮箱用户登录了")
         self.sess = None
         self.newSession()
-        self.expireSeconds = 120
+        self.expireSeconds = 40
         self.starttime = int(time.time())
         self.server = zmail.server(sender, password)
 
