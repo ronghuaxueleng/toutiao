@@ -1,4 +1,4 @@
-name: "构建Docker镜像8"
+name: "构建Docker镜像nodejs"
 on:
   workflow_dispatch:
   
@@ -12,5 +12,5 @@ jobs:
           git clone -b docker https://github.com/ronghuaxueleng/toutiao.git docker
           cd docker
           docker login docker.io -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
-          docker build -t ronghuaxueleng/jrtt:mitmproxy8.1.1 . -f Dockerfile8
-          docker push ronghuaxueleng/jrtt:mitmproxy8.1.1
+          docker build -t ronghuaxueleng/jrtt:mitmproxy-nodejs:6.0.2-14.18.1 . -f Dockerfile-nodejs
+          docker push ronghuaxueleng/jrtt:mitmproxy-nodejs:6.0.2-14.18.1
