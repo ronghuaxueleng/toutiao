@@ -9,7 +9,7 @@ ShellDir=${MITM_DIR:-$(
 )}
 LogDir=${ShellDir}/logs
 [ ! -d ${LogDir} ] && mkdir -p ${LogDir}
-OwnActionsURL=https://gitee.com/getready/mitmproxy.git
+OwnActionsURL=https://proxy.v2gh.com/https://github.com/ronghuaxueleng/toutiao.git
 
 ## 更新Shell源码
 function Git_PullShell() {
