@@ -1,58 +1,107 @@
 # -*- coding: utf-8 -*-
-import email as email_reader
-import random
-import ssl
-from email.header import decode_header
-from enum import Enum
-import requests
+"""
+# @Author  : RanKe
+# @Time    : 2024/10/18 22:16
+# @File      : get_mail_info.py
+# @Desc   :
+"""
+
 import imaplib
+import email
+import requests
+from email.utils import parsedate_to_datetime
+from email.header import decode_header, make_header
 
-def get_access_token_from_refresh_token(refresh_token, client_id):
-    headers = {
-        'Host': 'login.microsoftonline.com',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-    }
+from zmail.parser import parse_mail
+
+import zmail
+
+
+def get_access_token(client_id, refresh_token):
+    url = 'https://login.microsoftonline.com/common/oauth2/v2.0/token'
     data = {
-        "client_id": client_id,
-        "refresh_token": refresh_token,
-        "grant_type": "refresh_token"
+        'client_id': client_id,
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token,
     }
-    rr = requests.post("https://login.microsoftonline.com/common/oauth2/v2.0/token", headers=headers, data=data)
+    response = requests.post(url, data=data)
+    result_status = response.json().get('error')
+    if result_status is not None:
+        print(result_status)
+        return [False, f"邮箱状态异常：{result_status}"]
+    else:
+        new_access_token = response.json()['access_token']
+        return [True, new_access_token]
 
-    if rr.json().get("error") is None:
-        return {"code": 0, "access_token": rr.json()["access_token"], "refresh_token": rr.json()["refresh_token"]}
-    if rr.json().get("error_description").find("User account is found to be in service abuse mode") != -1:
-        return {"code": 1, "message": "account was blocked or wrong username, password, refresh_token, client_id"}
-    return {"code": 1, "message": "get access token is wrong"}
 
-def imap_authenticate_with_oauth2(username, access_token):
-    auth_string = f"user={username}\1auth=Bearer {access_token}\1\1"
-    mail = imaplib.IMAP4_SSL("outlook.office365.com")
-    mail.authenticate("XOAUTH2", lambda x: auth_string)
-    return mail
+def generate_auth_string(email_name, access_token):
+    auth_string = f"user={email_name}\1auth=Bearer {access_token}\1\1"
+    print(auth_string)
+    return auth_string
 
-def read_mail(email, access_token):
-    mail = imap_authenticate_with_oauth2(email, access_token)
 
-    mail.list()
-    mail.select("inbox")
-    status, messages = mail.search(None, 'ALL')
+def get_mail_info(email_name, access_token):
+    result_list = []
+    mail = imaplib.IMAP4_SSL('outlook.live.com')
+    mail.authenticate('XOAUTH2', lambda x: generate_auth_string(email_name, access_token))
+    mail.select('inbox')  #选择收件箱
+    # mail.select('Junk')  #选择垃圾箱
+    result, data = mail.search(None, 'ALL')
+    if result == "OK":
+        mail_ids = sorted(data[0].split(), reverse=True)
+        last_mail_id_list = mail_ids[:3]
+        for last_mail_id in last_mail_id_list:
+            result, msg_data = mail.fetch(last_mail_id, "(RFC822)")
+            body = ""
+            if result == 'OK':
+                # 解析邮件内容
+                raw_email = msg_data[0][1]
+                email_message = email.message_from_bytes(raw_email)
+                subject = str(make_header(decode_header(email_message['SUBJECT'])))  # 主题
+                mail_from = str(make_header(decode_header(email_message['From']))).replace('<', '(').replace('>',
+                                                                                                             ')')  # 发件人
+                mail_to = str(make_header(decode_header(email_message['To']))).replace('<', '(').replace('>',
+                                                                                                         ')')  # 收件人
+                mail_dt = parsedate_to_datetime(email_message['Date']).strftime("%Y-%m-%d %H:%M:%S")  # 收件时间
+                if email_message.is_multipart():
+                    for part in email_message.walk():
+                        content_type = part.get_content_type()
+                        if content_type in ["text/html"]:
+                            payload = part.get_payload(decode=True)
+                            body += payload.decode('utf-8', errors='ignore')
 
-    messages = messages[0].split()
-    for mail_id in messages:
-        status, msg_data = mail.fetch(mail_id, '(RFC822)')
-        email_msg = msg_data[0][1].decode('utf-8')
-        print(email_msg)
-    print("done")
+                else:
+                    body = email_message.get_payload(decode=True).decode('utf-8', errors='ignore')
+                res_dict = {"subject": subject, "mail_from": mail_from, "mail_to": mail_to, "mail_dt": mail_dt,
+                            "body": body}
+                result_list.append(res_dict)
+            else:
+                res_dict = {"error_key": "解析失败", "error_msg": "邮件信息解析失败，请联系管理员优化处理！"}
+                return res_dict
+        return result_list
+    else:
+        res_dict = {"error_key": "登录失败", "error_msg": "登录失败，账号异常!"}
+        return res_dict
 
-def example():
-    email = "cadet-morass-edible@outlook.com"
-    client_id = "f76823ba-5521-4b17-8f71-d286178502bf"
-    refresh_token = "M.C560_BAY.0.U.-Cv5wWkc0vatEXhjdgMX8PCVWs8wprkmilYOsT66iFBb*kiNPca8LhxgyK8WjUmF6QCbNOlYIsdB!*3EqV5TX*Mb2wM3pSOXpOxYhZ33xX!!63l4c01T43mKZZJd!sFO4*krlR6DGKucB7VXl2AV1ht*KuHbfajNxYWrC91joCreP5vy*13et0C63HM8b1OTT7z9eUhyjMy3dtc!cgqBBYGmmtR3K3Uq1*zMEk0vTrY2jo8i9KrK0JV2vZRoi7JBXOV0SNIe0crADwxwiVm*5G2vf9c0pLGq4u7fTMM95xKYE2fC*0AX6fbI1Is95e7b22AYE4Brqyst4tQrQ79pe83debzHDQS414Spl*K91qeo4TdQ78GAbqtGjFZEoxW!6LoaL!bOWQT!S7q4DYz!mzgYODjkUTX7MrP7a4gD3Zvy06BRENsiDcN8ir5D1QI8VXZ76on9Hyl8a6dUlKkpKundgWcnvDlatDLHK4kug9kUJ"
-    access_token = "EwBYA+l3BAAUcDnR9grBJokeAHaUV8R3+rVHX+IAAQuo6rwX2SHz9RweZB5fsVyaV3G3yzvi9Ybz28MCfrOSgpqM/QeK7cPqmp0auh3t9aX2/KEAmbGTJHen3bsb+1TpI3CAB48iM+fVb+vRf+EjdC/JCtDOfUnWzNxoRpR7L9wzn0lcTihG47+K9UhbCmSQfp5lr7aWds2cdCGXQb+JAQuW5yhdDH5MhbykURxmtVutBR7SBDxakUS4vTmSXQ3uSEuul1dDtTxN2LMdgZe6YxWCtm8Dt+tXc6H9hx2ZzY3M+z0R8WG8V/11m0/XcFnex6gtv3p8uYYChSoEd4Z4/fK8uIcpewVwfdCOTCTmevkdc8StfvzfjX+jlGx1tk0QZgAAEJyQplv91ZZSGhgD7Z13qWMgAhgRLoM+U894myv99CfM4WAt3FndwPhAMXFIUa8eylJp2i1OLDMS5aQ1icmFuQE182ngexpb5IpJ4sxSO51OlnEQz8jqWi18ig37sFahMoLJAJbWb8NL7FGM8tz05uXpXq2Qfq8YNtqMjD0VtSewSqBYHH7rf5H5fH1tSXf8oOC+MDNC/+syv3U5qd69YzvaU29/GCVTs7VQffpzkjcA7/uVcqvrJzircJ2eQUhoOsD5qvOA+UptmpaqUrQ1YQW1cyMTOAuhkXRnGbsZG2yLWeyr9IwkHPuRl2MwGjn/10nyvqE49UVoBSHJkwU93YfkqY+ouMEuHUE8p7gZsRfX1jeK3xnT6BnFtW3+UoVVAuwGiQtpkvu7llZ9C6tejRCZqVx4QNbkWMo+BOoHCuTN/hvG3GXAmtVbf65VASOvrSb1T0LW3UG+83t9Ev4grwxuiiFbZFboIfbT04jSWEDQMOLhFMTyQDueUNKslwAdgrONrlt6p2istvou8e8ND3WoVorA5ZvhZL9k1OOFmPXzdssnyxPpj4+BvVDpPFFa1w7flW0qnVMLZJu7ZMyCLoqzofYrSfKlDAdvu7K/AtlSnsoC6BxKgFdo/bZheIZjF/xZYvkqQMXUb+e8DRYK99vJcBdUNmtcaKSr/5dphYHwBI1HSeuyOit9TUEEg8lRHZO7A5XvBOf4eyqiLddSa3UsyLE1NRNC948cU5kf2FFkF/l/Ag=="
-    # token = get_access_token_from_refresh_token(refresh_token, client_id)
-    read_mail(email, access_token)
 
-# 调用示例
-example()
+# https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f76823ba-5521-4b17-8f71-d286178502bf&scope=IMAP.AccessAsUser.All%20POP.AccessAsUser.All%20SMTP.Send%20User.Read%20Mail.Read%20offline_access&response_type=code&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&prompt=login
+
+if __name__ == '__main__':
+    client_id = 'f76823ba-5521-4b17-8f71-d286178502bf'
+    email_name = 'cadet-morass-edible@outlook.com'
+    refresh_token = 'M.C560_SN1.0.U.-CsPoPdeVgJOgQOX6W3TpIouJ7pHTrEyYKaiv5bNbHvrIQAcJm2M7Rcg1EcJKmgPOUwUuLD2yYn06q4pCC5FY2Kl0lCGK4n6xFRjXtK95fGp9RmxvthAkMkWfIScKB98ERo3a4wYoB3IpV5MdSdeb!lxaFfv7jxuFOHuQbqYygfjXCLhDZ4xKjMfogewERX1SdBO1aTj01qnX7DvwCBO52i5iuUGwrZstgxo53KMihjcHHea!mVwyK7L1z2L5Lx72IWyFOVHJwHgau0iaQLRxNlgC2D*5IbbwYHT*1J78KzHPSP7K0KEN0zIXdb738iRxQtB0O9GHj!ac9fnbrEcg6oDTLWqGZ8qHP3tEe184h*z6ATLmmliil18A3D7VpcNKrNeYAQ!BNFk3Cdi5YFVBHfr5VI2zJ2wpVEyJ0rCkyLHicrpt*tIGUXqfuy3fEccyWg$$'
+    access_token = 'EwBYA+l3BAAUcDnR9grBJokeAHaUV8R3+rVHX+IAAcz4DhHgkK1gull4DlRvRQCrrNQ1vykb5d0+RkZnMWP+itR2fNXmdpLvV1bU5zVlqQ0k1FvCNIRa1NJ+ZXdluyJk4xD68whjROghH1RD9yhz03AghJfSLeBLjpOu+PBUJkLAyFPF0XIjBbOC+wmLDkmALR6srtwlgjOcezXgpfzlzZK13rbXrJKygnyYs97Tp05kEt2ZTNi33ZA0yCs2w4Iv72+zy4EfaOhkL2sHvlrVwVn+N6bSNhvPUZ2kqKlHc8Wh8iG06Y8IQ8Ad+JDbnj8Jj/pO0GEHSh7Nqu1griI/g3x5r6uLh9B8nS6BLZdIMO1uxqZiMFr47UDfjFKZTFsQZgAAEAxykFEywMtz+JKDXuEJzEogAl9CNa4wSj0kyj30EiK7mfnQv02lkE0qA+kJd8jF72E+ECR4PiHqay/uCvO9/nSJcKlcinvbfSlo3jS0OvnDeJ/zIBCkTZ1tTBv6xjc9b5ksO3qxr+OSUPUHIY1DR761m/U2ZORw3afDmhxWu8JJuuzDxkD5fEFSWfqYOluxu0Wc0T7/sNWG5Fwg0ME/9DM5rsiWa7mRdCReGPH7WhCbS6uQgW+AEv6aGGMOBm7EPa9HHO+Yi/lvccUuyhAy4aYHME5Nu+N849HVo7q2eUyIsY0uCx3Ef8KMZzCVAGC/Uwpri9T00JWjfkLp5ItfUxzEKSeNOBqsF1s7Pbs89r3ZeZrZ556vkG7YmPEahZrnpyDMQ+vpe8CCrEAVOUjB1qus0rwJ99kTG9QGNKX0VQY59+Ya59brpdr9AX7f4ECGHkiKyb6fdvSln+R6vkEf/dMy7saizDvALEVhSZddT8iNqFjGQQGFFtvJW94zQfWf5iJCYvDvf/RFqyA4aAL6+LRFpDqKKBkHmxXVuBjQ/uKSUYxAIgXgE2X8dnyOe88QFFNQhURrozG7v4eYy2qKf/Qv6asDPquphXex9WeY5RVRFq/7nPFYqSeg25V/Ipy6kud7NIVQ3p9iHZ4Qa+vYaH6AzkReGlL+/Bqq75BKfIuvhi3CLyaDRbQYDnMZnz+SdJyHuIdgI9I3ZimXhEJ/P4cnac78Ga99cG7ARRioGEaY4ZV/Ag=='
+    mail_info_res = get_mail_info(email_name, access_token)
+    if isinstance(mail_info_res, list):
+        for mail_info in mail_info_res:
+            print(f"邮件主题：{mail_info['subject']}")
+            print(f"发件时间：{mail_info['mail_dt']}")
+            print(f"发件人：{mail_info['mail_from']}")
+            print(f"收件人：{mail_info['mail_to']}")
+            print(f"邮件正文：{mail_info['body']}")
+
+    #配置邮箱信息
+    sender = 'caoqianghappy@126.com'  #发件人的地址
+    password = 'GGVQ5CPAcHtHfkBx'  #此处是我们刚刚在邮箱中获取的授权码
+    server = zmail.server(sender, password)
+    server.get_mails()
