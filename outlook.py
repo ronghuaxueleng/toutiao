@@ -12,10 +12,6 @@ import requests
 from email.utils import parsedate_to_datetime
 from email.header import decode_header, make_header
 
-from zmail.parser import parse_mail
-
-import zmail
-
 
 def get_access_token(client_id, refresh_token):
     url = 'https://login.microsoftonline.com/common/oauth2/v2.0/token'
@@ -99,9 +95,3 @@ if __name__ == '__main__':
             print(f"发件人：{mail_info['mail_from']}")
             print(f"收件人：{mail_info['mail_to']}")
             print(f"邮件正文：{mail_info['body']}")
-
-    #配置邮箱信息
-    sender = 'caoqianghappy@126.com'  #发件人的地址
-    password = 'GGVQ5CPAcHtHfkBx'  #此处是我们刚刚在邮箱中获取的授权码
-    server = zmail.server(sender, password)
-    server.get_mails()
