@@ -12,6 +12,7 @@ from peewee import fn
 from app.ShakkerEmailLogin import ShakkerEmailLogin
 from app.liblibQQLogin import liblibQQLogin
 from app.liblibWXLogin import LiblibwxLogin
+from outlook.TokenUtils import authorizationCode
 from run_task import profit_detail
 from db.toutiao_jisu import Account, CommonParams
 from liblibart.UserInfo import Account as LiblibAccount
@@ -88,7 +89,8 @@ def getLastLiblib():
     last_period_end = datetime.datetime(now.year, last_month, calendar.monthrange(now.year, last_month)[1]).strftime(
         '%Y%m%d')
     datas = {}
-    Statisticsdata = Statistics.select().where(Statistics.period >= f"{last_period_start}-{last_period_end}").order_by(Statistics.user_uuid, Statistics.period)
+    Statisticsdata = Statistics.select().where(Statistics.period >= f"{last_period_start}-{last_period_end}").order_by(
+        Statistics.user_uuid, Statistics.period)
     for idx, data in enumerate(Statisticsdata):
         period = data.period
         runCount = data.runCount
@@ -220,6 +222,15 @@ def getLastShakker():
         'month_end': last_period_end
     }
     return jsonify(result)
+
+
+@app.route('/outlook-callBack')
+def outlookCallBack():
+    code = request.args.get("code")
+    client_id = request.args.get("client_id")
+    client_secret = request.args.get("client_secret")
+    redirect_uri = ''
+    return authorizationCode(client_id, code, client_secret, redirect_uri)
 
 
 @app.route('/email-login')
