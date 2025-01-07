@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+import datetime
+import json
+
 import requests
+
+from outlook.OutlookInfo import OutlookInfo
 
 
 def refreshToken(client_id, refresh_token, client_secret):
@@ -7,8 +12,7 @@ def refreshToken(client_id, refresh_token, client_secret):
 
     payload = f'client_id={client_id}&grant_type=refresh_token&refresh_token={refresh_token}&client_secret={client_secret}'
     headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': 'fpc=AuynGZaRD-lFtjpqAhrAdKBjsc4rAQAAAEubDt8OAAAA'
+        'Content-Type': 'application/x-www-form-urlencoded'
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -21,10 +25,24 @@ def authorizationCode(client_id, code, client_secret, redirect_uri):
 
     payload = f'client_id={client_id}&code={code}&redirect_uri={redirect_uri}&client_secret={client_secret}&grant_type=authorization_code&scope=https%3A%2F%2Foutlook.office.com%2FIMAP.AccessAsUser.All%20https%3A%2F%2Foutlook.office.com%2FPOP.AccessAsUser.All%20https%3A%2F%2Foutlook.office.com%2FSMTP.Send%20https%3A%2F%2Foutlook.office.com%2FUser.Read%20https%3A%2F%2Foutlook.office.com%2FMail.Read%20offline_access'
     headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': 'fpc=AuynGZaRD-lFtjpqAhrAdKBjsc4rAQAAANnLDt8OAAAA; stsservicecookie=estsfd; x-ms-gateway-slice=estsfd'
+        'Content-Type': 'application/x-www-form-urlencoded'
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
-    print(response.text)
+    return response.text
+
+
+def getToken(client_id, code):
+    info = OutlookInfo.get(OutlookInfo.client_id == client_id)
+    client_secret = info.client_secret
+    redirect_uri = f'http://localhost:5000/outlook-callBack?client_id={client_id}'
+    result = authorizationCode(client_id, code, client_secret, redirect_uri)
+    if "error" not in result:
+        res = json.loads(result)
+        refresh_token = res['refresh_token']
+        OutlookInfo.update(
+            refresh_token=refresh_token,
+            timestamp=datetime.datetime.now()
+        ).where(OutlookInfo.client_id == client_id).execute()
+    return result

@@ -12,13 +12,13 @@ from peewee import fn
 from app.ShakkerEmailLogin import ShakkerEmailLogin
 from app.liblibQQLogin import liblibQQLogin
 from app.liblibWXLogin import LiblibwxLogin
-from outlook.TokenUtils import authorizationCode
+from outlook.TokenUtils import getToken
 from run_task import profit_detail
 from db.toutiao_jisu import Account, CommonParams
 from liblibart.UserInfo import Account as LiblibAccount
 from liblibart.SUserInfo import Account as ShakkerAccount
 from liblibart.StatisticsTask import getLiblibStatisticsData
-from liblibart.Statistics import Statistics, DownLoadImageStatistics, DownloadModelStatistics, RunStatistics
+from liblibart.Statistics import Statistics
 from liblibart.SStatistics import DownLoadImageStatistics as SDownLoadImageStatistics, \
     DownloadModelStatistics as SDownloadModelStatistics, RunStatistics as SRunStatistics
 
@@ -228,9 +228,13 @@ def getLastShakker():
 def outlookCallBack():
     code = request.args.get("code")
     client_id = request.args.get("client_id")
-    client_secret = request.args.get("client_secret")
-    redirect_uri = ''
-    return authorizationCode(client_id, code, client_secret, redirect_uri)
+    return getToken(client_id, code)
+
+@app.route('/outlook-refresh_token')
+def outlookRefreshToken():
+    code = request.args.get("code")
+    client_id = request.args.get("client_id")
+    return getToken(client_id, code)
 
 
 @app.route('/email-login')
