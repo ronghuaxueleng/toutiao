@@ -1,0 +1,18 @@
+services:
+  app:
+    container_name: toutiao
+    image: crpi-cnazxqmg4avmg4fq.cn-beijing.personal.cr.aliyuncs.com/ronghuaxueleng/jrtt:mitmproxy-nodejs6.0.2-14.18.1
+    ports:
+      - 5000:5000
+      - 8999:8999
+      - 7999:9999
+      - 8080:8080
+      - 2345:2345
+    volumes:
+      - /root/toutiao/config:/mitmproxy/config
+      - /root/toutiao/logs:/mitmproxy/logs
+      - /root/toutiao/logs:/var/run
+      - /root/toutiao/logs:/var/log
+    environment:
+      - TZ=Asia/Shanghai
+    restart: always

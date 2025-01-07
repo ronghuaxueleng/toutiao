@@ -10,7 +10,7 @@ docker run -dit \
 --network bridge \
 --hostname toutiao \
 --restart always \
-ronghuaxueleng/jrtt
+crpi-cnazxqmg4avmg4fq.cn-beijing.personal.cr.aliyuncs.com/ronghuaxueleng/jrtt:mitmproxy-nodejs6.0.2-14.18.1
 
 docker run -dit \
 -v /root/toutiao/config:/mitmproxy/config \
@@ -25,4 +25,4 @@ docker run -dit \
 --name toutiao \
 --network bridge \
 --hostname toutiao \
-ronghuaxueleng/jrtt
+crpi-cnazxqmg4avmg4fq.cn-beijing.personal.cr.aliyuncs.com/ronghuaxueleng/jrtt:mitmproxy-nodejs6.0.2-14.18.1
