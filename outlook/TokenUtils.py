@@ -46,3 +46,20 @@ def getToken(client_id, code):
             timestamp=datetime.datetime.now()
         ).where(OutlookInfo.client_id == client_id).execute()
     return result
+
+
+def genLoginUrl():
+    urls = []
+    outlooks = OutlookInfo.select().execute()
+    for outlook in outlooks:
+        if outlook.refresh_token is None:
+            client_id = outlook.client_id
+            redirect_uri = f'http://localhost:5000/outlook-callBack?client_id={client_id}'
+            url = f'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id={client_id}&scope=IMAP.AccessAsUser.All%20POP.AccessAsUser.All%20SMTP.Send%20User.Read%20Mail.Read%20offline_access&response_type=code&redirect_uri={redirect_uri}&prompt=login'
+            urls.append(url)
+    return json.dumps(urls)
+
+
+if __name__ == '__main__':
+    urls = genLoginUrl()
+    print(urls)
