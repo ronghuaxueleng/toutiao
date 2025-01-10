@@ -230,6 +230,7 @@ def outlookCallBack():
     client_id = request.args.get("client_id")
     return getToken(client_id, code)
 
+
 @app.route('/outlook-refresh_token')
 def outlookRefreshToken():
     code = request.args.get("code")
