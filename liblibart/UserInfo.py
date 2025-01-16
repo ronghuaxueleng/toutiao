@@ -101,6 +101,7 @@ class UserInfo(LogInfo):
         url = f"https://{self.web_host}/api/www/user/getUserInfo?timestamp={time.time()}"
         payload = {}
         response = requests.request("POST", url, headers=self.headers, data=payload)
+        self.getLogger().info(f'获取用户信息结果:{response.text}')
         res = json.loads(response.text)
         if res['code'] == 0:
             data = res['data']
