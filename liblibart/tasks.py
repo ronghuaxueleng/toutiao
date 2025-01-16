@@ -324,7 +324,7 @@ class LiblibTasks(LogInfo):
                     else:
                         get_percent(user, image, image_num, 1)
             except Exception as e:
-                self.getLogger().error(f"nickname：{user['usertoken']} Image，{traceback.format_exc()}")
+                self.getLogger().error(f"user：{json.dumps(user)} Image，{traceback.format_exc()}")
 
         exclude_user = self.notAvailableToImageUsers.setdefault(self.today, [])
         to_run_users = load_from_run_users()
