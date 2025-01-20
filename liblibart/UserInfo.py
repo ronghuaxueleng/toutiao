@@ -101,14 +101,18 @@ class UserInfo(LogInfo):
         url = f"https://{self.web_host}/api/www/user/getUserInfo?timestamp={time.time()}"
         payload = {}
         response = requests.request("POST", url, headers=self.headers, data=payload)
-        self.getLogger().info(f'获取用户信息结果:{response.text}')
-        res = json.loads(response.text)
-        if res['code'] == 0:
-            data = res['data']
-            print(data['nickname'], data['uuid'])
-            self.userInfo = data
-        else:
+        try:
+            res = json.loads(response.text)
+            if res['code'] == 0:
+                data = res['data']
+                print(data['nickname'], data['uuid'])
+                self.userInfo = data
+            else:
+                self.userInfo = None
+        except Exception as e:
             self.userInfo = None
+            self.getLogger().info(f'获取用户信息结果:{response.text}')
+            raise e
 
 
 if __name__ == '__main__':
