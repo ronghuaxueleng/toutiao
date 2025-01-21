@@ -186,7 +186,7 @@ class SLiblibTasks(LogInfo):
         users = get_users(cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
         for user in users:
             try:
-                SDownLoadImage(user['usertoken'], user['webid'], '/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
+                SDownLoadImage(user['usertoken'], user['webid'], f'/mitmproxy/logs/SDownLoadImage_{os.getenv("RUN_OS_KEY")}.log').download(share_image=True, feed_image=True)
             except Exception as e:
                 print(traceback.format_exc())
         s = scheduler.get_job(job_id)
