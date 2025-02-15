@@ -9,7 +9,8 @@ import traceback
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from liblibart.CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users, \
-    load_from_checkpoints, load_from_to_runcheckpoints, save_to_runcheckpoints
+    load_from_checkpoints, load_from_to_runcheckpoints, save_to_runcheckpoints, load_from_othercheckpoints, \
+    load_from_otherloras
 from liblibart.DownLoadImage import DownLoadImage
 from liblibart.DownloadModel import DownloadModel
 from liblibart.Image import Image
@@ -122,6 +123,9 @@ class LiblibTasks(LogInfo):
         for uuid, checkpoint in checkpoints.items():
             for item in checkpoint:
                 checkpointIdList.append(item)
+
+        othercheckpoints = load_from_othercheckpoints()
+        checkpointIdList.extend(random.sample(othercheckpoints, round((len(checkpointIdList) / 0.4 * 0.6))))
 
         to_run_checkpoints = load_from_to_runcheckpoints()
         if to_run_checkpoints is not None:
@@ -288,6 +292,7 @@ class LiblibTasks(LogInfo):
             try:
                 to_save_run_users = load_from_run_users()
                 if user['usertoken'] in to_save_run_users:
+                    self.getLogger().info(f"删除执行的usertoken:{user['usertoken']}")
                     to_save_run_users.remove(user['usertoken'])
                     save_to_run_users(list(set(to_save_run_users)))
                 if user['usertoken'] not in suanlibuzu:
@@ -348,14 +353,16 @@ class LiblibTasks(LogInfo):
             for user in to_run_users:
                 to_save_run_users.append(user['usertoken'])
             save_to_run_users(list(set(to_save_run_users)))
+            otherloras = load_from_otherloras()
             for user in to_run_users:
                 # for user in users:
                 to_run_models = user_model_dict[user['usertoken']]
                 to_run_model_count = (30 if len(to_run_models) >= 30 else len(to_run_models)) if is_time else (
                     20 if len(to_run_models) >= 20 else len(to_run_models))
                 to_run_models = random.sample(to_run_models, to_run_model_count)
-                group_every_two = [to_run_models[i:i + 1] for i in range(0, len(to_run_models), 1)]
+                group_every_two = [to_run_models[i:i + 3] for i in range(0, len(to_run_models), 1)]
                 for to_run_model in group_every_two:
+                    to_run_model.extend(random.sample(otherloras, 3))
                     yield doDrawImage(user, to_run_model)
 
         gen = simple_generator()

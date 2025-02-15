@@ -43,6 +43,7 @@ def load_from_run_users(is_shakker=False):
     else:
         return []
 
+
 def save_checkpoints(checkpoints, is_shakker=False):
     if is_shakker:
         r.set("s_checkpoints", json.dumps(checkpoints))
@@ -59,6 +60,42 @@ def load_from_checkpoints(is_shakker=False):
         return json.loads(checkpoints)
     else:
         return {}
+
+
+def save_otherloras(checkpoints, is_shakker=False):
+    if is_shakker:
+        r.set("s_other_loras", json.dumps(checkpoints))
+    else:
+        r.set("other_loras", json.dumps(checkpoints))
+
+
+def load_from_otherloras(is_shakker=False):
+    if is_shakker:
+        checkpoints = r.get('s_other_loras')
+    else:
+        checkpoints = r.get('other_loras')
+    if checkpoints is not None:
+        return json.loads(checkpoints)
+    else:
+        return []
+
+
+def save_othercheckpoints(checkpoints, is_shakker=False):
+    if is_shakker:
+        r.set("s_other_checkpoints", json.dumps(checkpoints))
+    else:
+        r.set("other_checkpoints", json.dumps(checkpoints))
+
+
+def load_from_othercheckpoints(is_shakker=False):
+    if is_shakker:
+        checkpoints = r.get('s_other_checkpoints')
+    else:
+        checkpoints = r.get('other_checkpoints')
+    if checkpoints is not None:
+        return json.loads(checkpoints)
+    else:
+        return []
 
 
 def save_to_runcheckpoints(to_runcheckpoints, is_shakker=False):
