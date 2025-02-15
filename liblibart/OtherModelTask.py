@@ -7,6 +7,7 @@ import traceback
 import requests
 import json
 
+from liblibart.CookieUtils import save_othercheckpoints, save_otherloras
 from liblibart.OtherModel import OtherModel
 
 base64_web_host = 'd3d3LmxpYmxpYi5hcnQ='
@@ -123,4 +124,21 @@ def getModel(modelType=1):
 
 
 if __name__ == '__main__':
+    getModel(1)
+    models = OtherModel.select().where(OtherModel.isEnable == True, OtherModel.modelType == 1, OtherModel.vipUsed != 1,
+                                       OtherModel.showType == 1).execute()
+
+    checkpoints = []
+    for model in models:
+        checkpoints.append(model.modelId)
+    print(checkpoints)
+    save_othercheckpoints(checkpoints)
+
     getModel(5)
+    models = OtherModel.select().where(OtherModel.isEnable == True, OtherModel.modelType == 5, OtherModel.vipUsed != 1,
+                                       OtherModel.showType == 1).execute()
+    loras = []
+    for model in models:
+        loras.append(json.loads(model.otherInfo))
+    print(loras)
+    save_otherloras(loras)
