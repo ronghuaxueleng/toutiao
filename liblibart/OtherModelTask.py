@@ -34,7 +34,12 @@ headers = {
 }
 
 
-def getModel():
+def getModel(modelType=1):
+    """
+    获取模型
+    :param modelType: 模型类型 1 checkpoint 5 lora
+    :return:
+    """
     payload = json.dumps({
         "isHome": True,
         "page": 1,
@@ -46,7 +51,7 @@ def getModel():
         ],
         "tagIds": [],
         "models": [
-            1
+            modelType
         ],
         "types": [
             1
@@ -118,4 +123,4 @@ def getModel():
 
 
 if __name__ == '__main__':
-    getModel()
+    getModel(5)
