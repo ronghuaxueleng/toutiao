@@ -59,7 +59,14 @@ def getModel():
         "tagV2Id": None
     })
 
-    _saved_models = {}
+    models = OtherModel.select()
+    saved_models = {}
+    for model in models:
+        __model = saved_models.setdefault(model.user_uuid, {})
+        key = f'{model.user_uuid}_{model.modelId}'
+        __model[key] = model
+        saved_models[model.user_uuid] = __model
+
     response = requests.request("POST", url, headers=headers, data=payload)
     data = json.loads(response.text)
     for model in data['data']['data']:
@@ -79,8 +86,8 @@ def getModel():
                     "modelType": model['modelType']
                 }
                 key = f"{model['userUuid']}_{version['id']}"
-                if key in _saved_models:
-                    del _saved_models[key]
+                if key in saved_models:
+                    del saved_models[key]
                     OtherModel.update(
                         user_name=model['nickname'],
                         modelName=model["name"],
