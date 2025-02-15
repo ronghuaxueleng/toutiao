@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import datetime
 import time
 import traceback
@@ -8,16 +9,21 @@ import json
 
 from liblibart.OtherModel import OtherModel
 
-url = "https://www.liblib.art/api/www/model/feed/stream?timestamp=1739582730020"
+base64_web_host = 'd3d3LmxpYmxpYi5hcnQ='
+base64_api_host = 'bGlibGliLWFwaS52aWJyb3UuY29t'
+api_host = str(base64.b64decode(base64_api_host), 'utf-8')
+web_host = str(base64.b64decode(base64_web_host), 'utf-8')
+
+url = f"https://{web_host}/api/www/model/feed/stream?timestamp=1739582730020"
 
 headers = {
-    'authority': 'www.liblib.art',
+    'authority': web_host,
     'accept': 'application/json, text/plain, */*',
     'accept-language': 'zh-CN,zh;q=0.9',
     'content-type': 'application/json',
     'dnt': '1',
-    'origin': 'https://www.liblib.art',
-    'referer': 'https://www.liblib.art/',
+    'origin': f'https://{web_host}',
+    'referer': f'https://{web_host}/',
     'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
@@ -25,7 +31,6 @@ headers = {
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'same-origin',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.95 Safari/537.36',
-    'webid': '1738378706302qrgpkfxe'
 }
 
 
@@ -58,7 +63,7 @@ def getModel():
     response = requests.request("POST", url, headers=headers, data=payload)
     data = json.loads(response.text)
     for model in data['data']['data']:
-        version_url = f"https://www.liblib.art/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
+        version_url = f"https://{web_host}/api/www/model/getByUuid/{model['uuid']}?timestamp={time.time()}"
         payload = {}
         response = requests.request("POST", version_url, headers=headers, data=payload)
         model_data = json.loads(response.text)
