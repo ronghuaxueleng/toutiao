@@ -8,6 +8,8 @@ services:
       - 7999:9999
       - 8080:8080
       - 2345:2345
+    extra_hosts:
+      - "www.ronghuaxueleng.site:192.168.1.15"
     volumes:
       - /root/toutiao/config:/mitmproxy/config
       - /root/toutiao/logs:/mitmproxy/logs
