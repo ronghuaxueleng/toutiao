@@ -64,3 +64,6 @@
 */30 * * * * python3 /mitmproxy/liblibart/SaveLora.py >> /mitmproxy/logs/liblibSaveLora.log 2>&1
 # 哩布哩布lora列表更新
 */40 * * * * python3 /mitmproxy/liblibart/SSaveLora.py >> /mitmproxy/logs/liblibSaveLora.log 2>&1
+#一言到浮墨笔记
+10 0 * * * python3 /mitmproxy/yiyan.py >> /mitmproxy/logs/yiyan.log 2>&1
+
