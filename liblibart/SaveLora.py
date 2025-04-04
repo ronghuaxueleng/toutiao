@@ -14,7 +14,6 @@ from Model import Model
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
-
 # 指定env文件
 env_path = Path.cwd().joinpath('env').joinpath('os.env')
 env_path.parent.mkdir(exist_ok=True)

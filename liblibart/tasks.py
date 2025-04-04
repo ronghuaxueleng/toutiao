@@ -125,7 +125,7 @@ class LiblibTasks(LogInfo):
                 checkpointIdList.append(item)
 
         othercheckpoints = load_from_othercheckpoints()
-        checkpointIdList.extend(random.sample(othercheckpoints, round((len(checkpointIdList) / 0.1 * 0.9))))
+        # checkpointIdList.extend(random.sample(othercheckpoints, round((len(checkpointIdList) / 0.1 * 0.9))))
 
         to_run_checkpoints = load_from_to_runcheckpoints()
         if to_run_checkpoints is not None:
@@ -300,14 +300,17 @@ class LiblibTasks(LogInfo):
                                   f'/mitmproxy/logs/Image_{os.getenv("RUN_OS_KEY")}.log')
                     runCount = {}
                     for model in my_loras:
-                        userUuid = model['user_uuid']
-                        del model['user_uuid']
-                        del model['modelType']
-                        image.param['additionalNetwork'].append(model)
-                        run_model = runCount.setdefault(userUuid, {})
-                        __model = run_model.setdefault(model['modelId'], model)
-                        run_count = __model.setdefault('count', 0)
-                        runCount[userUuid][model['modelId']]['count'] = run_count + 1
+                        try:
+                            userUuid = model['user_uuid']
+                            del model['user_uuid']
+                            del model['modelType']
+                            image.param['additionalNetwork'].append(model)
+                            run_model = runCount.setdefault(userUuid, {})
+                            __model = run_model.setdefault(model['modelId'], model)
+                            run_count = __model.setdefault('count', 0)
+                            runCount[userUuid][model['modelId']]['count'] = run_count + 1
+                        except Exception as e:
+                            print(e)
                     to_run_checkpoint_id = self.get_to_run_checkpoint()
                     image_num = image.gen(runCount, to_run_checkpoint_id)
                     if image_num == 'suanlibuzu':
@@ -362,7 +365,8 @@ class LiblibTasks(LogInfo):
                 to_run_models = random.sample(to_run_models, to_run_model_count)
                 group_every_two = [to_run_models[i:i + 3] for i in range(0, len(to_run_models), 1)]
                 for to_run_model in group_every_two:
-                    to_run_model.extend(random.sample(otherloras, 3))
+                    if len(otherloras) > 0:
+                        to_run_model.extend(random.sample(otherloras, 3))
                     yield doDrawImage(user, to_run_model)
 
         gen = simple_generator()
