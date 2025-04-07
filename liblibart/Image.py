@@ -154,7 +154,7 @@ class Image(Base):
                     except Exception as e:
                         self.getLogger().error(f'更新运行次数失败: {traceback.format_exc()}')
                 return res['data']
-            elif res['code'] == 1200000136 or res['code'] == 1200000170:
+            elif res['code'] == 1200000136 or res['code'] == 1200000170 or res['code'] == 1200000171:
                 if res['code'] == 1200000136:
                     suanlibuzu_user = load_from_suanlibuzu_users()
                     suanlibuzu_user.append(self.userInfo['uuid'])
