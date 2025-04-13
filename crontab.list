@@ -66,4 +66,5 @@
 */40 * * * * python3 /mitmproxy/liblibart/SSaveLora.py >> /mitmproxy/logs/liblibSaveLora.log 2>&1
 #一言到浮墨笔记
 10 0 * * * python3 /mitmproxy/yiyan.py >> /mitmproxy/logs/yiyan.log 2>&1
-
+#创意写作
+10 1 * * * python3 /mitmproxy/generate_keywords.py >> /mitmproxy/logs/generate_keywords.log 2>&1
