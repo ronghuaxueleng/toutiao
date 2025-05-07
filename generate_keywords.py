@@ -41,7 +41,7 @@ CATEGORIES = [
     "日常物品异化",
     "时空循环谜题",
     "非遗活化题材",
-    "赛博玄学",
+    # "赛博玄学",
     "直播事故现场",
     "密闭空间杀局",
     "教育焦虑",
@@ -58,13 +58,14 @@ def generate_keywords():
     }
 
     # 动态生成提示词
-    category = random.choice(CATEGORIES)
+    category = random.sample(CATEGORIES, 3)
     print(f'写作类型【{category}】')
     prompt = f"""请生成一组用于创意写作的{category}类关键词组合，要求：
     1. 包含5个不重复的具象词汇（如：机械苔藓、未寄信、暴雨夜）
     2. 词汇间需存在潜在逻辑关联
     3. 符合{category}类型的特点
-    4. 返回格式:关键词组合\n逻辑关联
+    4. 非赛博类型不要出现超现实和AI
+    5. 返回格式:关键词组合\n逻辑关联
     """
     print(prompt)
 
