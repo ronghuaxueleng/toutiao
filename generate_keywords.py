@@ -61,7 +61,7 @@ def generate_keywords():
     category = random.sample(CATEGORIES, 3)
     print(f'写作类型【{category}】')
     prompt = f"""请生成一组用于创意写作的{category}类关键词组合，要求：
-    1. 包含5个不重复的具象词汇（如：机械苔藓、未寄信、暴雨夜）
+    1. 包含10个不重复的具象词汇（如：机械苔藓、未寄信、暴雨夜）
     2. 词汇间需存在潜在逻辑关联
     3. 符合{category}类型的特点
     4. 非赛博类型不要出现超现实和AI
