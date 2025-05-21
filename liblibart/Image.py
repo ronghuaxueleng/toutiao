@@ -113,7 +113,7 @@ class Image(Base):
                     "generateId": self.frontId,
                     "var": {
                         "gen-img-req-param": {
-                            "checkpointId": 159549,
+                            "checkpointId": 125488,
                             "generateType": 1,
                             "frontCustomerReq": res1['data']['frontCustomerReq'],
                             "text2img": self.param['text2img'],

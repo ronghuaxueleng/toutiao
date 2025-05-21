@@ -15,7 +15,7 @@ class Base(UserInfo):
     def __init__(self, token, webid, filename=None):
         super().__init__(token, webid, filename)
         self.gen_param = {
-            "checkpointId": 2531860,
+            "checkpointId": 125488,
             "generateType": 1,
             "frontCustomerReq": {
                 "windowId": "",
@@ -81,7 +81,7 @@ class Base(UserInfo):
             with open(gen_params_path, 'r') as fp:
                 self.gen_param = json.load(fp)
 
-        self.checkpointIds = [2016037]
+        self.checkpointIds = [125488]
         if not os.path.exists(checkpointIds_path):
             with open(checkpointIds_path, 'w') as fp:
                 json.dump(self.checkpointIds, fp, indent=4)
