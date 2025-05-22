@@ -126,7 +126,7 @@ class LiblibTasks(LogInfo):
 
         othercheckpoints = load_from_othercheckpoints()
         # checkpointIdList.extend(random.sample(othercheckpoints, round((len(checkpointIdList) / 0.1 * 0.9))))
-
+        to_run_checkpoint_id = None
         to_run_checkpoints = load_from_to_runcheckpoints()
         if to_run_checkpoints is not None:
             to_run_checkpoints = to_run_checkpoints
@@ -134,10 +134,12 @@ class LiblibTasks(LogInfo):
                 to_run_checkpoint_id = to_run_checkpoints.pop()
                 save_to_runcheckpoints(to_run_checkpoints)
             else:
-                to_run_checkpoint_id = checkpointIdList.pop()
+                if len(checkpointIdList) > 0:
+                    to_run_checkpoint_id = checkpointIdList.pop()
                 save_to_runcheckpoints(checkpointIdList)
         else:
-            to_run_checkpoint_id = checkpointIdList.pop()
+            if len(checkpointIdList) > 0:
+                to_run_checkpoint_id = checkpointIdList.pop()
             save_to_runcheckpoints(checkpointIdList)
 
         return to_run_checkpoint_id
