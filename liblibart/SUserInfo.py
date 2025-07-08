@@ -110,9 +110,12 @@ class SUserInfo(LogInfo):
             self.model_dict['versionId'] = otherInfo
         checkpointids = [1496861, 1511727]
         self.to_run_checkpointId = 1531927
-        if self.uuid == '7d3786acb7364cee97eb754bf5a3d180':
-            checkpointIdIndex = int(datetime.datetime.now().strftime('%S')) % len(checkpointids)
-            self.to_run_checkpointId = checkpointids[checkpointIdIndex]
+        try:
+            if self.uuid == '7d3786acb7364cee97eb754bf5a3d180':
+                checkpointIdIndex = int(datetime.datetime.now().strftime('%S')) % len(checkpointids)
+                self.to_run_checkpointId = checkpointids[checkpointIdIndex]
+        except Exception as e:
+            print(traceback.format_exc())
 
         checkpoints = MyModel.select(
             MyModel.modelId,
