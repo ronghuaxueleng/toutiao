@@ -172,8 +172,8 @@ class liblibQQLogin(Base):
                     "aid": 716027609,
                     "daid": 383,
                     "pt_3rd_aid": 102049234,
-                    "o1vId": "531f114a7808a5cfef819c6f7a04c98d",
-                    "pt_js_version": "v1.57.0"
+                    "o1vId": "ce82a79e51bd93bb384fb72abd5f04a2",
+                    "pt_js_version": "0daa4751"
                 }
                 res = self.sess.get(url, params=params, timeout=1000)
                 _poll_res = self.ptuiCB(res.text)
@@ -188,7 +188,7 @@ class liblibQQLogin(Base):
                     data_dict = {
                         'response_type': 'code',
                         'client_id': '102049234',
-                        'redirect_uri': f"{str(base64.b64decode('aHR0cHM6Ly93d3cubGlibGliLmFydC9hcGkvd3d3L2xvZ2luL2xvZ2luQnlRUUFuZFJlZGlyZWN0'), 'utf-8')}?cid=1729157068424hgnvpkyw&platform=undefined",
+                        'redirect_uri': f"{str(base64.b64decode('aHR0cHM6Ly9wYXNzcG9ydC5saWJsaWIuYXJ0L2FwaS93d3cvbG9naW4vbG9naW5CeVFRQW5kUmVkaXJlY3Q='), 'utf-8')}?cid=1729157068424hgnvpkyw&platform=liblib",
                         'scope': '',
                         'state': '',
                         'switch': '',
@@ -198,9 +198,9 @@ class liblibQQLogin(Base):
                         'openapi': '1010',
                         'g_tk': self.get_g_tk(self.sess.cookies.get_dict().get('p_skey', '')),
                         'auth_time': int(time.time() * 1000),
-                        'ui': '3D5C88EA-A27B-4D14-9A7A-A7804716337E'
+                        'ui': 'E14E1439-2B39-4AD9-AD6A-66D2FEF90CF9'
                     }
-                    self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
+                    res = self.sess.post(url, timeout=1000, allow_redirects=True, data=urlencode(data_dict))
                     p_uin = self.sess.cookies.get_dict().get('p_uin', '')
                     webid = self.sess.cookies.get_dict().get('webid', '')
                     usertoken = self.sess.cookies.get_dict().get('usertoken', '')
