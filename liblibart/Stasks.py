@@ -116,24 +116,26 @@ class SLiblibTasks(LogInfo):
             for item in checkpoint:
                 checkpointIdList.append(item['versionId'])
                 checkpointMap[item['versionId']] = item
-
-        to_run_checkpoints = load_from_to_runcheckpoints(True)
-        if to_run_checkpoints is not None:
-            to_run_checkpoints = to_run_checkpoints
-            if len(to_run_checkpoints) > 0:
-                to_run_checkpoint_id = to_run_checkpoints.pop()
-                save_to_runcheckpoints(to_run_checkpoints, True)
+        def get_to_run_checkpoint():
+            to_run_checkpoints = load_from_to_runcheckpoints(True)
+            if to_run_checkpoints is not None:
+                to_run_checkpoints = to_run_checkpoints
+                if len(to_run_checkpoints) > 0:
+                    to_run_checkpoint_id = to_run_checkpoints.pop()
+                    save_to_runcheckpoints(to_run_checkpoints, True)
+                else:
+                    to_run_checkpoint_id = checkpointIdList.pop()
+                    save_to_runcheckpoints(checkpointIdList, True)
             else:
                 to_run_checkpoint_id = checkpointIdList.pop()
                 save_to_runcheckpoints(checkpointIdList, True)
-        else:
-            to_run_checkpoint_id = checkpointIdList.pop()
-            save_to_runcheckpoints(checkpointIdList, True)
+            try:
+                to_run_checkpoint = checkpointMap[to_run_checkpoint_id]
+                return to_run_checkpoint_id, to_run_checkpoint
+            except Exception as e:
+                get_to_run_checkpoint()
 
-        to_run_checkpoint = checkpointMap[to_run_checkpoint_id]
-
-        return to_run_checkpoint_id, to_run_checkpoint
-
+        return get_to_run_checkpoint()
 
     def update_userInfo(self):
         users = get_users(True, cookie_name="shakker_cookie", usertoken_name="liblibai_usertoken")
