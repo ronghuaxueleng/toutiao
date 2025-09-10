@@ -141,7 +141,7 @@
     <script type="application/javascript">
         let countdown = 0;
         let countdownTimer = null;
-        const id = "{{ id }}";
+        let id = "";
 
         // 显示消息
         function showMessage(text, type) {
@@ -259,9 +259,30 @@
             });
         });
 
-        // 页面加载完成后聚焦手机号输入框
+        // 获取URL参数
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 页面加载完成后处理初始化
         $(document).ready(function() {
-            $('#phone').focus();
+            // 从URL参数中获取id
+            const idFromUrl = getUrlParameter('id');
+            if (idFromUrl) {
+                id = idFromUrl;
+            }
+            
+            // 检查URL参数中是否有phone参数
+            const phoneFromUrl = getUrlParameter('phone');
+            if (phoneFromUrl) {
+                $('#phone').val(phoneFromUrl);
+                // 如果有手机号参数，聚焦验证码输入框
+                $('#code').focus();
+            } else {
+                // 没有手机号参数，聚焦手机号输入框
+                $('#phone').focus();
+            }
         });
     </script>
 </body>
