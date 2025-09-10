@@ -38,9 +38,9 @@ class LiblibPhoneLogin(Base):
             'Cache-Control': 'no-cache',
             'Connection': 'keep-alive',
             'DNT': '1',
-            'Origin': 'https://www.liblib.art',
+            'Origin': str(base64.b64decode('aHR0cHM6Ly93d3cubGlibGliLmFydA=='), 'utf-8'),
             'Pragma': 'no-cache',
-            'Referer': 'https://www.liblib.art/incomeReport/15430661',
+            'Referer': str(base64.b64decode('aHR0cHM6Ly93d3cubGlibGliLmFydC9pbmNvbWVSZXBvcnQvMTU0MzA2NjE='), 'utf-8'),
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Site': 'same-site',
@@ -54,8 +54,7 @@ class LiblibPhoneLogin(Base):
     def sendLoginPhoneCode(self, phone):
         """发送手机验证码"""
         try:
-            url = 'https://passport.liblib.art/api/www/login/sendLoginPhoneCode'
-
+            url = str(base64.b64decode('aHR0cHM6Ly9wYXNzcG9ydC5saWJsaWIuYXJ0L2FwaS93d3cvbG9naW4vc2VuZExvZ2luUGhvbmVDb2Rl'), 'utf-8')
             payload = json.dumps({
                 "phone": phone
             })
@@ -69,7 +68,7 @@ class LiblibPhoneLogin(Base):
             logger.info(f"发送验证码响应: {response.text}")
 
             result = json.loads(response.text)
-            if result.get('code') == 200:
+            if result.get('code') == 0:
                 return {"status": "success", "message": "验证码发送成功", "phone": phone}
             else:
                 return {"status": "error", "message": result.get('message', '发送验证码失败')}
@@ -81,8 +80,7 @@ class LiblibPhoneLogin(Base):
     def loginByPhoneCode(self, phone, code, id=None):
         """使用手机验证码登录"""
         try:
-            url = 'https://passport.liblib.art/api/www/login/loginByPhoneCode'
-
+            url = str(base64.b64decode('aHR0cHM6Ly9wYXNzcG9ydC5saWJsaWIuYXJ0L2FwaS93d3cvbG9naW4vbG9naW5CeVBob25lQ29kZQ=='), 'utf-8')
             payload = json.dumps({
                 "phone": phone,
                 "code": code,
@@ -98,20 +96,11 @@ class LiblibPhoneLogin(Base):
             logger.info(f"手机登录响应: {response.text}")
 
             result = json.loads(response.text)
-            if result.get('code') == 200:
-                # 获取登录后的cookies
-                cookies = requests.utils.dict_from_cookiejar(response.cookies)
-
+            if result.get('code') == 0:
                 # 从响应中提取token信息
                 data = result.get('data', {})
-                usertoken = data.get('userToken', '')
-                webid = data.get('webId', '')
-
-                # 如果cookie中没有，尝试从响应数据中获取
-                if not usertoken:
-                    usertoken = cookies.get('usertoken', '')
-                if not webid:
-                    webid = cookies.get('webid', '')
+                usertoken = data.get('token', '')
+                webid = self.cid
 
                 if usertoken and webid:
                     value = self.get_cookies(usertoken, webid)
@@ -123,7 +112,7 @@ class LiblibPhoneLogin(Base):
                             data_info = info['data']
                             name = data_info['name']
                             remarks = data_info['remarks']
-                            sourcetype = '手机'
+                            sourcetype = '手机号'
                             username = data_info['username']
                             createtime = data_info['createtime']
                             logger.info(f"{remarks}登录")
@@ -173,7 +162,7 @@ class LiblibPhoneLogin(Base):
 
         cookies = [
             {
-                "domain": ".www.liblib.art",
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
                 "expirationDate": expire_time,
                 "hostOnly": False,
                 "httpOnly": False,
@@ -186,7 +175,20 @@ class LiblibPhoneLogin(Base):
                 "value": usertoken
             },
             {
-                "domain": ".www.liblib.art",
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "expirationDate": expire_time,
+                "hostOnly": False,
+                "httpOnly": False,
+                "name": "usertoken_online",
+                "path": "/",
+                "sameSite": None,
+                "secure": False,
+                "session": False,
+                "storeId": None,
+                "value": usertoken
+            },
+            {
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
                 "expirationDate": expire_time,
                 "hostOnly": False,
                 "httpOnly": False,
@@ -197,21 +199,32 @@ class LiblibPhoneLogin(Base):
                 "session": False,
                 "storeId": None,
                 "value": webid
+            },
+            {
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "expirationDate": expire_time,
+                "hostOnly": False,
+                "httpOnly": False,
+                "name": "usertokenExt",
+                "path": "/",
+                "sameSite": None,
+                "secure": False,
+                "session": False,
+                "storeId": None,
+                "value": usertoken
+            },
+            {
+                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "expirationDate": expire_time,
+                "hostOnly": False,
+                "httpOnly": False,
+                "name": "webidExt",
+                "path": "/",
+                "sameSite": None,
+                "secure": False,
+                "session": False,
+                "storeId": None,
+                "value": webid
             }
         ]
         return json.dumps(cookies, ensure_ascii=False, indent=4)
-
-
-if __name__ == '__main__':
-    # 测试示例
-    phone_login = LiblibPhoneLogin()
-
-    # 发送验证码
-    result = phone_login.sendLoginPhoneCode("15901254680")
-    print("发送验证码结果:", result)
-
-    if result['status'] == 'success':
-        # 这里需要手动输入验证码
-        code = input("请输入验证码: ")
-        login_result = phone_login.loginByPhoneCode("15901254680", code)
-        print("登录结果:", login_result)

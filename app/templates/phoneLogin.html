@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机验证码登录</title>
+    <script src="../static/js/jquery.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, input[type="tel"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .code-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .code-input {
+            flex: 1;
+        }
+        .send-code-btn {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .send-code-btn:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        .send-code-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .login-btn:hover:not(:disabled) {
+            background-color: #1976D2;
+        }
+        .login-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .countdown {
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="title">手机验证码登录</h2>
+        <form id="phoneLoginForm">
+            <div class="form-group">
+                <label for="phone">手机号码:</label>
+                <input type="tel" id="phone" name="phone" placeholder="请输入手机号码" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="code">验证码:</label>
+                <div class="code-input-group">
+                    <div class="code-input">
+                        <input type="text" id="code" name="code" placeholder="请输入验证码" required>
+                    </div>
+                    <button type="button" id="sendCodeBtn" class="send-code-btn">发送验证码</button>
+                </div>
+            </div>
+            
+            <button type="submit" id="loginBtn" class="login-btn">登录</button>
+        </form>
+        
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+
+    <script type="application/javascript">
+        let countdown = 0;
+        let countdownTimer = null;
+        const id = "{{ id }}";
+
+        // 显示消息
+        function showMessage(text, type) {
+            const messageDiv = $('#message');
+            messageDiv.removeClass('success error').addClass(type);
+            messageDiv.text(text).show();
+            
+            // 3秒后自动隐藏成功消息
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.hide();
+                }, 3000);
+            }
+        }
+
+        // 开始倒计时
+        function startCountdown(seconds) {
+            countdown = seconds;
+            const sendBtn = $('#sendCodeBtn');
+            
+            function updateButton() {
+                if (countdown > 0) {
+                    sendBtn.prop('disabled', true);
+                    sendBtn.html(`重新发送(${countdown}s)`);
+                    countdown--;
+                    countdownTimer = setTimeout(updateButton, 1000);
+                } else {
+                    sendBtn.prop('disabled', false);
+                    sendBtn.html('发送验证码');
+                    countdownTimer = null;
+                }
+            }
+            updateButton();
+        }
+
+        // 发送验证码
+        $('#sendCodeBtn').click(function() {
+            const phone = $('#phone').val();
+            
+            if (!phone) {
+                showMessage('请输入手机号码', 'error');
+                return;
+            }
+            
+            // 简单的手机号验证
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                showMessage('请输入正确的手机号码', 'error');
+                return;
+            }
+            
+            $(this).prop('disabled', true).text('发送中...');
+            
+            $.ajax({
+                url: '/send-phone-code',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    phone: phone
+                }),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showMessage('验证码发送成功，请查收', 'success');
+                        startCountdown(60); // 60秒倒计时
+                    } else {
+                        showMessage(response.message || '发送验证码失败', 'error');
+                        $('#sendCodeBtn').prop('disabled', false).text('发送验证码');
+                    }
+                },
+                error: function() {
+                    showMessage('网络错误，请重试', 'error');
+                    $('#sendCodeBtn').prop('disabled', false).text('发送验证码');
+                }
+            });
+        });
+
+        // 登录
+        $('#phoneLoginForm').submit(function(e) {
+            e.preventDefault();
+            
+            const phone = $('#phone').val();
+            const code = $('#code').val();
+            
+            if (!phone || !code) {
+                showMessage('请输入手机号码和验证码', 'error');
+                return;
+            }
+            
+            $('#loginBtn').prop('disabled', true).text('登录中...');
+            
+            $.ajax({
+                url: '/phone-login-verify',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    phone: phone,
+                    code: code,
+                    id: id
+                }),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showMessage('登录成功！', 'success');
+                        // 可以在这里添加跳转逻辑
+                        setTimeout(() => {
+                            window.close();
+                        }, 2000);
+                    } else {
+                        showMessage(response.message || '登录失败', 'error');
+                    }
+                    $('#loginBtn').prop('disabled', false).text('登录');
+                },
+                error: function() {
+                    showMessage('网络错误，请重试', 'error');
+                    $('#loginBtn').prop('disabled', false).text('登录');
+                }
+            });
+        });
+
+        // 页面加载完成后聚焦手机号输入框
+        $(document).ready(function() {
+            $('#phone').focus();
+        });
+    </script>
+</body>
+</html>

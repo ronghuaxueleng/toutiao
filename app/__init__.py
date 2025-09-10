@@ -12,6 +12,7 @@ from peewee import fn
 from app.ShakkerEmailLogin import ShakkerEmailLogin
 from app.liblibQQLogin import liblibQQLogin
 from app.liblibWXLogin import LiblibwxLogin
+from app.liblibPhoneLogin import LiblibPhoneLogin
 from outlook.TokenUtils import getToken
 from run_task import profit_detail
 from db.toutiao_jisu import Account, CommonParams
@@ -308,3 +309,46 @@ def get_img(file_name):
     path = f'/mitmproxy/logs/{file_name}'
     resp = Response(open(path, 'rb'), mimetype="image/jpeg")
     return resp
+
+
+@app.route('/phone-login')
+def phoneLogin():
+    """手机验证码登录页面"""
+    id = request.args.get("id")
+    return render_template('phoneLogin.html', id=id)
+
+
+@app.route('/send-phone-code', methods=['POST'])
+def sendPhoneCode():
+    """发送手机验证码接口"""
+    try:
+        data = request.get_json()
+        phone = data.get('phone')
+        
+        if not phone:
+            return jsonify({'status': 'error', 'message': '请输入手机号'})
+        
+        phone_login = LiblibPhoneLogin()
+        result = phone_login.sendLoginPhoneCode(phone)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+
+@app.route('/phone-login-verify', methods=['POST'])
+def phoneLoginVerify():
+    """手机验证码登录接口"""
+    try:
+        data = request.get_json()
+        phone = data.get('phone')
+        code = data.get('code')
+        id = data.get('id')
+        
+        if not phone or not code:
+            return jsonify({'status': 'error', 'message': '请输入手机号和验证码'})
+        
+        phone_login = LiblibPhoneLogin()
+        result = phone_login.loginByPhoneCode(phone, code, id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
