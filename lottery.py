@@ -7,7 +7,7 @@ from utils.logger import logger
 class LotterySystem:
     """抽奖和兑换系统"""
 
-    def __init__(self, lottery_cookie, topup_cookie, new_api_user):
+    def __init__(self, lottery_cookies, topup_cookie, new_api_user):
         """
         初始化抽奖系统
 
@@ -18,7 +18,7 @@ class LotterySystem:
         """
         self.lottery_url = "https://tw.api.zzyu.me/api/lottery/spin"
         self.topup_url = "https://api.zzyu.me/api/user/topup"
-
+        self.lottery_cookies = lottery_cookies
         self.lottery_headers = {
             'authority': 'tw.api.zzyu.me',
             'accept': '*/*',
@@ -26,7 +26,6 @@ class LotterySystem:
             'cache-control': 'no-cache',
             'content-length': '0',
             'content-type': 'application/json',
-            'cookie': f'connect.sid={lottery_cookie}',
             'dnt': '1',
             'origin': 'https://tw.api.zzyu.me',
             'pragma': 'no-cache',
@@ -123,34 +122,37 @@ class LotterySystem:
         total_spins = 0
         total_topups = 0
 
-        while True:
-            # 执行抽奖
-            result = self.spin()
+        for lottery_cookie in self.lottery_cookies:
+            self.lottery_headers['cookie'] = f'connect.sid={lottery_cookie}'
 
-            if result is None:
-                logger.error("抽奖失败，停止执行")
-                break
+            while True:
+                # 执行抽奖
+                result = self.spin()
 
-            total_spins += 1
+                if result is None:
+                    logger.error("抽奖失败，停止执行")
+                    break
 
-            # 如果需要自动兑换且有兑换码
-            if auto_topup and result.get('redemptionCode'):
-                redemption_code = result.get('redemptionCode')
-                logger.info(f"准备兑换，兑换码: {redemption_code}")
+                total_spins += 1
 
-                topup_result = self.topup(redemption_code)
-                if topup_result:
-                    total_topups += 1
+                # 如果需要自动兑换且有兑换码
+                if auto_topup and result.get('redemptionCode'):
+                    redemption_code = result.get('redemptionCode')
+                    logger.info(f"准备兑换，兑换码: {redemption_code}")
 
-            # 检查剩余次数
-            remaining = result.get('remainingAttempts', 0)
-            if remaining <= 0:
-                logger.info(f"抽奖次数已用完！总共抽奖 {total_spins} 次，兑换 {total_topups} 次")
-                break
+                    topup_result = self.topup(redemption_code)
+                    if topup_result:
+                        total_topups += 1
 
-            # 等待一段时间再进行下次抽奖
-            if interval > 0:
-                time.sleep(interval)
+                # 检查剩余次数
+                remaining = result.get('remainingAttempts', 0)
+                if remaining <= 0:
+                    logger.info(f"抽奖次数已用完！总共抽奖 {total_spins} 次，兑换 {total_topups} 次")
+                    break
+
+                # 等待一段时间再进行下次抽奖
+                if interval > 0:
+                    time.sleep(interval)
 
         logger.info("抽奖任务执行完成")
 
@@ -158,12 +160,17 @@ class LotterySystem:
 def main():
     """主函数"""
     # 配置参数 - 请替换为你自己的值
-    LOTTERY_COOKIE = "s%3Aa0EwV0PcT_3zqsjzvUK_tnusmY4O3d5F.uwoJFVFFHlk6YtyyQpsYps3xfebWYGdkPDGk4FqzKkk"
+    LOTTERY_COOKIES = [
+        "s%3Aa0EwV0PcT_3zqsjzvUK_tnusmY4O3d5F.uwoJFVFFHlk6YtyyQpsYps3xfebWYGdkPDGk4FqzKkk",
+        "s%3APQWo5h-Rszkl1teCbtlSq3G7O-0-BmRM.9jgL2d%2ByUBD%2FWU22pEfU7TkuPCTBz9amebXRSo%2FQOc0",
+        "s%3AnJ1npTWkT12PDkgchC63vXVRT2NOv-vU.R7DAbvumzcF2ogghQxsaacUor%2FsdbBoPsIeAPjopeiU",
+        "s%3ALzpI-h2Js8_mCh6rLCCQ1h1_1TQAgFpB.dleCCtZUZ8aqHHdYNW2TALXgKnoI0Q34ny%2Bp9mxczds"
+    ]
     TOPUP_COOKIE = "MTc1OTMwNDcxM3xEWDhFQVFMX2dBQUJFQUVRQUFEX3Z2LUFBQVlHYzNSeWFXNW5EQTBBQzI5aGRYUm9YM04wWVhSbEJuTjBjbWx1Wnd3T0FBeE9VVTFHZEU1UFJVaEdTMlVHYzNSeWFXNW5EQVFBQW1sa0EybHVkQVFEQVBfLUJuTjBjbWx1Wnd3S0FBaDFjMlZ5Ym1GdFpRWnpkSEpwYm1jTUNRQUhjbTl1WjJoMVlRWnpkSEpwYm1jTUJnQUVjbTlzWlFOcGJuUUVBZ0FDQm5OMGNtbHVad3dJQUFaemRHRjBkWE1EYVc1MEJBSUFBZ1p6ZEhKcGJtY01Cd0FGWjNKdmRYQUdjM1J5YVc1bkRBa0FCMlJsWm1GMWJIUT18jKohc8HdyRDwPtzASBGDEa4EoSoCIYq2r8mMYXQ7Smc="
     NEW_API_USER = "127"
 
     # 创建抽奖系统实例
-    lottery = LotterySystem(LOTTERY_COOKIE, TOPUP_COOKIE, NEW_API_USER)
+    lottery = LotterySystem(LOTTERY_COOKIES, TOPUP_COOKIE, NEW_API_USER)
 
     # 执行自动抽奖和兑换
     lottery.run(auto_topup=True, interval=1)
