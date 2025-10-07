@@ -69,4 +69,4 @@
 #创意写作
 #10 1 * * * python3 /mitmproxy/generate_keywords.py >> /mitmproxy/logs/generate_keywords.log 2>&1
 #抽奖
-10 4 * * * python3 /mitmproxy/lottery.py >> /mitmproxy/logs/lottery.log 2>&1
+10 9,12,14 * * * python3 /mitmproxy/lottery.py >> /mitmproxy/logs/lottery.log 2>&1
