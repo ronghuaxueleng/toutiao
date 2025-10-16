@@ -1,6 +1,6 @@
 FROM ronghuaxueleng/mitmproxy:6.0.2
 LABEL maintainer="jishuixiansheng"
-ARG APP_URL=https://proxy.v2gh.com/https://github.com/ronghuaxueleng/toutiao.git
+ARG APP_URL=https://gh-proxy.com/https://github.com/ronghuaxueleng/toutiao.git
 ARG APP_BRANCH=main
 
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
