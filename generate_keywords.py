@@ -7,7 +7,7 @@ import random
 
 # 配置区 ================================================
 DEEPSEEK_API_KEY = "4YpnBSETwahD6URC87HHgpAsK/gr9q9BOfvzYDDsX9Dh+4zcOljr6xyhQc3qrDVM"  # 替换为你的API密钥
-API_URL = "http://49.234.39.232:8901/v1/chat/completions"
+API_URL = "http://www.ronghuaxueleng.top:8901/v1/chat/completions"
 CATEGORIES = [
     "情感冲突",
     "悬疑推理",
