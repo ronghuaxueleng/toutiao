@@ -4,7 +4,7 @@ import json
 
 from qlapi import qlenv
 
-config_base64 = "eyJob3N0Ijoid3d3LnJvbmdodWF4dWVsZW5nLnNpdGUiLCJwb3J0IjoiNTY4MCIsIkNsaWVudElEIjoiODctUXZrNEhrLW5iIiwiQ2xpZW50U2VjcmV0Ijoibi1meHNlcWFRUkU2RjNyQ2xLbzBGMXJsIn0="
+config_base64 = "eyJob3N0Ijoid3d3LnJvbmdodWF4dWVsZW5nLnRvcCIsInBvcnQiOiI1NjgwIiwiQ2xpZW50SUQiOiI4Ny1Rdms0SGstbmIiLCJDbGllbnRTZWNyZXQiOiJuLWZ4c2VxYVFSRTZGM3JDbEtvMEYxcmwifQ=="
 ql_config = str(base64.b64decode(config_base64), 'utf-8')
 json_config = json.loads(ql_config)
 ql_env = qlenv(
