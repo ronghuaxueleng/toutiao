@@ -8,7 +8,7 @@ from playhouse.pool import PooledMySQLDatabase
 from playhouse.shortcuts import ReconnectMixin
 
 # host = 'MTkyLjE0NC4yMTUuMjE4'
-host = 'd3d3LnJvbmdodWF4dWVsZW5nLnNpdGU='
+host = 'd3d3LnJvbmdodWF4dWVsZW5nLnRvcA=='
 
 
 class ReconnectPooledMySQLDatabase(ReconnectMixin, PooledMySQLDatabase):
