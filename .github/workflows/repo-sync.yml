@@ -5,15 +5,6 @@ jobs:
     name: 同步到gitee
     runs-on: ubuntu-latest
     steps:
-      - name: 同步到gitee
-        uses: Yikun/hub-mirror-action@master
-        with:
-          src: github/ronghuaxueleng
-          dst: gitee/getready
-          static_list: "toutiao"
-          dst_key: ${{ secrets.GITEE_KEY }}
-          dst_token: ${{ secrets.GITEE_TOKEN }}
-
       - name: 删除过多的workflows
         uses: Mattraks/delete-workflow-runs@main
         with:
