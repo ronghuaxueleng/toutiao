@@ -162,7 +162,7 @@ class LiblibPhoneLogin(Base):
 
         cookies = [
             {
-                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "domain": str(base64.b64decode("LmxpYmxpYi5hcnQ="), 'utf-8'),
                 "expirationDate": expire_time,
                 "hostOnly": False,
                 "httpOnly": False,
@@ -175,7 +175,7 @@ class LiblibPhoneLogin(Base):
                 "value": usertoken
             },
             {
-                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "domain": str(base64.b64decode("LmxpYmxpYi5hcnQ="), 'utf-8'),
                 "expirationDate": expire_time,
                 "hostOnly": False,
                 "httpOnly": False,
@@ -188,7 +188,7 @@ class LiblibPhoneLogin(Base):
                 "value": usertoken
             },
             {
-                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "domain": str(base64.b64decode("LmxpYmxpYi5hcnQ="), 'utf-8'),
                 "expirationDate": expire_time,
                 "hostOnly": False,
                 "httpOnly": False,
@@ -201,7 +201,7 @@ class LiblibPhoneLogin(Base):
                 "value": webid
             },
             {
-                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "domain": str(base64.b64decode("LmxpYmxpYi5hcnQ="), 'utf-8'),
                 "expirationDate": expire_time,
                 "hostOnly": False,
                 "httpOnly": False,
@@ -214,7 +214,7 @@ class LiblibPhoneLogin(Base):
                 "value": usertoken
             },
             {
-                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "domain": str(base64.b64decode("LmxpYmxpYi5hcnQ="), 'utf-8'),
                 "expirationDate": expire_time,
                 "hostOnly": False,
                 "httpOnly": False,

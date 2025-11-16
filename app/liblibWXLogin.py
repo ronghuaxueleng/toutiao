@@ -139,7 +139,7 @@ class LiblibwxLogin(Base):
     def get_cookies(self, usertoken, webid):
         cookies = [
             {
-                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "domain": str(base64.b64decode("LmxpYmxpYi5hcnQ="), 'utf-8'),
                 "hostOnly": False,
                 "httpOnly": False,
                 "name": "usertoken",
@@ -151,7 +151,7 @@ class LiblibwxLogin(Base):
                 "value": usertoken
             },
             {
-                "domain": str(base64.b64decode("Lnd3dy5saWJsaWIuYXJ0"), 'utf-8'),
+                "domain": str(base64.b64decode("LmxpYmxpYi5hcnQ="), 'utf-8'),
                 "hostOnly": False,
                 "httpOnly": False,
                 "name": "webid",
