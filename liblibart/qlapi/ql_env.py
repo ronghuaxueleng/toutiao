@@ -25,8 +25,8 @@ class qlenv(ql_api):
         ql_env.list()
     """
 
-    def __init__(self, url: str, port: int, client_id: str, client_secret: str):
-        super().__init__(url, port, client_id, client_secret)
+    def __init__(self, url: str, client_id: str, client_secret: str):
+        super().__init__(url, client_id, client_secret)
 
     def add(self, new_env, value, remarks: "", sourcetype, username, createtime):
         """
