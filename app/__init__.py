@@ -354,7 +354,7 @@ def phoneLoginVerify():
         return jsonify({'status': 'error', 'message': str(e)})
 
 
-@app.route('/tencent17995076833674810104.txt')
+@app.route('/tencent4800320466739894971.txt')
 def tencent_verify():
     """腾讯域名验证文件"""
-    return '15102954905091242189'
+    return '8087867572653573125'
