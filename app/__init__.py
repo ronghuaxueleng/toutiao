@@ -343,12 +343,18 @@ def phoneLoginVerify():
         phone = data.get('phone')
         code = data.get('code')
         id = data.get('id')
-        
+
         if not phone or not code:
             return jsonify({'status': 'error', 'message': '请输入手机号和验证码'})
-        
+
         phone_login = LiblibPhoneLogin()
         result = phone_login.loginByPhoneCode(phone, code, id)
         return jsonify(result)
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
+
+
+@app.route('/tencent17995076833674810104.txt')
+def tencent_verify():
+    """腾讯域名验证文件"""
+    return '15102954905091242189'
