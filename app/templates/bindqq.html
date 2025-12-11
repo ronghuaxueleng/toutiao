@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>二维码</title>
+    <script src="../static/js/jquery.js"></script>
+</head>
+<body>
+<!--<img src="data:;base64,{{ img_stream }}" style="width: 430px">-->
+<img src="/api/pic/{{ img_url }}">
+</body>
+<script type="application/javascript">
+    window.onload = function () {
+        $.post("/bindqq-check", {
+            "id": "{{ id }}",
+            "qrsig": "{{ qrsig }}",
+            "session_id": "{{ session_id }}",
+            "login_sig": "{{ login_sig }}",
+            "img_url": "{{ img_url }}"
+        })
+    }
+</script>
+</html>

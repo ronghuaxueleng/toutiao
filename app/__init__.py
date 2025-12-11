@@ -248,14 +248,14 @@ def emailLogin():
     return shakkerEmailLogin.login(id)
 
 
-@app.route('/wx-qrcode')
+@app.route('/bindwx')
 def wxQrcodeShow():
     id = request.args.get("id")
     login = LiblibwxLogin()
     login.get_qrcode()
     ticket = login.ticket
     qrCodeUrl = login.qrCodeUrl
-    return render_template('qrcode.html',
+    return render_template('bindwx.html',
                            id=id,
                            qrCodeUrl=qrCodeUrl,
                            ticket=ticket,
@@ -263,7 +263,7 @@ def wxQrcodeShow():
                            )
 
 
-@app.route('/wx-qrcode-check')
+@app.route('/bindwx-check')
 def wxQrcodeCheck():
     id = request.args.get("id")
     ticket = request.args.get("ticket")
@@ -273,7 +273,7 @@ def wxQrcodeCheck():
     return 'ok'
 
 
-@app.route('/qq-qrcode')
+@app.route('/bindqq')
 def qqQrcodeShow():
     id = request.args.get("id")
     login = liblibQQLogin()
@@ -281,7 +281,7 @@ def qqQrcodeShow():
     session_id = login.session_id
     qrsig = login.sess.cookies.get_dict().get('qrsig', '')
     login_sig = login.sess.cookies.get_dict().get('pt_login_sig', '')
-    return render_template('qqQrcode.html',
+    return render_template('bindqq.html',
                            id=id,
                            qrsig=qrsig,
                            login_sig=login_sig,
@@ -291,7 +291,7 @@ def qqQrcodeShow():
                            )
 
 
-@app.route('/qq-qrcode-check', methods=['POST'])
+@app.route('/bindqq-check', methods=['POST'])
 def qqQrcodeCheck():
     data = request.form
     id = data.get('id')

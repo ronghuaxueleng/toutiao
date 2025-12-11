@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>二维码</title>
+    <script src="../static/js/jquery.js"></script>
+</head>
+<body>
+<img src="{{ qrCodeUrl }}">
+</body>
+<script type="application/javascript">
+    window.onload = function () {
+        $.get('/bindwx-check?id={{ id }}&ticket={{ ticket }}&starttime={{ starttime }}')
+    }
+</script>
+</html>
