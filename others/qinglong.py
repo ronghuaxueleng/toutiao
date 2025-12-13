@@ -5,18 +5,13 @@ import requests
 
 class QingLong():
     def __init__(self):
-        config_base64 = "eyJob3N0IjoiMTkyLjE0NC4yMTUuMjE4OjU2ODAiLCJDbGllbnRJRCI6Ijg3LVF2azRIay1uYiIsIkNsaWVudFNlY3JldCI6Im4tZnhzZXFhUVJFNkYzckNsS28wRjFybCJ9"
-        ql_config = str(base64.b64decode(config_base64), 'utf-8')
-        json_config = json.loads(ql_config)
-
-        self.host = f"http://{json_config['host']}"
-        self.client_id = json_config['ClientID']
-        self.client_secret = json_config['ClientSecret']
+        self.host = "https://qinglong.ronghuaxueleng.top"
+        self.client_id = "87-Qvk4Hk-nb"
+        self.client_secret = "n-fxseqaQRE6F3rClKo0F1rl"
         self.token = None
         self.task_id = []
 
         self.header = {
-            'Host': f'{json_config["host"]}',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36 Edg/94.0.992.38'

@@ -22,6 +22,7 @@ from liblibart.StatisticsTask import getLiblibStatisticsData
 from liblibart.Statistics import Statistics
 from liblibart.SStatistics import DownLoadImageStatistics as SDownLoadImageStatistics, \
     DownloadModelStatistics as SDownloadModelStatistics, RunStatistics as SRunStatistics
+from others.qinglong import QingLong
 
 app = Flask(__name__)
 
@@ -358,3 +359,28 @@ def phoneLoginVerify():
 def tencent_verify():
     """腾讯域名验证文件"""
     return '8087867572653573125'
+
+
+@app.route('/getEnvList')
+def getEnvList():
+    """获取青龙环境变量列表"""
+    search_value = request.args.get('searchValue', 'liblib_cookie')
+    try:
+        ql = QingLong()
+        response = ql.run(search_value)
+        if response['code'] == 200:
+            data_list = []
+            for item in response['data']:
+                data_list.append({
+                    'id': item.get('id'),
+                    'name': item.get('remarks', '') + ('-' + item.get('username') if item.get('username') else ''),
+                    'remarks': item.get('remarks', ''),
+                    'username': item.get('username', ''),
+                    'sourcetype': item.get('sourcetype', ''),
+                    'status': item.get('status', 0)
+                })
+            return jsonify({'code': 200, 'data': data_list})
+        else:
+            return jsonify({'code': 500, 'message': '获取数据失败'})
+    except Exception as e:
+        return jsonify({'code': 500, 'message': str(e)})

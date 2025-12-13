@@ -3,9 +3,9 @@ import random
 import re
 import time
 
+import httpx
 import requests
 from chinese_calendar import is_workday
-from hyper import HTTP20Connection
 
 
 def get_sample(url, headers):
@@ -29,10 +29,13 @@ def request(host, method, path, headers=None, body=None):
         headers = {}
     headers['Accept'] = '*/*'
     headers['Connection'] = 'keep-alive'
-    c = HTTP20Connection(host)
-    response = c.request(method, path, headers=headers, body=body)
-    resp = c.get_response(response)
-    return resp.read().decode('utf-8')
+    url = f'https://{host}{path}'
+    with httpx.Client(http2=True) as client:
+        if method == 'GET':
+            resp = client.get(url, headers=headers)
+        else:
+            resp = client.post(url, headers=headers, content=body)
+        return resp.text
 
 
 def convert_cookies_to_dict(cookies, delimiter="; |;|, |,"):
