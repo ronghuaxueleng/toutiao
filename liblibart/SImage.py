@@ -31,6 +31,7 @@ class SImage(SBase):
         super().__init__(token, webid, log_filename)
         self.param = copy.deepcopy(self.gen_param)
         self.param['cid'] = self.webid
+        self.to_run_checkpoint = None
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(SImage, "_instance"):
