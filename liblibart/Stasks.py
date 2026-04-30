@@ -9,9 +9,10 @@ import traceback
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from CookieUtils import get_users, load_from_run_users, save_to_run_users, load_from_suanlibuzu_users, \
-    load_from_checkpoints, load_from_to_runcheckpoints, save_to_runcheckpoints
+    load_from_checkpoints, load_from_to_runcheckpoints, save_to_runcheckpoints, save_to_suanlibuzu_users
 from SDownLoadImage import SDownLoadImage
 from SImage import SImage
+from SBase import current_day_json_path
 from SModel import Model
 from SUserInfo import SUserInfo, Account
 from LogInfo import LogInfo
@@ -43,6 +44,24 @@ class SLiblibTasks(LogInfo):
         dt = datetime.datetime.now()
         self.yesterday = (dt - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         self.today = dt.strftime('%Y-%m-%d')
+
+    def reset_cross_day_state(self):
+        current_day_file = Path(current_day_json_path)
+        today = datetime.datetime.now().strftime('%Y%m%d')
+        current_day = None
+        if current_day_file.exists():
+            try:
+                with open(current_day_file, 'r') as current_day_fp:
+                    current_day = json.load(current_day_fp).get('current_day')
+            except Exception:
+                self.getLogger().error(f'读取当前日期配置失败：{traceback.format_exc()}')
+        if current_day != today:
+            current_day_file.parent.mkdir(exist_ok=True)
+            with open(current_day_file, 'w') as current_day_fp:
+                json.dump({'current_day': today}, current_day_fp, indent=4)
+            # 跨天后清空前一日的排除状态，避免新一天没有可运行账号。
+            save_to_suanlibuzu_users([], True)
+            save_to_run_users([], True)
 
     def init_tasks(self):
         scheduler.add_job(
@@ -210,6 +229,7 @@ class SLiblibTasks(LogInfo):
 
     def drawImage(self):
         self.init_day()
+        self.reset_cross_day_state()
         star_time = datetime.datetime.now()
         send_message("开始执行绘图", title=f'shakker-{os.getenv("RUN_OS_NAME")}')
         job_id = f"drawImage"
